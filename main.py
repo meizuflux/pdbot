@@ -53,7 +53,18 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_command(context):
-	print(f'{context.author} used !{context.command} in #{context.channel}')
+	print(f'{context.author} used !{context.command} in #{context.channel} in {context.guild}')
+
+@bot.event
+async def on_message(message):
+	if message.guild == False: 
+		string = message.content
+		split = string.split(' ')
+		channel = bot.get_channel(int(split[0]))
+		await channel.send(int(split[1]))
+
+
+
 
 
 keep_alive()
