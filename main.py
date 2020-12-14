@@ -42,16 +42,9 @@ async def nine_nine(ctx):
     await ctx.send(response)
 
 @bot.command(name='say', help='Says something than deleted the message')
-async def say(ctx, arg, message):
-	await ctx.send(arg)
-	await message.delete()
-
-@bot.command()
-async def say(ctx, message=None)
-    await ctx.send(message)#
-
-	
-	
+async def say(ctx, message=None):
+	await ctx.send(message)
+	await ctx.message.delete()
 
 @bot.event
 async def on_command_error(ctx, error):
