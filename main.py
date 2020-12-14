@@ -57,11 +57,16 @@ async def on_command(context):
 
 @bot.event
 async def on_message(message):
-	if message.guild == False: 
+	if not message.guild: 
 		string = message.content
 		split = string.split(' ')
 		channel = bot.get_channel(int(split[0]))
-		await channel.send(int(split[1]))
+		await channel.send(str(split[1]))
+		message1 = (str(split[1]))
+		channelid1 = (int(split[0]))
+		print(f'sent {message1} to {+channelid1}')
+
+	await bot.process_commands(message)
 
 
 
