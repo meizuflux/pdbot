@@ -33,12 +33,9 @@ async def ping(ctx):
 	await ctx.send(f'PONG! Oh, you wanted to know the ping. The ping is {round(bot.latency * 1000)} ms')
 
 @bot.command(name='send', help='hi')
-async def send(ctx, args):
-			split = args.split(' ', maxsplit=1)
-			printers = (int(split[1]))
-			print(f'{printers}')
-			channel = bot.get_channel(int(split[0]))
-			await channel.send(str(split[1]))
+async def send(ctx, channel: discord.TextChannel, *, message):
+	await channel.send(message) 
+	await ctx.message.delete()
 			
 
 #@bot.event
@@ -70,17 +67,6 @@ async def say(ctx, message=None):
 	await ctx.send(message)
 	await ctx.message.delete()
 
-#@bot.command(name='dm', help='Sends a direct message to a user')
-#async def dm(ctx, args, message):
-#	sender = ctx.author 
-#	string = args
-#	split = string.split(' ', maxsplit=1)
-#	user = bot.get_user(int(split[0]))
-#	await user.send(str(split[1]))
-#	message1 = (str(split[1]))
-#	user1 = (int(split[0]))
-#	print(f'{sender} sent "{message1}" to {+user1}')
-
 @bot.command()
 async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> None:
   await target.send(message)
@@ -108,23 +94,20 @@ async def on_command(context):
 async def on_message(message):
 	if message.content == 'pong':
 		await message.channel.send('That\'s not how you supposed to play the game!')
+	
 	if not message.guild:
-		channel = bot.get_channel(788471476927332382)
-		user = message.author
-		creationtime = message.created_at
-		embed = discord.Embed(title='*INCOMEING MESSAGE*', description=f'<@{user.id}> sent "{message.content}"')
-		embed.colour = 0xFFFFFF
-		embed.set_thumbnail(url=message.author.avatar_url)
-		embed.set_footer(text=f"Sent at {creationtime}") 
-	if not message.guild:
-			sender = message.author 
-			string = message.content
-			split = string.split(' ', maxsplit=1)
-			channel = bot.get_channel(int(split[0]))
-			await channel.send(str(split[1]))
-			message1 = (str(split[1]))
-			channelid1 = (int(split[0]))
-			print(f'{sender} sent "{message1}" to {+channelid1}')
+		if message.author.id == bot.user.id:
+			return
+		else:
+			channel = bot.get_channel(788471476927332382)
+			user = message.author
+			creationtime = message.created_at
+			embed = discord.Embed(title='*INCOMEING MESSAGE*', description=f'<@{user.id}> sent "{message.content}"')
+			embed.colour = 0xFFFFFF
+			embed.set_thumbnail(url=message.author.avatar_url)
+			embed.set_footer(text=f"Sent at {creationtime}")
+			await channel.send(embed=embed)
+			return
 
 	await bot.process_commands(message)
 
