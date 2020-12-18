@@ -117,7 +117,7 @@ async def on_command(ctx):
 	user = ctx.author
 	channelID = ctx.channel
 	creationtime = ctx.message.created_at
-	embed = discord.Embed(title='Command Use', description=f'<@{user.id}> used `!{ctx.command}` in <#{channelID.id}> in {ctx.guild}')
+	embed = discord.Embed(title='Command Use', description=f'<@{user.id}> used `!{ctx.command}` in #{channelID.name} in {ctx.guild}')
 	embed.colour = 0xFFFFFF
 	embed.set_thumbnail(url=ctx.author.avatar_url)
 	embed.set_footer(text=f"Sent at {creationtime}")  
