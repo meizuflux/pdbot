@@ -36,17 +36,6 @@ async def ping(ctx):
 async def send(ctx, channel: discord.TextChannel, *, message):
 	await channel.send(message) 
 	await ctx.message.delete()
-			
-
-#@bot.event
-#async def on_message(message):
-#	print('working')
-#	if message.content == 'pong':
-#		await message.channel.send('That\'s not how you supposed to play the game!')
-
-#	await bot.process_commands(message)
-
-	
 
 @bot.command(name='99', help='Responds with a random quote from Brooklyn 99')
 async def nine_nine(ctx):
@@ -75,6 +64,14 @@ async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> No
 async def purge(ctx, *, args):
 	await ctx.message.channel.purge(limit=1+int(args))
 	await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
+
+@bot.command(name='pp', help='cock')
+async def cock(ctx, args):
+	args = args.capitalize()
+	if args == 'I' or 'You':
+		await ctx.send(f'{args} have a small pp')
+	else:
+		await ctx.send(f'{args} has a small pp')
 
 
 @bot.event
@@ -108,6 +105,9 @@ async def on_message(message):
 			embed.set_footer(text=f"Sent at {creationtime}")
 			await channel.send(embed=embed)
 			return
+	if message.channel.id == int(789329010080743444):
+		await message.add_reaction('\N{UPWARDS BLACK ARROW}')
+		await message.add_reaction('\N{DOWNWARDS BLACK ARROW}')
 
 	await bot.process_commands(message)
 
