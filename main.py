@@ -4,8 +4,9 @@ import discord
 import random
 intents = discord.Intents(messages=True, guilds=True)
 from discord.ext import commands
+from embed_help_command import EmbedHelpCommand
 
-bot = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="!", help_command=EmbedHelpCommand())
 
 token = os.environ['DTOKEN']
 from keep_alive import keep_alive
@@ -14,13 +15,6 @@ from keep_alive import keep_alive
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
-class MyHelpCommand(commands.MinimalHelpCommand):
-    async def send_pages(self):
-        destination = self.get_destination()
-        e = discord.Embed(color=discord.Color.blurple(), description='')
-        for page in self.paginator.pages:
-            e.description += page
-        await destination.send(embed=e)
 
 @bot.command(name='createchannel')
 @commands.has_role('admin')
@@ -105,7 +99,7 @@ async def on_message(message):
 			embed.colour = 0xFFFFFF
 			embed.set_thumbnail(url=message.author.avatar_url)
 			embed.set_footer(text=f"Sent at {creationtime}	ID: {message.author.id}")
-			#embed.set_author(*, name=f'{message.author}', url=Embed.Empty, icon_url=f'{message.author.avatar_url}')
+			embed.set_author(name=f'{message.author}', url='https://www.urbandictionary.com/define.php?term=Your%20mum%20gay', icon_url=f'{message.author.avatar_url}')
 			await channel.send(embed=embed)
 			return
 	if message.channel.id == int(789329010080743444):
@@ -129,7 +123,7 @@ async def on_command(ctx):
 
 	await channel.send(embed=embed)
 
-
-bot.help_command = MyHelpCommand()
+bot.load_extension('cogs.embeds')
+bot.load_extension('cogs.fun')
 keep_alive()
 bot.run(token)
