@@ -97,9 +97,8 @@ async def on_message(message):
 			return
 		else:
 			channel = bot.get_channel(788471476927332382)
-			user = message.author
 			creationtime = message.created_at
-			embed = discord.Embed(title='*INCOMEING MESSAGE*', description=f'<@{user.id}> sent "{message.content}"')
+			embed = discord.Embed(title='*INCOMEING MESSAGE*', description=f'{message.author} sent "{message.content}"')
 			embed.colour = 0xFFFFFF
 			embed.set_thumbnail(url=message.author.avatar_url)
 			embed.set_footer(text=f"Sent at {creationtime}")
@@ -114,10 +113,9 @@ async def on_message(message):
 @bot.event
 async def on_command(ctx):
 	channel = bot.get_channel(788471476927332382)
-	user = ctx.author
 	channelID = ctx.channel
 	creationtime = ctx.message.created_at
-	embed = discord.Embed(title='Command Use', description=f'<@{user.id}> used `!{ctx.command}` in #{channelID.name} in {ctx.guild}')
+	embed = discord.Embed(title='Command Use', description=f'{ctx.author} used `!{ctx.command}` in #{channelID.name} in {ctx.guild}')
 	embed.colour = 0xFFFFFF
 	embed.set_thumbnail(url=ctx.author.avatar_url)
 	embed.set_footer(text=f"Sent at {creationtime}")  
