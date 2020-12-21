@@ -59,8 +59,12 @@ async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> No
 
 @bot.command(name='purge', help='Purges a set amount of messages.')
 async def purge(ctx, *, args):
-	await ctx.message.channel.purge(limit=1+int(args))
-	await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
+	if args == 'all':
+		await ctx.message.channel.purge(limit=10000000000000000)
+		await ctx.channel.send(f'Deleted {args} messages', delete_after=3)
+	else: 
+		await ctx.message.channel.purge(limit=1+int(args))
+		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
 
 @bot.command(name='pp', help='cock')
 async def cock(ctx, args):
@@ -108,6 +112,9 @@ async def on_message(message):
 	if message.channel.id == int(788058309973901344):
 		await message.add_reaction('\N{UPWARDS BLACK ARROW}')
 		await message.add_reaction('\N{DOWNWARDS BLACK ARROW}')
+	if message.channel.id == int(769195542026125373):
+	    await message.add_reaction('\N{UPWARDS BLACK ARROW}')
+	    await message.add_reaction('\N{DOWNWARDS BLACK ARROW}')
 
 	await bot.process_commands(message)
 
@@ -116,14 +123,15 @@ async def on_command(ctx):
 	channel = bot.get_channel(788471476927332382)
 	channelID = ctx.channel
 	creationtime = ctx.message.created_at
-	embed = discord.Embed(title='Command Use', description=f'{ctx.author} used `!{ctx.command}` in #{channelID.name} in {ctx.guild}')
+	embed = discord.Embed(title='Command Use', description=f'`{ctx.author}` used `!{ctx.message.content}` in `#{channelID.name}` in `{ctx.guild}`')
 	embed.colour = 0xFFFFFF
 	embed.set_thumbnail(url=ctx.author.avatar_url)
-	embed.set_footer(text=f"Sent at {creationtime}	ID: {ctx.author.id}")  
+	embed.set_footer(text=f"Sent at {creationtime}	UID: {ctx.author.id}") 
 
 	await channel.send(embed=embed)
 
-bot.load_extension('cogs.embeds')
+bot.load_extension('cogs.greetings')
+bot.load_extension('cogs.examplecog')
 bot.load_extension('cogs.fun')
 keep_alive()
 bot.run(token)
