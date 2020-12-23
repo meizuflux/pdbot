@@ -10,6 +10,9 @@ pip = "^20.3.1"
 discord = "^1.0.1"
 python-dotenv = "^0.15.0"
 flask = "^1.1.2"
+jsonschema = "^3.2.0"
+tenorpy = "^1.0.3"
+discord-pretty-help = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 
