@@ -6,12 +6,12 @@ class testingjson(commands.Cog, command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 
-	with open("test.json", "r") as f:
+	with open("data.json", "r") as f:
 		data = json.load(f)
 
 	@commands.command(name='cutetest')
 	async def cute(self, ctx, *, message):
-		with open("test.json", "r") as f:
+		with open("data.json", "r") as f:
 			data = json.load(f)
 			data["cute"] = message
 		with open("data.json", "w") as f:
