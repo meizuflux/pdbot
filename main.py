@@ -15,7 +15,7 @@ async def pre(bot, message):
 
 
 
-bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True)
+bot = commands.Bot(command_prefix='!', help_command=PrettyHelp(),case_insensitive=True)
 bot.author_id = 777893499471265802
 
 token = os.environ['DTOKEN']
