@@ -3,6 +3,7 @@ import discord
 import TenGiphPy
 t = TenGiphPy.Tenor(token='TRAY0EI21XW9')
 
+
 class fun(commands.Cog):
 	"""For the fun commands"""
 	def __init__(self, bot):
@@ -32,7 +33,7 @@ class fun(commands.Cog):
 
 	@commands.command(name='astrelladies')
 	async def fakeembed(self, ctx):
-		embed = discord.Embed(title='he ded', description='can we get an f in the chat')
+		embed = discord.Embed(title='he ded', description='Can we get an f in the chat')
 		embed.colour = 0xFFFFFF  # can be set in 'discord.Embed()' too
 		embed.set_image(url='https://media.discordapp.net/attachments/786309313786019891/790598215137099807/tenor_2.gif')
 
