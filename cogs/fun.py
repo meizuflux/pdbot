@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
-import tenorpy
-t = tenorpy.Tenor()
+import TenGiphPy
+t = TenGiphPy.Tenor(token='TRAY0EI21XW9')
 
 class fun(commands.Cog):
 	"""For the fun commands"""
