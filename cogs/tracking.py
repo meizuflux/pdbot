@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 import random
 
-class logging(commands.Cog, command_attrs=dict(hidden=True)):
+class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -37,4 +37,4 @@ class logging(commands.Cog, command_attrs=dict(hidden=True)):
 		await channel.send(embed=embed2)
 
 def setup(bot):
-	bot.add_cog(logging(bot))
+	bot.add_cog(tracking(bot))

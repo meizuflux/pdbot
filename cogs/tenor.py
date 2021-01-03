@@ -1,8 +1,8 @@
 from discord.ext import commands
 import discord
-import tenorpy
 import random
-t = tenorpy.Tenor()
+import TenGiphPy
+t = TenGiphPy.Tenor(token='TRAY0EI21XW9')
 
 class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False)):
 	"""Collection of commands which draw GIFs from Tenor"""
