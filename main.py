@@ -78,7 +78,7 @@ extensions = [
 	'cogs.fun',
 	'cogs.tenor',
 	'cogs.devcommands',
-	'cogs.logging',
+	'cogs.tracking',
 	'cogs.reactions',
 	'cogs.speak',
 	'cogs.testingjson'
