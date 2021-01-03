@@ -1,18 +1,15 @@
 [tool.poetry]
-name = "discord-test"
+name = "python-discord-bot"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["repl.it user <replituser@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pip = "^20.3.1"
-discord = "^1.0.1"
-python-dotenv = "^0.15.0"
 flask = "^1.1.2"
-jsonschema = "^3.2.0"
-tenorpy = "^1.0.3"
+discord = "^1.0.1"
 discord-pretty-help = "^1.2.0"
+tenorpy = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 

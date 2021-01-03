@@ -4,7 +4,7 @@ import tenorpy
 import random
 t = tenorpy.Tenor()
 
-class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=True)):
+class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False)):
 	"""Collection of commands which draw GIFs from Tenor"""
 	def __init__(self, bot):
 		self.bot = bot
@@ -14,7 +14,7 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=True)
 		if len(args) == 0:
 			return
 		else:
-			if args == 'bot.user':
+			if self.bot.user in ctx.message.mentions:
 				await ctx.send('Fuck you')
 			else:
 				embed = discord.Embed(description=f'**<@{ctx.author.id}> smacks {args}! <:POGGER:790605271898259516>**')
@@ -23,9 +23,8 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=True)
 				await ctx.send(embed=embed)
 
 	@commands.command(name='gif', help='This command will return a tenor gif if you type "!gif cat" as example.')
-	async def gif(ctx, giftag):
-		getgifurl = t.random(str(giftag))
-		await ctx.send(f'{getgifurl}')
+	async def gif(ctx, *, message):
+		await ctx.send(f'{t.random(message)}')
 
 	@commands.command(name='cute', help='!cute <person>')
 	async def cute(self, ctx, args):
