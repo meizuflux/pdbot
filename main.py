@@ -15,6 +15,7 @@ async def pre(bot, message):
 
 
 
+
 bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True)
 bot.author_id = 777893499471265802
 
@@ -33,6 +34,17 @@ async def create_channel(ctx, channel_name='real-python'):
     if not existing_channel:
         print(f'Creating a new channel: {channel_name}')
         await guild.create_text_channel(channel_name)
+
+blist = ['me',
+		'also me',
+		'and maybe me']
+
+@bot.check
+async def blacklist(ctx):
+	if ctx.author.id in blist:
+		return False
+	else: 
+		return True
 
 
 
@@ -81,7 +93,8 @@ extensions = [
 	'cogs.tracking',
 	'cogs.reactions',
 	'cogs.speak',
-	'cogs.testingjson'
+	'cogs.testingjson',
+	'cogs.api'
 ]
 
 if __name__ == '__main__':
