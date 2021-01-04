@@ -38,6 +38,10 @@ class fun(commands.Cog):
 
 		await ctx.send(embed=embed)
 
+	@commands.command(name='blue', help='blue')
+	async def blue(self, ctx):
+		await ctx.send('https://www.youtube.com/watch?v=HiHPjwyzwNk')
+
 	
 
 def setup(bot):
