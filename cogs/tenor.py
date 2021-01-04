@@ -2,7 +2,10 @@ from discord.ext import commands
 import discord
 import random
 import TenGiphPy
-t = TenGiphPy.Tenor(token='TRAY0EI21XW9')
+tokens = {'tenor': 'TRAY0EI21XW9',
+          'giphy': 'SBnFmkU0hpDAJs6OWeVRg52ch58zpUCI'}
+t = TenGiphPy.Tenor(token=tokens['tenor'])
+g = TenGiphPy.Giphy(token=tokens['giphy'])
 
 class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False)):
 	"""Collection of commands which draw GIFs from Tenor"""
@@ -22,9 +25,11 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 				embed.set_image(url=t.random("anime smack"))
 				await ctx.send(embed=embed)
 
-	@commands.command(name='gif', help='This command will return a tenor gif if you type "!gif cat" as example.')
-	async def gif(ctx, *, message):
-		await ctx.send(f'{t.random(message)}')
+	@commands.command(name='gif', help='This command will return a gif if you type "!gif cat" as example.')
+	async def giphy(ctx, *, giftag):
+		getgifurl = g.random(str(giftag))
+		await ctx.send(f'{getgifurl}')
+    
 
 	@commands.command(name='cute', help='!cute <person>')
 	async def cute(self, ctx, args):
