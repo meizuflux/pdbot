@@ -2,7 +2,6 @@ from discord.ext import commands
 import discord
 import requests
 import time
-import json
 
 class api(commands.Cog, command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
