@@ -45,6 +45,7 @@ async def blacklist(ctx):
 		return True
 
 @bot.command(name='block', hidden=True)
+@commands.has_permissions(manage_channels=True)
 async def block(ctx, *, member: discord.Member=None):
 	blist.append(int(member.id))
 	await ctx.send(f'Added {member} to the blacklist.')
@@ -55,10 +56,12 @@ async def block(ctx, *, member: discord.Member=None):
 
 
 @bot.command(hidden=True)
+@commands.is_owner()
 async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> None:
   await target.send(message)
 
 @bot.command(name='purge', help='Purges a set amount of messages.', hidden=True)
+@commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
 async def purge(ctx, *, args):
 	if args == 'all':
 		await ctx.message.channel.purge(limit=10000000000000000)
