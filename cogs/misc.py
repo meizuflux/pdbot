@@ -27,7 +27,7 @@ class Misc(commands.Cog):
 		
 	@commands.command(name='source', help='Bots source code')
 	async def source(self, ctx):
-		embed=discord.Embed(description='https://repl.it/@ppotatoo/python-discord-bot')
+		embed=discord.Embed(description='https://github.com/ppotatoo/pdbot')
 		await ctx.send(embed=embed)
 		
 	@commands.command(name='creator', help='use it')
@@ -37,10 +37,15 @@ class Misc(commands.Cog):
 			await ctx.send('you <:PogYou:791007602741739610>')
 		else:
 			await ctx.send(f'not you {random.choice(thelist)}')
-			
-	@commands.command(name='privatepuppy', help='privatepuppy <user>')
-	async def pm(ctx: commands.Context, target: discord.User):
-		await target.send('https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11')
+
+	
+	@commands.command(name='purge')
+	@commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
+	async def purge(ctx, *, args):
+		await ctx.message.channel.purge(limit=1+int(args))
+		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=2)
+
+	
 	
 
 def setup(bot):

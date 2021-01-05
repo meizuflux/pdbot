@@ -24,11 +24,6 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 				embed.color = 0x2f3136
 				embed.set_image(url=t.random("anime smack"))
 				await ctx.send(embed=embed)
-
-	@commands.command(name='gif', help='This command will return a gif if you type "!gif cat" as example.')
-	async def giphy(ctx, *, giftag):
-		getgifurl = g.random(str(giftag))
-		await ctx.send(f'{getgifurl}')
     
 
 	@commands.command(name='cute', help='!cute <person>')

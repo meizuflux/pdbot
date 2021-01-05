@@ -13,9 +13,6 @@ async def pre(bot, message):
 		data = json.load(f)
 	return data['prefix']
 
-
-
-
 bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True)
 bot.author_id = 777893499471265802
 
@@ -34,40 +31,8 @@ async def blacklist(ctx):
 	else: 
 		return True
 
-@bot.command(name='block', hidden=True)
-@commands.has_permissions(manage_channels=True)
-async def block(ctx, *, member: discord.Member=None):
-	blist.append(int(member.id))
-	await ctx.send(f'Added {member} to the blacklist.')
-
-
-
-
-
-
-@bot.command(hidden=True)
-@commands.is_owner()
-async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> None:
-  await target.send(message)
-
-@bot.command(name='purge', help='Purges a set amount of messages.', hidden=True)
-
-@commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
-async def purge(ctx, *, args):
-	if args == 'all':
-		await ctx.message.channel.purge(limit=10000000000000000)
-		await ctx.channel.send(f'Deleted {args} messages', delete_after=3)
-	else: 
-		await ctx.message.channel.purge(limit=1+int(args))
-		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
-
-
-
-
-
 extensions = [
 	'cogs.misc',
-	'cogs.examplecog',
 	'cogs.fun',
 	'cogs.tenor',
 	'cogs.devcommands',

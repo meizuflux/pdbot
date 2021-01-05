@@ -10,8 +10,8 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 
 	@commands.command(name='profile', description='!profile <scoresaberid>')
 	async def profile(self, ctx, args):
-		#if args.isdidget() == False:
-			#await ctx.send('It looks like you did not enter a number')
+		if args == int == True:
+			await ctx.send('It looks like you did not enter a number')
 		data = requests.get(f'https://new.scoresaber.com/api/player/{args}/full').json()
 		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{args}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
 		embed.color = 0x2f3136
