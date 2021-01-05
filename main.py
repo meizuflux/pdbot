@@ -25,16 +25,6 @@ token = os.environ['DTOKEN']
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
-
-@bot.command(name='createchannel', hidden=True)
-@commands.has_role('admin')
-async def create_channel(ctx, channel_name='real-python'):
-    guild = ctx.guild
-    existing_channel = discord.utils.get(guild.channels, name=channel_name)
-    if not existing_channel:
-        print(f'Creating a new channel: {channel_name}')
-        await guild.create_text_channel(channel_name)
-
 blist = []
 
 @bot.check
