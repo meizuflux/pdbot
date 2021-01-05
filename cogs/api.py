@@ -31,15 +31,16 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 				}
 		data = requests.get(f'https://beatsaver.com/api/maps/detail/{args}', headers=headers).json()
 		cortime = time.strftime('%H:%M:%S', time.gmtime(data['metadata']['duration']))
-		embed = discord.Embed(title=data['metadata']['songName'], url=f"https://beatsaver.com/beatmap/{data['key']}")
+		embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://beatsaver.com{data['coverURL']}")
-		if data['metadata']['songSubName'] == "":
-			pass
-		else:
-			embed.add_field(name=f"Song Sub Name", value=f"{data['metadata']['songSubName']}")
+		#if data['metadata']['songSubName'] == "":
+			#pass
+		#else:
+			#embed.add_field(name=f"Song Sub Name", value=f"{data['metadata']['songSubName']}", inline=True)
 		embed.add_field(name=f"Author", value=f"{data['metadata']['songAuthorName']}", inline=False)
-		embed.add_field(name=f"Uploader", value=f"{data['metadata']['levelAuthorName']}", inline=False)
+		embed.add_field(name=f"Mapper", value=f"{data['metadata']['levelAuthorName']}", inline=False)
+		embed.add_field(name=f"Uploader", value=f"{data['uploader']['username']}", inline=True)
 		embed.add_field(name=f"Key", value=f"{data['key']}", inline=False)
 		if data['metadata']['duration'] != 0:
 			embed.add_field(name=f"Duration", value=f"{cortime}")
@@ -51,7 +52,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 			embed.add_field(name=f"Playable on Quest?", value=f"Yes", inline=False)
 		embed.add_field(name=f"BPM", value=f"{data['metadata']['bpm']}", inline=False)
 		embed.add_field(name=f"Download Link", value=f"https://beatsaver.com/api/download/key/{data['key']}", inline=False)
-		embed.add_field(name=f"OneClick Install", value=f"<beatsaver://{data['key']}>", inline=False)
+		embed.add_field(name=f"OneClick Install", value=f"beatsaver://{data['key']}", inline=True)
 		embed.add_field(name=f"Preview", value=f"https://skystudioapps.com/bs-viewer/?id={data['key']}", inline=False)
 		await ctx.send(embed=embed)
 
