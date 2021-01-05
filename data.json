@@ -2,5 +2,8 @@
     "cute": "hanunhnaijnahin my name jeff ehehhehe",
     "prefix": "!",
     "Test": "HELLO WORLD",
-    "Team Tank": "dank"
+    "Team Tank": "dank",
+	"blacklist": [
+		"34134213413412341"
+	]
 }

@@ -35,9 +35,7 @@ async def create_channel(ctx, channel_name='real-python'):
         print(f'Creating a new channel: {channel_name}')
         await guild.create_text_channel(channel_name)
 
-blist = ['me',
-		'also me',
-		'and maybe me']
+blist = []
 
 @bot.check
 async def blacklist(ctx):
@@ -45,6 +43,12 @@ async def blacklist(ctx):
 		return False
 	else: 
 		return True
+
+@bot.command(name='block', hidden=True)
+async def block(ctx, *, member: discord.Member=None):
+	blist.append(int(member.id))
+	await ctx.send(f'Added {member} to the blacklist.')
+
 
 
 
@@ -62,25 +66,9 @@ async def purge(ctx, *, args):
 	else: 
 		await ctx.message.channel.purge(limit=1+int(args))
 		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.errors.CheckFailure):
-        await ctx.send('You do not have the correct role for this command.')
 	
 
-#@bot.event
-#async def on_message(message):
-	#if bot.user in message.mentions:
-	#	await message.channel.send(f'<@{message.author.id}>, my prefix on this server is `!`')
-#	if message.content == 'pong':
-#		await message.channel.send('That\'s not how you supposed to play the game!')
-	#if message.content == 'patience':
-	#    patienceembed = discord.Embed(description='patoence')
-	 #   await message.channel.send(embed=patienceembed)
 
-	#await bot.process_commands(message)
 
 
 
@@ -94,7 +82,8 @@ extensions = [
 	'cogs.reactions',
 	'cogs.speak',
 	'cogs.testingjson',
-	'cogs.api'
+	'cogs.api',
+	'cogs.errorhandler'
 ]
 
 if __name__ == '__main__':
