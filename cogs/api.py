@@ -18,7 +18,6 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 		embed.set_footer(text=f"Sent at {ctx.message.created_at}")
 		embed.add_field(name='Score Stats', value=f"Play Count: {data['scoreStats']['totalPlayCount']} \nRanked Play Count: {data['scoreStats']['rankedPlayCount']} \nAverage Ranked Accuracy: {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
 
 		await ctx.send(embed=embed)

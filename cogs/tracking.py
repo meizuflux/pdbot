@@ -22,19 +22,5 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 				await channel.send(embed=embed)
 				return
 
-	@commands.Cog.listener()
-	async def on_command(self, ctx):
-		channel = self.bot.get_channel(788471476927332382)
-		embed2 = discord.Embed(title='Command Use')
-		embed2.color = discord.Colour.from_hsv(random.random(), 1, 1) #0x2f3136 is the gray color that blends in
-		#embed2.set_thumbnail(url=ctx.author.avatar_url)
-		embed2.set_footer(text=f"Sent at {ctx.message.created_at}")
-		embed2.add_field(name='Command', value=f'{ctx.message.content}', inline=False)
-		embed2.add_field(name='Where', value=f'#{ctx.channel}, ID = {ctx.channel.id}, Guild = {ctx.guild}')
-		embed2.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-		embed2.set_footer(text=f'Sent at {ctx.message.created_at}')
-
-		await channel.send(embed=embed2)
-
 def setup(bot):
 	bot.add_cog(tracking(bot))
