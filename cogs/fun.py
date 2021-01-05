@@ -38,6 +38,10 @@ class fun(commands.Cog):
 	async def blue(self, ctx):
 		await ctx.send('https://www.youtube.com/watch?v=HiHPjwyzwNk')
 
+	@commands.command(name='multiply')
+	async def multiply(self, ctx, *, message=None):
+		await ctx.send(message*6)
+
 	
 
 def setup(bot):
