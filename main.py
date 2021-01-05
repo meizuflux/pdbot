@@ -1,7 +1,6 @@
 	# bot.py
 import os
 import discord
-import random
 import json
 intents = discord.Intents(messages=True, guilds=True)
 from discord.ext import commands
