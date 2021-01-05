@@ -61,6 +61,7 @@ async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> No
   await target.send(message)
 
 @bot.command(name='purge', help='Purges a set amount of messages.', hidden=True)
+
 @commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
 async def purge(ctx, *, args):
 	if args == 'all':
@@ -69,7 +70,6 @@ async def purge(ctx, *, args):
 	else: 
 		await ctx.message.channel.purge(limit=1+int(args))
 		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=3)
-	
 
 
 
