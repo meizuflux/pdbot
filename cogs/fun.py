@@ -39,8 +39,10 @@ class fun(commands.Cog):
 		await ctx.send('https://www.youtube.com/watch?v=HiHPjwyzwNk')
 
 	@commands.command(name='multiply')
-	async def multiply(self, ctx, *, message=None):
-		await ctx.send(message*6)
+	async def multiply(self, ctx, times: int, *, message=None):
+		await ctx.send(f'{message} '*times)
+
+	
 
 	
 
