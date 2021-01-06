@@ -40,7 +40,8 @@ extensions = [
 	'cogs.speak',
 	'cogs.testingjson',
 	'cogs.api',
-	'cogs.errorhandler'
+	'cogs.errorhandler',
+	'cogs.admin'
 ]
 
 if __name__ == '__main__':
