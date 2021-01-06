@@ -1,5 +1,6 @@
 	# bot.py
 import os
+import asyncio
 import discord
 import json
 intents = discord.Intents(messages=True, guilds=True)
@@ -11,8 +12,13 @@ async def pre(bot, message):
 	with open("data.json", "r") as f:
 		data = json.load(f)
 	return data['prefix']
+def prefix():
+	with open("data.json", "r") as f:
+		data = json.load(f)
+	return data['prefix']
 
-bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True)
+activity = discord.Activity(type=discord.ActivityType.listening, name=f'{prefix()}help')
+bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True, activity=activity)
 bot.author_id = 777893499471265802
 
 token = os.environ['DTOKEN']
@@ -20,7 +26,6 @@ token = os.environ['DTOKEN']
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-	await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f'{pre}help))
 
 blist = []
 
