@@ -45,7 +45,21 @@ class Misc(commands.Cog):
 		await ctx.message.channel.purge(limit=1+int(args))
 		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=2)
 
-	
+
+	@commands.command(name='activity')
+	@commands.is_owner()
+	async def presence(self, ctx, atype: str, *, activity: str):
+		atype = atype.lower()
+		if atype == 'watching':
+			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=activity))
+		if atype == 'listening':
+			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=activity))
+		if atype == 'playing':
+			await self.bot.change_presence(activity=discord.Game(name=activity))
+		if atype == 'streaming':
+			await self.bot.change_presence(activity=discord.Streaming(name=activity, url='https://twitch.tv/ppotatoo_'))
+		if atype == 'competing':
+			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
 	
 
 def setup(bot):

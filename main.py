@@ -20,6 +20,7 @@ token = os.environ['DTOKEN']
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+	await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f'{pre}help))
 
 blist = []
 
@@ -41,7 +42,7 @@ extensions = [
 	'cogs.testingjson',
 	'cogs.api',
 	'cogs.errorhandler',
-	'cogs.admin'
+	'cogs.owner'
 ]
 
 if __name__ == '__main__':
