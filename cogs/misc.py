@@ -46,7 +46,7 @@ class Misc(commands.Cog):
 		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=2)
 
 
-	@commands.command(name='activity')
+	@commands.command(name='activity', aliases=['a'])
 	@commands.is_owner()
 	async def presence(self, ctx, atype: str, *, activity: str):
 		atype = atype.lower()
