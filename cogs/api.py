@@ -54,7 +54,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.command(name='ow', help='Currently PC only. Profile must be public.')
 	async def ow(self, ctx, region=None, *, BattleTag: str):
 		BattleTag = BattleTag.replace('#', '-')
-		if region.len = 0:
+		if len(region) == 0:
 			region = 'us'
 		data = requests.get(f'https://ow-api.com/v1/stats/pc/{region}/{BattleTag}/profile')
 		if data.status_code == 400:
