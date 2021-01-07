@@ -48,8 +48,10 @@ class Misc(commands.Cog):
 
 	@commands.command(name='activity', aliases=['a'])
 	@commands.is_owner()
-	async def presence(self, ctx, atype: str, *, activity: str):
+	async def presence(self, ctx, atype: str, *, activity=None):
 		atype = atype.lower()
+		if atype == 'default':
+			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f'@{self.bot.user.name}'))
 		if atype == 'watching':
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=activity))
 		if atype == 'listening':
@@ -60,6 +62,7 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Streaming(name=activity, url='https://twitch.tv/ppotatoo_'))
 		if atype == 'competing':
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
+
 	
 
 def setup(bot):
