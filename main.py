@@ -8,9 +8,9 @@ from pretty_help import PrettyHelp
 from keep_alive import keep_alive
 
 async def pre(bot, message):
-	with open("data.json", "r") as f:
-		data = json.load(f)
-	return data['prefix']
+	with open("prefixes.json", "r") as f:
+		prefixes = json.load(f)
+	return prefixes[str(message.guild.id)]
 
 activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
 bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True, activity=activity)
@@ -43,7 +43,8 @@ extensions = [
 	'cogs.testingjson',
 	'cogs.api',
 	'cogs.errorhandler',
-	'cogs.owner'
+	'cogs.owner',
+	'coge.prefixes'
 ]
 
 if __name__ == '__main__':
