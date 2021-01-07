@@ -22,20 +22,16 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		await ctx.send(embed=embed)
 
 	@commands.command(name='key', description='!key <keyfrombeatsaver> note: older songs do not show duration')
-	async def key(self, ctx, identifier: str):
+	async def bsr(self, ctx, key: str):
 		bad = ['Lawless', 'Lightshow']
 		headers = {
     		'User-Agent': 'rank 1 scoresaber 1.0',
 				}
-		data = requests.get(f'https://beatsaver.com/api/maps/detail/{identifier}', headers=headers).json()
+		data = requests.get(f'https://beatsaver.com/api/maps/detail/{key}', headers=headers).json()
 		cortime = time.strftime('%H:%M:%S', time.gmtime(data['metadata']['duration']))
 		embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://beatsaver.com{data['coverURL']}")
-		#if data['metadata']['songSubName'] == "":
-			#pass
-		#else:
-			#embed.add_field(name=f"Song Sub Name", value=f"{data['metadata']['songSubName']}", inline=True)
 		embed.add_field(name=f"Author", value=f"{data['metadata']['songAuthorName']}", inline=False)
 		embed.add_field(name=f"Mapper", value=f"{data['metadata']['levelAuthorName']}", inline=False)
 		embed.add_field(name=f"Uploader", value=f"{data['uploader']['username']}", inline=True)
@@ -52,7 +48,28 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		embed.add_field(name=f"Download Link", value=f"https://beatsaver.com/api/download/key/{data['key']}", inline=False)
 		embed.add_field(name=f"OneClick Install", value=f"beatsaver://{data['key']}", inline=True)
 		embed.add_field(name=f"Preview", value=f"https://skystudioapps.com/bs-viewer/?id={data['key']}", inline=False)
+		embed.set_footer(text=f'Powered by the BeatSaver API')
 		await ctx.send(embed=embed)
+
+	@commands.command(name='ow', help='Currently PC only. Profile must be public.')
+	async def ow(self, ctx, region=None, *, BattleTag: str):
+		BattleTag = BattleTag.replace('#', '-')
+		if region.len = 0:
+			region = 'us'
+		data = requests.get(f'https://ow-api.com/v1/stats/pc/{region}/{BattleTag}/profile')
+		if data.status_code == 400:
+			await ctx.send('Player not found')
+		else:
+			data = data.json()
+			if data['private'] == True:
+				await ctx.send(f"Profile is private. They are level {data['prestige']}{data['level']}.")
+			else:
+				embed = discord.Embed(title=data['name'], url=f'https://www.overbuff.com/players/pc/{BattleTag}?mode=competitive', color=0x2f3136, description=f"Level: {data['prestige']}{data['level']} \nEndorsement Level: {data['endorsement']} \nTotal Games Won: {data['gamesWon']}")
+				embed.set_thumbnail(url=data['icon'])
+				embed.add_field(name='Competitive Stats', value=f"Tank SR: {data['ratings'][0]['level']}sr \nDamage SR: {data['ratings'][1]['level']}sr \nSupport SR: {data['ratings'][2]['level']}sr")
+				embed.set_footer(text=f'Powered by https://ow-api.com')
+
+				await ctx.send(embed=embed)
 
 
 
