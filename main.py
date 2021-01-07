@@ -11,12 +11,8 @@ async def pre(bot, message):
 	with open("data.json", "r") as f:
 		data = json.load(f)
 	return data['prefix']
-def prefix():
-	with open("data.json", "r") as f:
-		data = json.load(f)
-	return data['prefix']
 
-activity = discord.Activity(type=discord.ActivityType.listening, name=f'{prefix()}help')
+activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
 bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True, activity=activity)
 bot.author_id = 777893499471265802
 

@@ -62,7 +62,20 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Streaming(name=activity, url='https://twitch.tv/ppotatoo_'))
 		if atype == 'competing':
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
-
+	
+	@commands.command(name='whois')
+	async def who(self, ctx, member: discord.Member):
+		mention_roles = [i.mention for i in member.roles[1:]]
+		join = member.joined_at.strftime("%m/%d/%Y")
+		create = member.created_at.strftime("%m/%d/%Y")
+		embed=discord.Embed(title=str(member), description=f'**Joined:** {join}\n**Account Creation:** {create}')
+		embed.set_thumbnail(url=member.avatar_url)
+		embed.add_field(name='Roles', value=', '.join(mention_roles))
+		if member.name != member.display_name:
+			embed.set_footer(text=f'{member.id} • {member.display_name}')
+		else:
+			embed.set_footer(text=member.id)
+		await ctx.send(embed=embed)
 	
 
 def setup(bot):
