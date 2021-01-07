@@ -31,6 +31,7 @@ async def blacklist(ctx):
 	else: 
 		return True
 
+
 extensions = [
 	'cogs.misc',
 	'cogs.fun',
