@@ -1,6 +1,5 @@
 	# bot.py
 import os
-import asyncio
 import discord
 import json
 intents = discord.Intents(messages=True, guilds=True)

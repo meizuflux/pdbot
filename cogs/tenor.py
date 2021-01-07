@@ -2,8 +2,12 @@ from discord.ext import commands
 import discord
 import random
 import TenGiphPy
-tokens = {'tenor': 'TRAY0EI21XW9',
-          'giphy': 'SBnFmkU0hpDAJs6OWeVRg52ch58zpUCI'}
+import os
+ttoken = os.environ['tenortoken']
+gtoken = os.environ['giphytoken']
+
+tokens = {'tenor': ttoken,
+          'giphy': gtoken}
 t = TenGiphPy.Tenor(token=tokens['tenor'])
 g = TenGiphPy.Giphy(token=tokens['giphy'])
 
