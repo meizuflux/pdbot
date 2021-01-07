@@ -8,11 +8,11 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		self.bot = bot
 
 	@commands.command(name='profile', description='!profile <scoresaberid>')
-	async def profile(self, ctx, args):
-		if args == int == True:
+	async def profile(self, ctx, ssid: int):
+		if ssid != int:
 			await ctx.send('It looks like you did not enter a number')
-		data = requests.get(f'https://new.scoresaber.com/api/player/{args}/full').json()
-		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{args}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
+		data = requests.get(f'https://new.scoresaber.com/api/player/{ssid}/full').json()
+		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 		embed.set_footer(text=f"Sent at {ctx.message.created_at}")
@@ -22,12 +22,12 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		await ctx.send(embed=embed)
 
 	@commands.command(name='key', description='!key <keyfrombeatsaver> note: older songs do not show duration')
-	async def key(self, ctx, args):
+	async def key(self, ctx, identifier: str):
 		bad = ['Lawless', 'Lightshow']
 		headers = {
     		'User-Agent': 'rank 1 scoresaber 1.0',
 				}
-		data = requests.get(f'https://beatsaver.com/api/maps/detail/{args}', headers=headers).json()
+		data = requests.get(f'https://beatsaver.com/api/maps/detail/{identifier}', headers=headers).json()
 		cortime = time.strftime('%H:%M:%S', time.gmtime(data['metadata']['duration']))
 		embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}")
 		embed.color = 0x2f3136
