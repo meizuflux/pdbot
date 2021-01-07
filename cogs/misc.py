@@ -41,9 +41,9 @@ class Misc(commands.Cog):
 	
 	@commands.command(name='purge')
 	@commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
-	async def purge(ctx, *, args):
-		await ctx.message.channel.purge(limit=1+int(args))
-		await ctx.channel.send(f'Deleted {args} message(s)', delete_after=2)
+	async def purge(ctx, amount: int):
+		await ctx.message.channel.purge(limit=1+int(amount))
+		await ctx.channel.send(f'Deleted {amount} message(s)', delete_after=2)
 
 
 	@commands.command(name='activity', aliases=['a'])
