@@ -40,7 +40,6 @@ extensions = [
 	'cogs.tracking',
 	'cogs.reactions',
 	'cogs.speak',
-	'cogs.testingjson',
 	'cogs.api',
 	'cogs.errorhandler',
 	'cogs.owner',
