@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 import requests
 import urllib.parse
+import time
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=True)):
 	'''Beat Saber Related Commands'''
