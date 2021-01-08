@@ -36,7 +36,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 
 		with open('prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)
-		await ctx.send(f'Set prefix to ' +prefixes[str(ctx.guild.id)])
+		await ctx.send(f'Set prefix to {prefixes[str(ctx.guild.id)]}')
 
 def setup(bot):
 	bot.add_cog(prefixes(bot))
