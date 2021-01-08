@@ -9,20 +9,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name='profile', help='!profile <scoresaberid>')
-	async def profile(self, ctx, ssid: int):
-		if ssid != int:
-			await ctx.send('It looks like you did not enter a number')
-		data = requests.get(f'https://new.scoresaber.com/api/player/{ssid}/full').json()
-		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
-		embed.color = 0x2f3136
-		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-		embed.add_field(name='Score Stats', value=f"Play Count: {data['scoreStats']['totalPlayCount']} \nRanked Play Count: {data['scoreStats']['rankedPlayCount']} \nAverage Ranked Accuracy: {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-		embed.set_footer(text=f'Powered by the ScoreSaber API')
-
-		await ctx.send(embed=embed)
-
-	@commands.command(name='ssinfo', help='As long as your username doesn\'t contain \'+\'')
+	@commands.command(name='ss', help='As long as your username doesn\'t contain \'+\'')
 	async def info(self, ctx, *, username: str):
 		username = urllib.parse.quote_plus(username)
 		username = username.replace('+', '%20')
@@ -35,8 +22,6 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		embed.add_field(name='Score Stats', value=f"Play Count: {data['scoreStats']['totalPlayCount']} \nRanked Play Count: {data['scoreStats']['rankedPlayCount']} \nAverage Ranked Accuracy: {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
 		await ctx.send(embed=embed)
-
-
 
 	@commands.command(name='key', help='!key <keyfrombeatsaver> note: older songs do not show duration')
 	async def bsr(self, ctx, key: str):
