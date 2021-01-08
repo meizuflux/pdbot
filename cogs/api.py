@@ -5,10 +5,11 @@ import time
 import urllib.parse
 
 class api(commands.Cog, command_attrs=dict(hidden=False)):
+	'''Some random API stuff I'm working on'''
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name='profile', description='!profile <scoresaberid>')
+	@commands.command(name='profile', help='!profile <scoresaberid>')
 	async def profile(self, ctx, ssid: int):
 		if ssid != int:
 			await ctx.send('It looks like you did not enter a number')
@@ -16,31 +17,32 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-		embed.set_footer(text=f"Sent at {ctx.message.created_at}")
 		embed.add_field(name='Score Stats', value=f"Play Count: {data['scoreStats']['totalPlayCount']} \nRanked Play Count: {data['scoreStats']['rankedPlayCount']} \nAverage Ranked Accuracy: {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name='ssinfo')
-	async def info(self, ctx, username: str):
+	@commands.command(name='ssinfo', help='As long as your username doesn\'t contain \'+\'')
+	async def info(self, ctx, *, username: str):
+		username = urllib.parse.quote_plus(username)
+		username = username.replace('+', '%20')
 		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
 		ssid = url['players'][0]['playerId']
 		data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"Player Ranking: #{data['playerInfo']['rank']} \nCountry Ranking: {data['playerInfo']['country']} #{data['playerInfo']['countryRank']} \nPerformance Points: {data['playerInfo']['pp']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-		embed.set_footer(text=f"Sent at {ctx.message.created_at}")
 		embed.add_field(name='Score Stats', value=f"Play Count: {data['scoreStats']['totalPlayCount']} \nRanked Play Count: {data['scoreStats']['rankedPlayCount']} \nAverage Ranked Accuracy: {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
-
 		await ctx.send(embed=embed)
 
-	@commands.command(name='key', description='!key <keyfrombeatsaver> note: older songs do not show duration')
+
+
+	@commands.command(name='key', help='!key <keyfrombeatsaver> note: older songs do not show duration')
 	async def bsr(self, ctx, key: str):
 		bad = ['Lawless', 'Lightshow']
 		headers = {
-    		'User-Agent': 'rank 1 scoresaber 1.0',
+    		'User-Agent': 'https://github.com/ppotatoo/pdbot, it is a discord bot coded in python',
 				}
 		data = requests.get(f'https://beatsaver.com/api/maps/detail/{key}', headers=headers).json()
 		cortime = time.strftime('%H:%M:%S', time.gmtime(data['metadata']['duration']))
