@@ -16,7 +16,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		with open('prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)
 
-	@commands.Cog.listner()
+	@commands.Cog.listener()
 	async def on_guild_remove(self, guild):
 		with open('prefixes.json', 'r') as f:
 			prefixes = json.load(f)
