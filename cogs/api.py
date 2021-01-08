@@ -24,8 +24,6 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 
 	@commands.command(name='ssinfo')
 	async def info(self, ctx, username: str):
-		username = urllib.parse.urlencode(username)
-		print(username)
 		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
 		ssid = url['players'][0]['playerId']
 		data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
