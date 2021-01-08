@@ -1,8 +1,6 @@
 from discord.ext import commands
 import discord
 import requests
-import time
-import urllib.parse
 
 class api(commands.Cog, command_attrs=dict(hidden=False)):
 	'''Some random API stuff I'm working on'''
