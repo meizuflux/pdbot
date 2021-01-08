@@ -40,10 +40,12 @@ class CommandErrorHandler(commands.Cog):
         # Anything in ignored will return and prevent anything happening.
         if isinstance(error, ignored):
             return
-
         if isinstance(error, commands.DisabledCommand):
             await ctx.send(f'{ctx.command} has been disabled.')
 
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send('You do not have the correct permissions for this command')
+						
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
@@ -54,6 +56,7 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
                 await ctx.send('I could not find that member. Please try again.')
+		
 
         else:
             # All other Errors not returned come here. And we can just print the default TraceBack.
@@ -62,4 +65,4 @@ class CommandErrorHandler(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(CommandErrorHandler(bot))
+    bot.add_cog(CommandErrorHandler(bot))    
