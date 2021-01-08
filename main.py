@@ -44,7 +44,8 @@ extensions = [
 	'cogs.api',
 	'cogs.errorhandler',
 	'cogs.owner',
-	'cogs.prefixes'
+	'cogs.prefixes',
+	'jishaku'
 ]
 
 if __name__ == '__main__':
