@@ -6,13 +6,13 @@ class example(commands.Cog, command_attrs=dict(hidden=False)):
 		self.bot = bot
 
 	@commands.command(name='say')
-	async def say(ctx, *, message: str):
+	async def say(self, ctx, *, message: str):
 		await ctx.send(message)
 		await ctx.message.delete()
 	
 	@commands.command(name='dm', hidden=False)
 	@commands.is_owner()
-	async def pm(ctx: commands.Context, target: discord.User, *, message: str) -> None:
+	async def pm(self, ctx: commands.Context, target: discord.User, *, message: str) -> None:
   		await target.send(message)
 
 
