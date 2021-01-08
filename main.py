@@ -44,7 +44,7 @@ extensions = [
 	'cogs.api',
 	'cogs.errorhandler',
 	'cogs.owner',
-	'coge.prefixes'
+	'cogs.prefixes'
 ]
 
 if __name__ == '__main__':
