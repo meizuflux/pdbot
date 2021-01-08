@@ -9,8 +9,8 @@ cogs/__pycache__/
 
 #repl.it files
 .replit
-.lock
-.toml
+poetry.lock
+pyproject.toml
 
 # C extensions
 *.so
