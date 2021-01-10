@@ -44,7 +44,8 @@ extensions = [
 	'cogs.errorhandler',
 	'cogs.owner',
 	'cogs.prefixes',
-	'jishaku'
+	'jishaku',
+	'cogs.beatsaber'
 ]
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import requests
 import urllib.parse
 import time
 
-class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=True)):
+class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
 	'''Beat Saber Related Commands'''
 	def __init__(self, bot):
 		self.bot = bot
