@@ -1,6 +1,9 @@
 from discord.ext import commands
 import discord
 import requests
+import praw
+
+#reddit = praw.Reddit()
 
 class api(commands.Cog, command_attrs=dict(hidden=False)):
 	'''Some random API stuff I'm working on'''
@@ -26,7 +29,12 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 				embed.set_footer(text=f'Powered by https://ow-api.com')
 
 				await ctx.send(embed=embed)
-
+				
+	@commands.command(name='reddit')
+	async def reddit(self, ctx):
+		await ctx.send('wip')
+#	  for submission in reddit.subreddit("memes").hot(limit=1):
+	  #	await ctx.send(submission.message)
 
 
 def setup(bot):
