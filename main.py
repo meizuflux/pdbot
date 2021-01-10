@@ -30,6 +30,12 @@ async def blacklist(ctx):
 		return False
 	else: 
 		return True
+		
+os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
+
+# also 
+os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True" 
+os.environ["JISHAKU_HIDE"] = "True"
 
 
 extensions = [
@@ -51,6 +57,8 @@ extensions = [
 if __name__ == '__main__':
 	for extension in extensions:
 		bot.load_extension(extension)
+		
+		
 
 keep_alive()
 bot.run(token)
