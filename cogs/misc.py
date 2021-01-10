@@ -76,6 +76,20 @@ class Misc(commands.Cog):
 		else:
 			embed.set_footer(text=member.id)
 		await ctx.send(embed=embed)
+
+	@commands.command(name='serverinfo', usage='', help='Shows info about the server')
+	async def info(self, ctx):
+		guild = ctx.guild
+		roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
+		e = discord.Embed()
+		e.title = guild.name
+		e.description = f'**ID:** {guild.id}'
+		e.set_thumbnail(url=ctx.guild.icon_url)
+		fmt = f'Total: {guild.member_count}'
+		e.add_field(name='Members', value=fmt, inline=False)
+		e.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else f'{len(roles)} roles')
+		e.set_footer(text='Created').timestamp = guild.created_at
+		await ctx.send(embed=e)
 	
 
 def setup(bot):
