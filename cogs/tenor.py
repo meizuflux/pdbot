@@ -51,6 +51,15 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 			hugembed.color = 0x2f3136
 			await ctx.send(embed=hugembed)
 
+
+	@commands.command(name='kiss', help='!kiss <person>')
+	async def kiss(self, ctx, member: str):
+		kisstype = ['anime kiss','anime cute kiss','kiss']
+		hugembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> kisses {member}! <:floshed:790667091022708757>')
+		hugembed.set_image(url=t.random(f"{random.choice(kisstype)}"))
+		hugembed.color = 0x2f3136
+		await ctx.send(embed=hugembed)
+
 def setup(bot):
 	bot.add_cog(Tenor(bot))
 
