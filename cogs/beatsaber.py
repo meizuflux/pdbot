@@ -15,13 +15,14 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 
 	@commands.command(name='ss', help='As long as your username doesn\'t contain \'+\'')
 	async def info(self, ctx, *, username: str=None):
-		try:
-			message = await ctx.send(f'Getting your stats ...')
-			with open('data.json', 'r') as f:
-				data = json.load(f)
-				ssid = data['ssinfo'][str(ctx.author.id)]
-		except KeyError:
-			await ctx.send('You are not in the database')
+		if username is None:
+			try:
+				with open('data.json', 'r') as f:
+					data = json.load(f)
+					ssid = data['ssinfo'][str(ctx.author.id)]
+					message = await ctx.send(f'Getting your stats ...')
+			except KeyError:
+				await ctx.send('You are not in the database')
 		try:
 			if username != None:
 				message = await ctx.send(f'Searching for `{username}` ...')
