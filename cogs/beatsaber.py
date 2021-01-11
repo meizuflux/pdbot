@@ -5,9 +5,8 @@ import urllib.parse
 import time
 import math
 import json
+import asyncio
 
-with open("data.json", "r") as f:
-    data = json.load(f)
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
 	'''Beat Saber Related Commands'''
@@ -40,6 +39,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	
 	@commands.command(name='register', help='Registers you to a ScoreSaber profile')
 	async def reg(self, ctx, username: str):
+
 		message = await ctx.send(f'Searching for `{username}` ...')
 		username = urllib.parse.quote_plus(username.upper())
 		username = username.replace('+', '%20')
@@ -47,6 +47,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
 		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
 		try:
+
 			ssid = url['players'][0]['playerId']
 			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
@@ -65,12 +66,14 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			try:
 				reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
 			except asyncio.TimeoutError:
-				await channel.send('👎')
+				await ctx.send('You did not react in time.')
 			else:
+				with open('data.json', 'r') as f:
+					data = json.load(f)
+				data['ssinfo'][str(ctx.author.id)] = ssid
 				with open('data.json', 'w') as f:
-					data['ssusers'][str(ctx.author.id)] = ssid
 					json.dump(data, f, indent=4)
-				await ctx.send('👍')
+				await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
 		except KeyError:
 			await message.edit(content='Player not found.')
 
