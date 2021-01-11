@@ -14,15 +14,26 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		self.bot = bot
 
 	@commands.command(name='ss', help='As long as your username doesn\'t contain \'+\'')
-	async def info(self, ctx, *, username: str):
-		message = await ctx.send(f'Searching for `{username}` ...')
-		username = urllib.parse.quote_plus(username.upper())
-		username = username.replace('+', '%20')
-		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...')
-		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
-		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
+	async def info(self, ctx, *, username: str=None):
 		try:
-			ssid = url['players'][0]['playerId']
+			message = await ctx.send(f'Getting your stats ...')
+			with open('data.json', 'r') as f:
+				data = json.load(f)
+				ssid = data['ssinfo'][str(ctx.author.id)]
+		except KeyError:
+			await ctx.send('You are not in the database')
+		try:
+			if username != None:
+				message = await ctx.send(f'Searching for `{username}` ...')
+				username = urllib.parse.quote_plus(username.upper())
+				username = username.replace('+', '%20')
+				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...')
+				url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
+				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
+				ssid = url['players'][0]['playerId']
+		except KeyError:
+			await message.edit(content='Player not found.')
+		try:		
 			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
@@ -33,12 +44,10 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text=f'Powered by the ScoreSaber API')
 			await message.edit(content=None, embed=embed)
-		except KeyError:
-			await message.edit(content='Player not found.')
+		
 
-	
 	@commands.command(name='register', help='Registers you to a ScoreSaber profile')
-	async def reg(self, ctx, username: str):
+	async def reg(self, ctx, *, username: str):
 
 		message = await ctx.send(f'Searching for `{username}` ...')
 		username = urllib.parse.quote_plus(username.upper())
@@ -47,7 +56,6 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
 		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
 		try:
-
 			ssid = url['players'][0]['playerId']
 			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
