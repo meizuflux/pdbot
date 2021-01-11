@@ -38,7 +38,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 		grank = math.ceil(int(data['playerInfo']['rank'])/50)
 		crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://new.scoresaber.com/rankings/{crank}https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
+		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 		embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
@@ -64,7 +64,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed = discord.Embed(title=f"Is this you?")
 			embed.color = 0x2f3136
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://new.scoresaber.com/rankings/{crank}https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}", inline=False)
+			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}", inline=False)
 			embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
 			await message.edit(content=None, embed=embed, delete_after=30)
 			await message.add_reaction('✅')
