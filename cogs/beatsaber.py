@@ -4,6 +4,10 @@ import requests
 import urllib.parse
 import time
 import math
+import json
+
+with open("data.json", "r") as f:
+    data = json.load(f)
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
 	'''Beat Saber Related Commands'''
@@ -30,6 +34,43 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text=f'Powered by the ScoreSaber API')
 			await message.edit(content=None, embed=embed)
+		except KeyError:
+			await message.edit(content='Player not found.')
+
+	
+	@commands.command(name='register', help='Registers you to a ScoreSaber profile')
+	async def reg(self, ctx, username: str):
+		message = await ctx.send(f'Searching for `{username}` ...')
+		username = urllib.parse.quote_plus(username.upper())
+		username = username.replace('+', '%20')
+		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...')
+		url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
+		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
+		try:
+			ssid = url['players'][0]['playerId']
+			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
+			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
+			grank = math.ceil(int(data['playerInfo']['rank'])/50)
+			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
+			embed = discord.Embed(title=f"Is this you?")
+			embed.color = 0x2f3136
+			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
+			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://new.scoresaber.com/rankings/{crank}https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}", inline=False)
+			embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
+			await message.edit(content=None, embed=embed)
+			await message.add_reaction('✅')
+			await message.add_reaction('❌')
+			def check(reaction, user):
+				return user == ctx.author and str(reaction.emoji) == '✅'
+			try:
+				reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+			except asyncio.TimeoutError:
+				await channel.send('👎')
+			else:
+				with open('data.json', 'w') as f:
+					data['ssusers'][str(ctx.author.id)] = ssid
+					json.dump(data, f, indent=4)
+				await ctx.send('👍')
 		except KeyError:
 			await message.edit(content='Player not found.')
 
@@ -63,12 +104,15 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.set_footer(text=f'Powered by the BeatSaver API')
 		await ctx.send(embed=embed)
 
+
 	@bsr.error
 	async def bsr_error(self, ctx, error):
 		if isinstance(error, commands.MissingRequiredArgument):
 			await ctx.send('Please send a key along with the command.')
+		if isinstance(error, commands.CommandInvokeError):
+			await ctx.send('Please send a valid key.')
 		else:
-			raise error	
+			raise error
 
 
 def setup(bot):
