@@ -66,15 +66,13 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}", inline=False)
 			embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
-			await message.edit(content=None, embed=embed, delete_after=30)
+			await message.edit(content=None, embed=embed, delete_after=15)
 			await message.add_reaction('✅')
 			await message.add_reaction('❌')
-			def rcheck(reaction, user):
-				return user == ctx.author and str(reaction.emoji) == '❌'
 			def gcheck(reaction, user):
 				return user == ctx.author and str(reaction.emoji) == '✅'
 			try:
-				reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=gcheck)
+				reaction, user = await self.bot.wait_for('reaction_add', timeout=14.0, check=gcheck)
 			except asyncio.TimeoutError:
 				await ctx.send('You did not react in time.')
 			else:
@@ -85,12 +83,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 					json.dump(data, f, indent=4)
 				await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
 
-			try:
-				reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=rcheck)
-			except asyncio.TimeoutError:
-				await ctx.send('You did not react in time.')
-			else:
-				await ctx.send(f'Sorry that I could not find {username}.')
+			
 		except KeyError:
 			await message.edit(content='Player not found.')
 
