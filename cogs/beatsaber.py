@@ -32,18 +32,17 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
 				ssid = url['players'][0]['playerId']
 		except KeyError:
-			await message.edit(content='Player not found.')
-		try:		
-			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
-			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
-			grank = math.ceil(int(data['playerInfo']['rank'])/50)
-			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-			embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://new.scoresaber.com/rankings/{crank}https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
-			embed.color = 0x2f3136
-			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-			embed.set_footer(text=f'Powered by the ScoreSaber API')
-			await message.edit(content=None, embed=embed)
+			await message.edit(content='Player not found.')		
+		data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
+		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
+		grank = math.ceil(int(data['playerInfo']['rank'])/50)
+		crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
+		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://new.scoresaber.com/rankings/{crank}https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
+		embed.color = 0x2f3136
+		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
+		embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
+		embed.set_footer(text=f'Powered by the ScoreSaber API')
+		await message.edit(content=None, embed=embed)
 		
 
 	@commands.command(name='register', help='Registers you to a ScoreSaber profile')
