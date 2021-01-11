@@ -53,16 +53,6 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
         except discord.HTTPException as err:
             await ctx.send(err)
 
-    @change.command(name="username")
-    @commands.is_owner()
-    async def change_username(self, ctx, *, name: str):
-        """ Change username. """
-        try:
-            await self.bot.user.edit(username=name)
-            await ctx.send(f"Successfully changed username to **{name}**")
-        except discord.HTTPException as err:
-            await ctx.send(err)
-
     @change.command(name="nickname")
     @commands.is_owner()
     async def change_nickname(self, ctx, *, name: str = None):
