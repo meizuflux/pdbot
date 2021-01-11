@@ -32,7 +32,7 @@ class fun(commands.Cog):
 	async def fakeembed(self, ctx):
 		embed = discord.Embed(title='he ded', description='can we get an f in the chat')
 		embed.colour = 0xFFFFFF  # can be set in 'discord.Embed()' too
-		embed.set_image(url='https://media.discordapp.net/attachments/786309313786019891/790598215137099807/tenor_2.gif')
+		embed.set_image(url='https://media.tenor.com/images/b5e65cd0e7a8c8fef19af759a29d1acd/tenor.gif')
 
 		await ctx.send(embed=embed)
 
