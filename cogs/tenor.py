@@ -21,13 +21,10 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 		if len(args) == 0:
 			return
 		else:
-			if self.bot.user in ctx.message.mentions:
-				await ctx.send('Fuck you')
-			else:
-				embed = discord.Embed(description=f'**<@{ctx.author.id}> smacks {args}! <:POGGER:790605271898259516>**')
-				embed.color = 0x2f3136
-				embed.set_image(url=t.random("anime smack"))
-				await ctx.send(embed=embed)
+			embed = discord.Embed(description=f'**<@{ctx.author.id}> smacks {args}! <:POGGER:790605271898259516>**')
+			embed.color = 0x2f3136
+			embed.set_image(url=t.random("anime smack"))
+			await ctx.send(embed=embed)
     
 
 	@commands.command(name='cute', help='!cute <person>')
