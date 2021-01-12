@@ -13,7 +13,12 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name='ss', help='As long as your username doesn\'t contain \'+\'')
+	@commands.group(help='Collection of ScoreSaber commands')
+	async def ss(self, ctx):
+		if ctx.invoked_subcommand is None:
+		    await ctx.send_help(str(ctx.command))
+
+	@ss.command(name='info', help='As long as your username doesn\'t contain \'+\'')
 	async def info(self, ctx, *, username: str=None):
 		if username is None:
 			try:
@@ -46,7 +51,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		await message.edit(content=None, embed=embed)
 		
 
-	@commands.command(name='register', help='Registers you to a ScoreSaber profile')
+	@ss.command(name='register', help='Registers you to a ScoreSaber profile')
 	async def reg(self, ctx, *, username: str):
 
 		message = await ctx.send(f'Searching for `{username}` ...')
@@ -70,18 +75,23 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			await message.add_reaction('✅')
 			await message.add_reaction('❌')
 			def gcheck(reaction, user):
-				return user == ctx.author and str(reaction.emoji) == '✅'
+				return user == ctx.author and str(reaction.emoji) == '✅' or user == ctx.author and str(reaction.emoji) == '❌'
 			try:
 				reaction, user = await self.bot.wait_for('reaction_add', timeout=14.0, check=gcheck)
 			except asyncio.TimeoutError:
 				await ctx.send('You did not react in time.')
 			else:
-				with open('data.json', 'r') as f:
-					data = json.load(f)
-				data['ssinfo'][str(ctx.author.id)] = ssid
-				with open('data.json', 'w') as f:
-					json.dump(data, f, indent=4)
-				await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
+				if reaction.emoji == '✅':
+					await message.delete()
+					with open('data.json', 'r') as f:
+						data = json.load(f)
+					data['ssinfo'][str(ctx.author.id)] = ssid
+					with open('data.json', 'w') as f:
+						json.dump(data, f, indent=4)
+					await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
+				if reaction.emoji == '❌':
+					await message.delete()
+					await ctx.send('Sorry that I could not help you.')
 
 			
 		except KeyError:
@@ -116,6 +126,8 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.add_field(name=f"Preview", value=f"https://skystudioapps.com/bs-viewer/?id={data['key']}", inline=False)
 		embed.set_footer(text=f'Powered by the BeatSaver API')
 		await ctx.send(embed=embed)
+
+
 
 
 	@bsr.error
