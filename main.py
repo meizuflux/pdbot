@@ -44,6 +44,7 @@ extensions = [
 	'cogs.tenor',
 	'cogs.devcommands',
 	'cogs.tracking',
+	'cogs.reactions',
 	'cogs.speak',
 	'cogs.api',
 	'cogs.errorhandler',
