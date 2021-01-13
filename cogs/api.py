@@ -1,9 +1,10 @@
 from discord.ext import commands
 import discord
 import requests
-import praw
+import aiohttp
+import random
 
-#reddit = praw.Reddit()
+
 
 class api(commands.Cog, command_attrs=dict(hidden=False)):
 	'''Some random API stuff I'm working on'''
@@ -30,11 +31,19 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 
 				await ctx.send(embed=embed)
 				
-	@commands.command(name='reddit')
+	@commands.command(name='dankmeme', help='Sends a Dank Meme 😎')
 	async def reddit(self, ctx):
-		await ctx.send('wip')
-#	  for submission in reddit.subreddit("memes").hot(limit=1):
-	  #	await ctx.send(submission.message)
+		try:
+			m = await ctx.send('Getting random dank meme ...')
+			async with aiohttp.ClientSession() as cs:
+				async with cs.get('https://www.reddit.com/r/dankmemes/hot.json') as r:
+					res = await r.json()  # returns dict
+					e = discord.Embed(title=res['data']['children'][random.randint(3, 20)]['data']['title'])
+					e.set_image(url=res['data']['children'][random.randint(3, 20)]['data']['url_overridden_by_dest'])
+					await m.edit(content=None, embed=e)
+		except KeyError:
+			await ctx.send('Something went wrong.')
+
 
 
 def setup(bot):

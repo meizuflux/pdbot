@@ -13,7 +13,8 @@ async def pre(bot, message):
 	return prefixes[str(message.guild.id)]
 
 activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
-bot = commands.Bot(command_prefix=pre, help_command=PrettyHelp(),case_insensitive=True, activity=activity)
+bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity)
+bot.help_command = PrettyHelp(active_time=60, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
 
 token = os.environ['DTOKEN']
