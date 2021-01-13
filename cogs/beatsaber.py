@@ -38,7 +38,8 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
 				ssid = url['players'][0]['playerId']
 		except KeyError:
-			await message.edit(content='Player not found.')		
+			await message.edit(content=url['error']['message'])
+			
 		data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 		grank = math.ceil(int(data['playerInfo']['rank'])/50)
@@ -49,6 +50,10 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
 		await message.edit(content=None, embed=embed)
+
+	@ss.command(name='lb', aliases=['top10', 'top'], help='Shows the top 10 players on the leaderboard right now.')
+	async def lb(self, ctx):
+		await ctx.send('Soon:tm:')
 		
 
 	@ss.command(name='register', help='Registers you to a ScoreSaber profile')
@@ -91,11 +96,35 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 					await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
 				if reaction.emoji == '❌':
 					await message.delete()
-					await ctx.send('Sorry that I could not help you.')
-
-			
+					await ctx.send('Sorry that I could not help you.')	
 		except KeyError:
-			await message.edit(content='Player not found.')
+			await message.edit(content=url['error']['message'])
+
+	@ss.command(name='unregister', help='Unregisters you from a ScoreSaber profile')
+	async def ureg(self, ctx):
+		e = discord.Embed(description='Would you like to remove yourself from the database?')
+		e.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
+		embed = await ctx.send(embed=e, delete_after=15)
+		await embed.add_reaction('✅')
+		await embed.add_reaction('❌')
+		def gcheck(reaction, user):
+			return user == ctx.author and str(reaction.emoji) == '✅' or user == ctx.author and str(reaction.emoji) == '❌'
+		try:
+			reaction, user = await self.bot.wait_for('reaction_add', timeout=14.0, check=gcheck)
+		except asyncio.TimeoutError:
+			await ctx.send('You did not react in time.')
+		else:
+			if reaction.emoji == '✅':
+				e = discord.Embed(description=f'Sucessfully removed {ctx.author} and their corresponding ID from the database')
+				with open('data.json', 'r') as f:
+					data = json.load(f)
+					data['ssinfo'].pop(str(ctx.author.id))
+				with open('data.json', 'w') as f:
+					json.dump(data, f, indent=4)
+				await embed.edit(content=None, embed=e)
+			if reaction.emoji == '❌':
+				e = discord.Embed(description=f'Cancelled unregistering.')
+				await embed.edit(content=None, embed=e, delete_after=15)				
 
 	@commands.command(name='key', help='!key <keyfrombeatsaver> note: older songs do not show duration')
 	async def bsr(self, ctx, key: str):
