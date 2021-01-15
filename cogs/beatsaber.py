@@ -71,26 +71,18 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		except KeyError:
 			await ctx.send('The user is not in the database.')
 
-	@ss.command(name='lb', aliases=['top10', 'top'], help='Shows the top 10 players on the leaderboard right now.')
+	@ss.command(name='leaderboard', aliases=['top', 'ranking', 'lb'], help='Shows the top 10 players on the leaderboard right now.')
 	async def lb(self, ctx):
 		message = await ctx.send('Getting the leaderboard from ScoreSaber ...')
 		async with aiohttp.ClientSession() as cs:
 				async with cs.get('https://new.scoresaber.com/api/players/1') as r:
 					lb = await r.json()  # returns dict
-		await message.edit(content='Got it! Sending top ten players ...')
+		await message.edit(content='Got it! Sending top players ...')
 		r = discord.Embed(title='Top Ten')
-		r.add_field(name=f'#1: {lb["players"][0]["playerName"]}', value=f'Performance Points: {lb["players"][0]["pp"]}\nCountry: {lb["players"][0]["country"]}\nRank Change: +{lb["players"][0]["difference"]}', inline=True)
-		r.add_field(name=f'#2: {lb["players"][1]["playerName"]}', value=f'Performance Points: {lb["players"][1]["pp"]}\nCountry: {lb["players"][1]["country"]}\nRank Change: +{lb["players"][1]["difference"]}', inline=True)
-		r.add_field(name=f'#3: {lb["players"][2]["playerName"]}', value=f'Performance Points: {lb["players"][2]["pp"]}\nCountry: {lb["players"][2]["country"]}\nRank Change: +{lb["players"][2]["difference"]}', inline=True)
-		r.add_field(name=f'#4: {lb["players"][3]["playerName"]}', value=f'Performance Points: {lb["players"][3]["pp"]}\nCountry: {lb["players"][3]["country"]}\nRank Change: +{lb["players"][3]["difference"]}', inline=True)
-		r.add_field(name=f'#5: {lb["players"][4]["playerName"]}', value=f'Performance Points: {lb["players"][4]["pp"]}\nCountry: {lb["players"][4]["country"]}\nRank Change: +{lb["players"][4]["difference"]}', inline=True)
-		r.add_field(name=f'#6: {lb["players"][5]["playerName"]}', value=f'Performance Points: {lb["players"][5]["pp"]}\nCountry: {lb["players"][5]["country"]}\nRank Change: +{lb["players"][5]["difference"]}', inline=True)
-		r.add_field(name=f'#7: {lb["players"][6]["playerName"]}', value=f'Performance Points: {lb["players"][6]["pp"]}\nCountry: {lb["players"][6]["country"]}\nRank Change: +{lb["players"][6]["difference"]}', inline=True)
-		r.add_field(name=f'#8: {lb["players"][7]["playerName"]}', value=f'Performance Points: {lb["players"][7]["pp"]}\nCountry: {lb["players"][7]["country"]}\nRank Change: +{lb["players"][7]["difference"]}', inline=True)
-		r.add_field(name=f'#9: {lb["players"][8]["playerName"]}', value=f'Performance Points: {lb["players"][8]["pp"]}\nCountry: {lb["players"][8]["country"]}\nRank Change: +{lb["players"][8]["difference"]}', inline=True)
-		r.add_field(name=f'#10: {lb["players"][9]["playerName"]}', value=f'Performance Points: {lb["players"][9]["pp"]}\nCountry: {lb["players"][9]["country"]}\nRank Change: +{lb["players"][9]["difference"]}', inline=True)
-		r.add_field(name=f'#11: {lb["players"][10]["playerName"]}', value=f'Performance Points: {lb["players"][10]["pp"]}\nCountry: {lb["players"][10]["country"]}\nRank Change: +{lb["players"][10]["difference"]}', inline=True)
-		r.add_field(name=f'#12: {lb["players"][11]["playerName"]}', value=f'Performance Points: {lb["players"][11]["pp"]}\nCountry: {lb["players"][11]["country"]}\nRank Change: +{lb["players"][11]["difference"]}', inline=True)
+		tten = lb['players']
+		for number, thing in enumerate(tten, 1):
+			if number < 13:
+				r.add_field(name=f'#{number}: {tten[number-1]["playerName"]}', value=f'Performance Points: {tten[number-1]["pp"]}\nCountry: {tten[number-1]["country"]}\nRank Change: +{lb["players"][number-1]["difference"]}', inline=True)
 		r.set_footer(text=f'Powered by the ScoreSaber API')
 		await message.edit(content=None, embed=r)
 		
