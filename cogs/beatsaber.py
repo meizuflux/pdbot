@@ -6,6 +6,7 @@ import time
 import math
 import json
 import asyncio
+import aiohttp
 
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
@@ -51,11 +52,48 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.set_footer(text=f'Powered by the ScoreSaber API')
 		await message.edit(content=None, embed=embed)
 
+	@ss.command(name='user', help='Ping a user and get their stats')
+	async def u(self, ctx, person: discord.Member):
+		try:
+			with open('data.json', 'r') as f:
+						data = json.load(f)
+			message = await ctx.send(f'Getting stats for `{person.name}`')
+			ssid = data['ssinfo'][str(person.id)]
+			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
+			grank = math.ceil(int(data['playerInfo']['rank'])/50)
+			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
+			embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
+			embed.color = 0x2f3136
+			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
+			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
+			embed.set_footer(text=f'Powered by the ScoreSaber API')
+			await message.edit(content=None, embed=embed)
+		except KeyError:
+			await ctx.send('The user is not in the database.')
+
 	@ss.command(name='lb', aliases=['top10', 'top'], help='Shows the top 10 players on the leaderboard right now.')
 	async def lb(self, ctx):
-		await ctx.send('Soon:tm:')
+		message = await ctx.send('Getting the leaderboard from ScoreSaber ...')
+		async with aiohttp.ClientSession() as cs:
+				async with cs.get('https://new.scoresaber.com/api/players/1') as r:
+					lb = await r.json()  # returns dict
+		await message.edit(content='Got it! Sending top ten players ...')
+		r = discord.Embed(title='Top Ten')
+		r.add_field(name=f'#1: {lb["players"][0]["playerName"]}', value=f'Performance Points: {lb["players"][0]["pp"]}\nCountry: {lb["players"][0]["country"]}\nRank Change: +{lb["players"][0]["difference"]}', inline=True)
+		r.add_field(name=f'#2: {lb["players"][1]["playerName"]}', value=f'Performance Points: {lb["players"][1]["pp"]}\nCountry: {lb["players"][1]["country"]}\nRank Change: +{lb["players"][1]["difference"]}', inline=True)
+		r.add_field(name=f'#3: {lb["players"][2]["playerName"]}', value=f'Performance Points: {lb["players"][2]["pp"]}\nCountry: {lb["players"][2]["country"]}\nRank Change: +{lb["players"][2]["difference"]}', inline=True)
+		r.add_field(name=f'#4: {lb["players"][3]["playerName"]}', value=f'Performance Points: {lb["players"][3]["pp"]}\nCountry: {lb["players"][3]["country"]}\nRank Change: +{lb["players"][3]["difference"]}', inline=True)
+		r.add_field(name=f'#5: {lb["players"][4]["playerName"]}', value=f'Performance Points: {lb["players"][4]["pp"]}\nCountry: {lb["players"][4]["country"]}\nRank Change: +{lb["players"][4]["difference"]}', inline=True)
+		r.add_field(name=f'#6: {lb["players"][5]["playerName"]}', value=f'Performance Points: {lb["players"][5]["pp"]}\nCountry: {lb["players"][5]["country"]}\nRank Change: +{lb["players"][5]["difference"]}', inline=True)
+		r.add_field(name=f'#7: {lb["players"][6]["playerName"]}', value=f'Performance Points: {lb["players"][6]["pp"]}\nCountry: {lb["players"][6]["country"]}\nRank Change: +{lb["players"][6]["difference"]}', inline=True)
+		r.add_field(name=f'#8: {lb["players"][7]["playerName"]}', value=f'Performance Points: {lb["players"][7]["pp"]}\nCountry: {lb["players"][7]["country"]}\nRank Change: +{lb["players"][7]["difference"]}', inline=True)
+		r.add_field(name=f'#9: {lb["players"][8]["playerName"]}', value=f'Performance Points: {lb["players"][8]["pp"]}\nCountry: {lb["players"][8]["country"]}\nRank Change: +{lb["players"][8]["difference"]}', inline=True)
+		r.add_field(name=f'#10: {lb["players"][9]["playerName"]}', value=f'Performance Points: {lb["players"][9]["pp"]}\nCountry: {lb["players"][9]["country"]}\nRank Change: +{lb["players"][9]["difference"]}', inline=True)
+		r.add_field(name=f'#11: {lb["players"][10]["playerName"]}', value=f'Performance Points: {lb["players"][10]["pp"]}\nCountry: {lb["players"][10]["country"]}\nRank Change: +{lb["players"][10]["difference"]}', inline=True)
+		r.add_field(name=f'#12: {lb["players"][11]["playerName"]}', value=f'Performance Points: {lb["players"][11]["pp"]}\nCountry: {lb["players"][11]["country"]}\nRank Change: +{lb["players"][11]["difference"]}', inline=True)
+		r.set_footer(text=f'Powered by the ScoreSaber API')
+		await message.edit(content=None, embed=r)
 		
-
 	@ss.command(name='register', help='Registers you to a ScoreSaber profile')
 	async def reg(self, ctx, *, username: str):
 
@@ -156,8 +194,17 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.set_footer(text=f'Powered by the BeatSaver API')
 		await ctx.send(embed=embed)
 
+	@commands.command()
+	async def typetest(self, ctx, user: discord.Member):
+		user = str(user)
+		await ctx.send(f'Member\'s ID is `{user.id}')
+		if user == str:
+			await ctx.send('string')
 
-
+	@typetest.error
+	async def typetest_error(self, ctx, error):
+		if isinstance(error, commands.MemberNotFound):
+				await ctx.send('I could not find that member...')
 
 	@bsr.error
 	async def bsr_error(self, ctx, error):

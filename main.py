@@ -10,7 +10,7 @@ from keep_alive import keep_alive
 async def pre(bot, message):
 	with open("prefixes.json", "r") as f:
 		prefixes = json.load(f)
-	return prefixes[str(message.guild.id)]
+	return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)
 
 activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
 bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity)
