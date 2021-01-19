@@ -6,6 +6,7 @@ import os
 from pkg_resources import get_distribution
 import time
 import platform
+import psutil
 from psutil import Process
 from dateutil.relativedelta import relativedelta
 
@@ -13,6 +14,7 @@ class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.process = psutil.Process(os.getpid())
 
 	def mng_msg():
 		def predicate(ctx):
@@ -138,9 +140,20 @@ class Misc(commands.Cog):
 
 	@commands.command()
 	async def info(self, ctx):
-		emb = discord.Embed(title=f"{self.bot.name}", colour=discord.Colour.blue())
-		emb.set_thumbnail(url=self.bot.avatar_url)
-		implementation = platform.python_implementation()
+		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
+
+		ramUsage = self.process.memory_full_info().rss / 1024**2
+		totalRam = psutil.virtual_memory().free / 1024**2
+		cpuUsage = psutil.cpu_percent(interval=0.5)
+		cpuFreq = psutil.cpu_freq().current
+
+		uptimerobot = 'https://stats.uptimerobot.com/Gzv84sJ9oV'
+
+
+		emb = discord.Embed(title=f"{self.bot.user.name}", colour=discord.Colour.blue())
+		emb.set_thumbnail(url=self.bot.user.avatar_url)
+		memb = await self.bot.fetch_user(self.bot.author_id)
+		emb.set_footer(text=f'Created in Python by {memb.name}', icon_url=memb.avatar_url)
 		pyVersion = platform.python_version()
 		libVersion = get_distribution("discord.py").version
 		hosting = platform.platform()
@@ -148,21 +161,13 @@ class Misc(commands.Cog):
 		delta = relativedelta(seconds=int(time.time() - Process(os.getpid()).create_time()))
 		uptime = ''
 
-		if delta.days: uptime += f'{int(delta.days)} d, '
-		if delta.hours: uptime += f'{int(delta.hours)} h, '
-		if delta.minutes: uptime += f'{int(delta.minutes)} m, '
-		if delta.seconds: uptime += f'{int(delta.seconds)} s, '
+		if delta.days: uptime += f'{int(delta.days)} days, '
+		if delta.hours: uptime += f'{int(delta.hours)} hours, '
+		if delta.minutes: uptime += f'{int(delta.minutes)} minutes, '
+		if delta.seconds: uptime += f'and {int(delta.seconds)} seconds.'
 
-		emb.add_field(name='Server count', value=str(len(self.bot.guilds)))
-		emb.add_field(name='Member count', value=str(sum([guild.member_count for guild in self.bot.guilds])))
-
-		emb.add_field(name='Python', value=f'Python {pyVersion} with {implementation}')
-		emb.add_field(name='Discord.py version', value=libVersion)
-
-		emb.add_field(name='Hosting', value=hosting)
-		emb.add_field(name='Uptime', value=uptime[:-2])
-
-		await ctx.send(embed=emb)
+		await ctx.send(f'<:botpfp:801162753477705808> All about ME!```yaml\nUsername: {self.bot.user.name}\nDeveloper: {memb.name}#6862 ({self.bot.author_id})\nVersion: Python {pyVersion}\nLibrary: discord.py {libVersion}\nHosting: {hosting}\nUptime: {uptime[:-2]}\nRAM Usage: {ramUsage:.2f} MB / {totalRam:.2f} MB\nCPU Usage: {cpuUsage}%\nCPU Frequency: {cpuFreq} MHZ\nServer Count: {str(len(self.bot.guilds))}\nMember Count: {str(sum([guild.member_count for guild in self.bot.guilds]))} (Avg: {avgmembers:.1f})\nCommands Loaded: {len([x.name for x in self.bot.commands])} ```'
+		)
 
 
 def setup(bot):
