@@ -3,6 +3,11 @@ import discord
 import random
 import inspect
 import os
+from pkg_resources import get_distribution
+import time
+import platform
+from psutil import Process
+from dateutil.relativedelta import relativedelta
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
@@ -130,6 +135,34 @@ class Misc(commands.Cog):
 			final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
 			e=discord.Embed(description=final_url)
 			await ctx.send(embed=e)
+
+	@commands.command()
+	async def info(self, ctx):
+		emb = discord.Embed(title=f"{self.bot.name}", colour=discord.Colour.blue())
+		emb.set_thumbnail(url=self.bot.avatar_url)
+		implementation = platform.python_implementation()
+		pyVersion = platform.python_version()
+		libVersion = get_distribution("discord.py").version
+		hosting = platform.platform()
+
+		delta = relativedelta(seconds=int(time.time() - Process(os.getpid()).create_time()))
+		uptime = ''
+
+		if delta.days: uptime += f'{int(delta.days)} d, '
+		if delta.hours: uptime += f'{int(delta.hours)} h, '
+		if delta.minutes: uptime += f'{int(delta.minutes)} m, '
+		if delta.seconds: uptime += f'{int(delta.seconds)} s, '
+
+		emb.add_field(name='Server count', value=str(len(self.bot.guilds)))
+		emb.add_field(name='Member count', value=str(sum([guild.member_count for guild in self.bot.guilds])))
+
+		emb.add_field(name='Python', value=f'Python {pyVersion} with {implementation}')
+		emb.add_field(name='Discord.py version', value=libVersion)
+
+		emb.add_field(name='Hosting', value=hosting)
+		emb.add_field(name='Uptime', value=uptime[:-2])
+
+		await ctx.send(embed=emb)
 
 
 def setup(bot):
