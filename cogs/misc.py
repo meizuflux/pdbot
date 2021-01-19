@@ -4,8 +4,6 @@ import random
 import inspect
 import os
 import psutil
-import timeago as timesince
-import datetime
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
@@ -17,7 +15,7 @@ class Misc(commands.Cog):
 		def predicate(ctx):
 			if ctx.author.id == 777893499471265802:
 				return True
-			if ctx.author.id.guild_permissions.manage_messages == True:
+			if ctx.author.guild_permissions.manage_messages == True:
 				return True
 			else: 
 				return False

@@ -10,7 +10,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		def predicate(ctx):
 			if ctx.author.id == ctx.bot.author_id:
 				return True
-			if ctx.author.id.guild_permissions.manage_guild == True:
+			if ctx.author.guild_permissions.manage_guild == True:
 				return True
 			else: 
 				return False
@@ -21,7 +21,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		with open('prefixes.json', 'r') as f:
 			prefixes = json.load(f)
 
-		prefixes[str(guild.id)] = '!'
+		prefixes[str(guild.id)] = 'c:/'
 
 		with open('prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)
@@ -39,14 +39,17 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.command(name='prefix')
 	@mng_gld()
 	async def prefix(self, ctx, prefix: str):
-		with open('prefixes.json', 'r') as f:
-			prefixes = json.load(f)
+		if len(prefix) > 5:
+			await ctx.send('Prefixes must be under 5 characters!')
+		else:
+			with open('prefixes.json', 'r') as f:
+				prefixes = json.load(f)
 
-		prefixes[str(ctx.guild.id)] = prefix
+			prefixes[str(ctx.guild.id)] = prefix
 
-		with open('prefixes.json', 'w') as f:
-			json.dump(prefixes, f, indent=4)
-		await ctx.send(f'Set prefix to {prefixes[str(ctx.guild.id)]}')
+			with open('prefixes.json', 'w') as f:
+				json.dump(prefixes, f, indent=4)
+			await ctx.send(f'Set prefix to {prefixes[str(ctx.guild.id)]}')
 
 def setup(bot):
 	bot.add_cog(prefixes(bot))
