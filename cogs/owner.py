@@ -7,6 +7,7 @@ from contextlib import redirect_stdout
 import time
 import aiohttp
 from utils import http
+import sys
 # to expose to the eval command
 import datetime
 from collections import Counter
@@ -137,6 +138,13 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
             else:
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
+
+    @commands.command()
+    @commands.is_owner()
+    async def reboot(self, ctx):
+    	await ctx.send('Rebooting now ...')
+    	time.sleep(1)
+    	sys.exit(0)
 
 	
 def setup(bot):

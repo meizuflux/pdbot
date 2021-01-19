@@ -1,11 +1,27 @@
 from discord.ext import commands
 import discord
 import random
+import inspect
+import os
+import psutil
+import timeago as timesince
+import datetime
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.process = psutil.Process(os.getpid())
+
+	def mng_msg():
+		def predicate(ctx):
+			if ctx.author.id == 777893499471265802:
+				return True
+			if ctx.author.id.guild_permissions.manage_messages == True:
+				return True
+			else: 
+				return False
+		return commands.check(predicate)
 		
 	@commands.command(name='guilds', help='list of guilds')
 	async def guilds(self, ctx):
@@ -25,10 +41,6 @@ class Misc(commands.Cog):
 	async def ping(self, ctx):
 		await ctx.send(f'PONG! Oh, you wanted to know the ping. The ping is {round(self.bot.latency * 1000)} ms')
 		
-	@commands.command(name='source', help='Bots source code')
-	async def source(self, ctx):
-		embed=discord.Embed(description='https://github.com/ppotatoo/pdbot')
-		await ctx.send(embed=embed)
 		
 	@commands.command(name='creator', help='use it')
 	async def creator(self, ctx):
@@ -40,7 +52,7 @@ class Misc(commands.Cog):
 
 	
 	@commands.command(name='purge')
-	@commands.has_permissions(manage_messages=True) # can also do manage_guild, your choice.
+	@mng_msg() # can also do manage_guild, your choice.
 	async def purge(self, ctx, amount: int):
 		await ctx.channel.purge(limit=1+int(amount))
 		await ctx.send(f'Deleted {amount} message(s)', delete_after=2)
@@ -90,6 +102,38 @@ class Misc(commands.Cog):
 		e.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else f'{len(roles)} roles')
 		e.set_footer(text='Created').timestamp = guild.created_at
 		await ctx.send(embed=e)
+
+	@commands.command()
+	async def source(self, ctx, *, command: str = None):
+		source_url = 'https://github.com/ppotatoo/pdbot'
+		branch = 'master'
+		if command is None:
+			return await ctx.send(source_url)
+		if command == 'help':
+			e=discord.Embed(description='https://pypi.org/project/discord-pretty-help/')
+			await ctx.send(embed=e)			
+		elif command.startswith('jsk') or command.startswith('jishaku'):
+			e=discord.Embed(description='https://pypi.org/project/jishaku/')
+			await ctx.send(embed=e)
+		else:
+			obj = self.bot.get_command(command.replace('.', ' '))
+			if obj is None:
+				return await ctx.send('Could not find command.')
+			src = obj.callback.__code__
+			module = obj.callback.__module__
+			filename = src.co_filename
+		
+			lines, firstlineno = inspect.getsourcelines(src)
+			if not module.startswith('discord'):
+				location = os.path.relpath(filename).replace('\\', '/')
+			else:
+				location = module.replace('.', '/')
+				source_url = 'https://github.com/ppotatoo/pdbot'
+				branch = 'master'
+
+			final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
+			e=discord.Embed(description=final_url)
+			await ctx.send(embed=e)
 	
 
 def setup(bot):
