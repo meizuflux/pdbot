@@ -5,6 +5,16 @@ import json
 class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
+    
+	def mng_gld():
+		def predicate(ctx):
+			if ctx.author.id == ctx.bot.author_id:
+				return True
+			if ctx.author.id.guild_permissions.manage_guild == True:
+				return True
+			else: 
+				return False
+		return commands.check(predicate)
 
 	@commands.Cog.listener()
 	async def on_guild_join(self, guild):
@@ -27,7 +37,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 			json.dump(prefixes, f, indent=4)
 
 	@commands.command(name='prefix')
-	@commands.has_permissions(manage_guild=True)
+	@mng_gld()
 	async def prefix(self, ctx, prefix: str):
 		with open('prefixes.json', 'r') as f:
 			prefixes = json.load(f)
