@@ -3,13 +3,11 @@ import discord
 import random
 import inspect
 import os
-import psutil
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
 	def __init__(self, bot):
 		self.bot = bot
-		self.process = psutil.Process(os.getpid())
 
 	def mng_msg():
 		def predicate(ctx):
@@ -132,7 +130,7 @@ class Misc(commands.Cog):
 			final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
 			e=discord.Embed(description=final_url)
 			await ctx.send(embed=e)
-	
+
 
 def setup(bot):
 	bot.add_cog(Misc(bot))

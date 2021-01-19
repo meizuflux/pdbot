@@ -51,5 +51,11 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 				json.dump(prefixes, f, indent=4)
 			await ctx.send(f'Set prefix to {prefixes[str(ctx.guild.id)]}')
 
+
+	@prefix.error
+	async def prefix_error(self, ctx, error):
+		if isinstance(error, commands.CheckFailure):
+			await ctx.send('You need manage guild permissions in order to change the prefix. The prefix on this server is '+prefixes[str(ctx.guild.id)])
+
 def setup(bot):
 	bot.add_cog(prefixes(bot))
