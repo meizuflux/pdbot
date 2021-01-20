@@ -143,7 +143,8 @@ class Misc(commands.Cog):
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
 
 		ramUsage = self.process.memory_full_info().rss / 1024**2
-		totalRam = psutil.virtual_memory().free / 1024**2
+		totalRam = self.process.virtual_memory().free / 1024**2
+		ramPerc = psutil.virtual_memory().percent
 		cpuUsage = psutil.cpu_percent(interval=0.5)
 		cpuFreq = psutil.cpu_freq().current
 
@@ -166,7 +167,7 @@ class Misc(commands.Cog):
 		if delta.minutes: uptime += f'{int(delta.minutes)} minutes, '
 		if delta.seconds: uptime += f'and {int(delta.seconds)} seconds.'
 
-		await ctx.send(f'<:botpfp:801162753477705808> All about ME!```yaml\nUsername: {self.bot.user.name}\nDeveloper: {memb.name}#6862 ({self.bot.author_id})\nVersion: Python {pyVersion}\nLibrary: discord.py {libVersion}\nHosting: {hosting}\nUptime: {uptime[:-2]}\nRAM Usage: {ramUsage:.2f} MB / {totalRam:.2f} MB\nCPU Usage: {cpuUsage}%\nCPU Frequency: {cpuFreq} MHZ\nServer Count: {str(len(self.bot.guilds))}\nMember Count: {str(sum([guild.member_count for guild in self.bot.guilds]))} (Avg: {avgmembers:.1f})\nCommands Loaded: {len([x.name for x in self.bot.commands])} ```'
+		await ctx.send(f'<:botpfp:801162753477705808> All about ME!```yaml\nUsername: {self.bot.user.name}\nDeveloper: {memb.name}#6862 ({self.bot.author_id})\nVersion: Python {pyVersion}\nLibrary: discord.py {libVersion}\nHosting: {hosting}\nUptime: {uptime}\nRAM Usage: {ramPerc}% {ramUsage:.2f} MB / {totalRam:.2f} MB\nCPU Usage: {cpuUsage}%\nCPU Frequency: {cpuFreq} MHZ\nServer Count: {str(len(self.bot.guilds))}\nMember Count: {str(sum([guild.member_count for guild in self.bot.guilds]))} (Avg: {avgmembers:.1f})\nCommands Loaded: {len([x.name for x in self.bot.commands])} ```'
 		)
 
 
