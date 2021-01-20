@@ -1,8 +1,12 @@
 import discord
 from discord.ext import commands
+import os
+from utils import default
+import sys
+import time
 
 
-class DevCommands(commands.Cog, name='Developer Commands'):
+class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hidden=True)):
 	'''These are the developer commands'''
 
 	def __init__(self, bot):
@@ -23,17 +27,35 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 		Reloads a cog.
 		'''
 		extensions = self.bot.extensions  # A list of the bot's cogs/extensions.
-		if cog == 'all':  # Lets you reload all cogs at once
-			for extension in extensions:
-				self.bot.unload_extension(cog)
-				self.bot.load_extension(cog)
-			await ctx.send('Done')
 		if cog in extensions:
 			self.bot.unload_extension(cog)  # Unloads the cog
 			self.bot.load_extension(cog)  # Loads the cog
 			await ctx.send('Done')  # Sends a message where content='Done'
 		else:
 			await ctx.send('Unknown Cog')  # If the cog isn't found/loaded.
+
+	@commands.command()
+	async def reloadall(self, ctx):
+	    """ Reloads all extensions. """
+	    error_collection = []
+	    for file in os.listdir("cogs"):
+	        if file.endswith(".py"):
+	            name = file[:-3]
+	            try:
+	                self.bot.reload_extension(f"cogs.{name}")
+	            except Exception as e:
+	                error_collection.append(
+	                    [file, default.traceback_maker(e, advance=False)]
+                    )
+
+	    if error_collection:
+	        output = "\n".join([f"**{g[0]}** ```diff\n- {g[1]}```" for g in error_collection])
+	        return await ctx.send(
+                f"Attempted to reload all extensions, was able to reload, "
+                f"however the following failed...\n\n{output}"
+            )
+
+	    await ctx.send("Successfully reloaded all extensions")
 	
 	@commands.command(name="unload", aliases=['ul']) 
 	async def unload(self, ctx, cog):
@@ -69,6 +91,7 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 		base_string += "\n".join([str(cog) for cog in self.bot.extensions])
 		base_string += "\n```"
 		await ctx.send(base_string)
+
 
 
 def setup(bot):

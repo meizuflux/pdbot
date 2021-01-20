@@ -77,6 +77,7 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Streaming(name=activity, url='https://twitch.tv/ppotatoo_'))
 		if atype == 'competing':
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
+		await ctx.send(f'Set activity to `{activity}` with type `{atype}` ')
 	
 	@commands.command(name='whois')
 	async def who(self, ctx, member: discord.Member):
