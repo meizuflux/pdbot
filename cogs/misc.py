@@ -140,21 +140,14 @@ class Misc(commands.Cog):
 
 	@commands.command()
 	async def info(self, ctx):
+		msg = await ctx.send('Getting bot information ...')
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
 
 		ramUsage = self.process.memory_full_info().rss / 1024**2
-		totalRam = self.process.virtual_memory().free / 1024**2
 		ramPerc = psutil.virtual_memory().percent
 		cpuUsage = psutil.cpu_percent(interval=0.5)
 		cpuFreq = psutil.cpu_freq().current
 
-		uptimerobot = 'https://stats.uptimerobot.com/Gzv84sJ9oV'
-
-
-		emb = discord.Embed(title=f"{self.bot.user.name}", colour=discord.Colour.blue())
-		emb.set_thumbnail(url=self.bot.user.avatar_url)
-		memb = await self.bot.fetch_user(self.bot.author_id)
-		emb.set_footer(text=f'Created in Python by {memb.name}', icon_url=memb.avatar_url)
 		pyVersion = platform.python_version()
 		libVersion = get_distribution("discord.py").version
 		hosting = platform.platform()
@@ -167,8 +160,30 @@ class Misc(commands.Cog):
 		if delta.minutes: uptime += f'{int(delta.minutes)} minutes, '
 		if delta.seconds: uptime += f'and {int(delta.seconds)} seconds.'
 
-		await ctx.send(f'<:botpfp:801162753477705808> All about ME!```yaml\nUsername: {self.bot.user.name}\nDeveloper: {memb.name}#6862 ({self.bot.author_id})\nVersion: Python {pyVersion}\nLibrary: discord.py {libVersion}\nHosting: {hosting}\nUptime: {uptime}\nRAM Usage: {ramPerc}% {ramUsage:.2f} MB / {totalRam:.2f} MB\nCPU Usage: {cpuUsage}%\nCPU Frequency: {cpuFreq} MHZ\nServer Count: {str(len(self.bot.guilds))}\nMember Count: {str(sum([guild.member_count for guild in self.bot.guilds]))} (Avg: {avgmembers:.1f})\nCommands Loaded: {len([x.name for x in self.bot.commands])} ```'
-		)
+		emb = discord.Embed(colour=0x2F3136)
+		emb.set_thumbnail(url=self.bot.user.avatar_url)
+		emb.set_author(name=self.bot.user.name, url='https://github.com/ppotatoo/pdbot', icon_url=self.bot.user.avatar_url)
+		emb.set_thumbnail(url=self.bot.user.avatar_url)
+		emb.add_field(name=f'Developer', value=f'```ppotatoo#6862 (777893499471265802)```', inline=False)
+		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{uptime}```', inline=False)
+		emb.add_field(name=f'Hosting', value=f'```{hosting}```', inline=False)
+
+		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage}%```', inline=True)
+		emb.add_field(name=f'CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
+		emb.add_field(name='Memory Usage', value=f'```{ramPerc}%```', inline=True)
+
+		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
+		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
+
+		emb.add_field(name='Command Count', value=f'```{len([x.name for x in self.bot.commands])} commands```', inline=False)
+		emb.add_field(name='Guild Count', value=f'```{str(len(self.bot.guilds))} guilds```', inline=False)
+
+		emb.add_field(name='Member Count', value=f'```{str(sum([guild.member_count for guild in self.bot.guilds]))} members```', inline=True)
+		emb.add_field(name='Average Member Count', value=f'```{avgmembers:.1f}```')
+
+		emb.set_footer(text=f'{ctx.author} • {ctx.author.id}', icon_url=ctx.author.avatar_url)
+
+		await msg.edit(content=None, embed=emb)
 
 
 def setup(bot):
