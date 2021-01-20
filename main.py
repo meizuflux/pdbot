@@ -1,7 +1,6 @@
 import os
 import discord
 import json
-intents = discord.Intents(messages=True, guilds=True)
 from discord.ext import commands
 from pretty_help import PrettyHelp 	
 from keep_alive import keep_alive
@@ -12,8 +11,8 @@ async def pre(bot, message):
 	return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)
 
 activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
-bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity)
-bot.help_command = PrettyHelp(active_time=60, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
+bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
+bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
 
 token = os.environ['DTOKEN']
@@ -32,8 +31,6 @@ async def blacklist(ctx):
 		return True
 		
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
-
-# also 
 os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True" 
 os.environ["JISHAKU_HIDE"] = "True"
 
@@ -58,7 +55,5 @@ if __name__ == '__main__':
 	for extension in extensions:
 		bot.load_extension(extension)
 		
-		
-
 keep_alive()
 bot.run(token)
