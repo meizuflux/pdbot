@@ -146,11 +146,6 @@ class Misc(commands.Cog):
 			e=discord.Embed(description=final_url)
 			await ctx.send(embed=e)
 
-	@commands.command()
-	async def uptime(self, ctx):
-		m = await ctx.send(embed=discord.Embed(title='Uptime', description=f"{humanize.precisedelta(self.bot.start_time format='%0.0f')}"))
-		await ctx.send(embed=m)
-
 	@commands.command(aliases=['information', 'botinfo'])
 	async def info(self, ctx):
 		msg = await ctx.send('Getting bot information ...')
@@ -158,6 +153,8 @@ class Misc(commands.Cog):
 		ramPerc = psutil.virtual_memory().percent
 		cpuUsage = psutil.cpu_percent(interval=0.5)
 		cpuFreq = psutil.cpu_freq().current
+		memory_usage = self.process.memory_full_info().uss / 1024**2
+		cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
 
 		pyVersion = platform.python_version()
 		libVersion = get_distribution("discord.py").version
@@ -171,9 +168,9 @@ class Misc(commands.Cog):
 		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```', inline=False)
 		emb.add_field(name=f'Hosting', value=f'```{hosting}```', inline=False)
 
-		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage}%```', inline=True)
+		emb.add_field(name=f'CPU Usage', value=f'```{cpu_usage:.2f}%```', inline=True)
 		emb.add_field(name=f'CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
-		emb.add_field(name='Memory Usage', value=f'```{ramPerc}%```', inline=True)
+		emb.add_field(name='Memory Usage', value=f'```{ramPerc}%\n{memory_usage:.2f} MB```', inline=True)
 
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
 		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)

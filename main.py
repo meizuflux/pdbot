@@ -50,7 +50,8 @@ extensions = [
 	'cogs.owner',
 	'cogs.prefixes',
 	'jishaku',
-	'cogs.beatsaber'
+	'cogs.beatsaber',
+	'cogs.imagemanip'
 ]
 
 if __name__ == '__main__':
