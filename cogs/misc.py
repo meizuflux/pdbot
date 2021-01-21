@@ -5,6 +5,7 @@ import inspect
 import os
 from pkg_resources import get_distribution
 import time
+import humanize
 import platform
 import psutil
 from psutil import Process
@@ -145,12 +146,10 @@ class Misc(commands.Cog):
 			e=discord.Embed(description=final_url)
 			await ctx.send(embed=e)
 
-	@commands.command()
+	@commands.command(aliases=['information', 'botinfo'])
 	async def info(self, ctx):
 		msg = await ctx.send('Getting bot information ...')
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
-
-		ramUsage = self.process.memory_full_info().rss / 1024**2
 		ramPerc = psutil.virtual_memory().percent
 		cpuUsage = psutil.cpu_percent(interval=0.5)
 		cpuFreq = psutil.cpu_freq().current
@@ -159,20 +158,12 @@ class Misc(commands.Cog):
 		libVersion = get_distribution("discord.py").version
 		hosting = platform.platform()
 
-		delta = relativedelta(seconds=int(time.time() - Process(os.getpid()).create_time()))
-		uptime = ''
-
-		if delta.days: uptime += f'{int(delta.days)} days, '
-		if delta.hours: uptime += f'{int(delta.hours)} hours, '
-		if delta.minutes: uptime += f'{int(delta.minutes)} minutes, '
-		if delta.seconds: uptime += f'and {int(delta.seconds)} seconds.'
-
 		emb = discord.Embed(colour=0x2F3136)
-		emb.set_thumbnail(url=self.bot.user.avatar_url)
+		#emb.set_thumbnail(url=self.bot.user.avatar_url)
 		emb.set_author(name=self.bot.user.name, url='https://github.com/ppotatoo/pdbot', icon_url=self.bot.user.avatar_url)
 		emb.set_thumbnail(url=self.bot.user.avatar_url)
 		emb.add_field(name=f'Developer', value=f'```ppotatoo#6862 (777893499471265802)```', inline=False)
-		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{uptime}```', inline=False)
+		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```', inline=False)
 		emb.add_field(name=f'Hosting', value=f'```{hosting}```', inline=False)
 
 		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage}%```', inline=True)

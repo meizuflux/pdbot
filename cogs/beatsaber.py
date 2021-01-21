@@ -14,6 +14,8 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	def __init__(self, bot):
 		self.bot = bot
 
+	
+
 	@commands.group(help='Collection of ScoreSaber commands')
 	async def ss(self, ctx):
 		if ctx.invoked_subcommand is None:
@@ -31,21 +33,20 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await ctx.send('You are not in the database')
 		try:
 			if username != None:
-				message = await ctx.send(f'Searching for `{username}` ...')
-				username = urllib.parse.quote_plus(username.upper())
-				username = username.replace('+', '%20')
-				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...')
+				message = await ctx.send(f'Formatting `{username}` to use in the search ...')
+				user = urllib.parse.quote_plus(username.upper())
+				user = user.replace('+', '%20')
+				await message.edit(content=f'Searching for `{username}`\'s player ID ...')
 				url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
-				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
+				await message.edit(content=f'Got it!')
 				ssid = url['players'][0]['playerId']
 		except KeyError:
 			await message.edit(content=url['error']['message'])
-			
+		await message.edit(content=f'Grabbing `{username}`\'s stats ...')	
 		data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
-		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 		grank = math.ceil(int(data['playerInfo']['rank'])/50)
 		crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
+		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
 		embed.color = 0x2f3136
 		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 		embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
@@ -62,7 +63,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			data = requests.get(f"https://new.scoresaber.com/api/player/{ssid}/full").json()
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
 			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-			embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}")
+			embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
 			embed.color = 0x2f3136
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
@@ -82,7 +83,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		tten = lb['players']
 		for number, thing in enumerate(tten, 1):
 			if number < 13:
-				r.add_field(name=f'#{number}: {tten[number-1]["playerName"]}', value=f'Performance Points: {tten[number-1]["pp"]}\nCountry: {tten[number-1]["country"]}\nRank Change: +{lb["players"][number-1]["difference"]}', inline=True)
+				r.add_field(name=f'#{number}: {tten[number-1]["playerName"]}', value=f'Performance Points: {tten[number-1]["pp"]}pp\nCountry: {tten[number-1]["country"]}\nRank Change: +{lb["players"][number-1]["difference"]}', inline=True)
 		r.set_footer(text=f'Powered by the ScoreSaber API')
 		await message.edit(content=None, embed=r)
 		
@@ -104,7 +105,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed = discord.Embed(title=f"Is this you?")
 			embed.color = 0x2f3136
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}", inline=False)
+			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp", inline=False)
 			embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
 			await message.edit(content=None, embed=embed, delete_after=15)
 			await message.add_reaction('✅')
