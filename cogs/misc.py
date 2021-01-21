@@ -37,12 +37,18 @@ class Misc(commands.Cog):
 	
 	@commands.command(name='puppy', help='A cute little puppy doing cute things')
 	async def puppy(self, ctx):
-		await ctx.author.send('https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11')
-		await ctx.send('Video sent successfully')
+		await ctx.send('https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11')
 
 	@commands.command(name='ping', help='only for cool kids')
 	async def ping(self, ctx):
-		await ctx.send(f'PONG! Oh, you wanted to know the ping. The ping is {round(self.bot.latency * 1000)} ms')
+		start = time.perf_counter()
+		message = await ctx.send("Pinging ...")
+		end = time.perf_counter()
+		duration = (end - start) * 1000
+		pong = discord.Embed(title='Ping', color=0x2F3136)
+		pong.add_field(name='Typing Latency', value=f'```python\n{round(duration)} ms```')
+		pong.add_field(name='Websocket Latency', value=f'```python\n{round(self.bot.latency * 1000)} ms```')
+		await message.edit(content=None, embed=pong)
 		
 		
 	@commands.command(name='creator', help='use it')
