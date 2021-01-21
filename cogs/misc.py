@@ -8,8 +8,6 @@ import time
 import humanize
 import platform
 import psutil
-from psutil import Process
-from dateutil.relativedelta import relativedelta
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""

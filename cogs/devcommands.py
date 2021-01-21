@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 import os
 from utils import default
-import sys
-import time
 
 
 class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hidden=True)):
