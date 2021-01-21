@@ -1,14 +1,20 @@
 from discord.ext import commands
 import discord
 import os
-
-
+from io import BytesIO
+import cv2
+import functools
+import requests
+import aiohttp
+import numpy as np
 flipnotetoken = os.environ['tflipnote']
 
 class fun(commands.Cog):
 	"""For the fun commands"""
 	def __init__(self, bot):
 		self.bot = bot
+
+	
 
 	@commands.command(name='smolpp', hidden=True)
 	async def smolpp(self, ctx, *, message):
