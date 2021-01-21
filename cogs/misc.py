@@ -146,6 +146,11 @@ class Misc(commands.Cog):
 			e=discord.Embed(description=final_url)
 			await ctx.send(embed=e)
 
+	@commands.command()
+	async def uptime(self, ctx):
+		m = await ctx.send(embed=discord.Embed(title='Uptime', description=f"{humanize.precisedelta(self.bot.start_time format='%0.0f')}"))
+		await ctx.send(embed=m)
+
 	@commands.command(aliases=['information', 'botinfo'])
 	async def info(self, ctx):
 		msg = await ctx.send('Getting bot information ...')
