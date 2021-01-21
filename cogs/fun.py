@@ -1,12 +1,6 @@
 from discord.ext import commands
 import discord
 import os
-from io import BytesIO
-import cv2
-import functools
-import requests
-import aiohttp
-import numpy as np
 flipnotetoken = os.environ['tflipnote']
 
 class fun(commands.Cog):
