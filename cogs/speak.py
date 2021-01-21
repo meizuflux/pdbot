@@ -12,7 +12,7 @@ class example(commands.Cog, command_attrs=dict(hidden=False)):
 	
 	@commands.command(name='dm', hidden=False)
 	@commands.is_owner()
-	async def pm(self, ctx: commands.Context, target: discord.User, *, message: str) -> None:
+	async def pm(self, ctx, target: discord.User, *, message: str):
   		await target.send(message)
 
 
