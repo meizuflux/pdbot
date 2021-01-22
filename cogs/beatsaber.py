@@ -187,18 +187,6 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		embed.set_footer(text=f'Powered by the BeatSaver API')
 		await ctx.send(embed=embed)
 
-	@commands.command()
-	async def typetest(self, ctx, user: discord.Member):
-		user = str(user)
-		await ctx.send(f'Member\'s ID is `{user.id}')
-		if user == str:
-			await ctx.send('string')
-
-	@typetest.error
-	async def typetest_error(self, ctx, error):
-		if isinstance(error, commands.MemberNotFound):
-				await ctx.send('I could not find that member...')
-
 	@bsr.error
 	async def bsr_error(self, ctx, error):
 		if isinstance(error, commands.MissingRequiredArgument):

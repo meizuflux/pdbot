@@ -91,7 +91,10 @@ class Misc(commands.Cog):
 		create = member.created_at.strftime("%m/%d/%Y")
 		embed=discord.Embed(title=str(member), description=f'**Joined:** {join}\n**Account Creation:** {create}')
 		embed.set_thumbnail(url=member.avatar_url)
-		embed.add_field(name='Roles', value=', '.join(mention_roles))
+		try:
+			embed.add_field(name='Roles', value=', '.join(mention_roles))
+		except:
+			embed.add_field(name='Roles', value='This user has no roles')
 		if member.name != member.display_name:
 			embed.set_footer(text=f'{member.id} • {member.display_name}')
 		else:
