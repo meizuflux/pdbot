@@ -99,7 +99,7 @@ class Misc(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command(name='serverinfo', usage='', help='Shows info about the server')
-	async def info(self, ctx):
+	async def sinfo(self, ctx):
 		guild = ctx.guild
 		roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
 		e = discord.Embed()
@@ -166,9 +166,9 @@ class Misc(commands.Cog):
 		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```', inline=False)
 		emb.add_field(name=f'Hosting', value=f'```{hosting}```', inline=False)
 
-		emb.add_field(name=f'CPU Usage', value=f'```{cpu_usage:.2f}%```', inline=True)
+		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage:.2f}%```', inline=True)
 		emb.add_field(name=f'CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
-		emb.add_field(name='Memory Usage', value=f'```{ramPerc}%\n{memory_usage:.2f} MB```', inline=True)
+		emb.add_field(name='Memory Usage', value=f'```{memory_usage:.2f} MB```', inline=True)
 
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
 		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
