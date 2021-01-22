@@ -3,9 +3,11 @@ import discord
 import polaroid
 import functools
 import typing
+from typing import Optional
 import os
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
+dagpikey = os.environ['dagpikey']
 
 class Image(commands.Cog):
 	def __init__(self, bot):
@@ -34,19 +36,39 @@ class Image(commands.Cog):
 			embed.set_footer(text=f"Powered by Polaroid")
 			await ctx.send(embed=embed, file=file)
 
-	async def dagpi_image(self, url):
+	async def dagpi_image(self, url, fn: Optional[str]):
 		cs = self.bot.session
-		r = await cs.get(f'https://api.dagpi.xyz/image/{url}', headers={'Authorization': flipnotetoken})
+		r = await cs.get(f'https://api.dagpi.xyz/image/{url}', headers={'Authorization': dagpikey})
 		io = BytesIO(await r.read())
-		f = discord.File(fp=io, filename='dagpi.png')
+		f = discord.File(fp=io, filename=fn or 'dagpi.png')
 		return f
 
 	async def alex_image(self, url):
 		cs = self.bot.session
-		r = await cs.get(f'https://api.alexflipnote.dev/{url}', headers={'Authorization': self.bot.config['API']['alex_token']})
+		r = await cs.get(f'https://api.alexflipnote.dev/{url}', headers={'Authorization': flipnotetoken})
 		io = BytesIO(await r.read())
 		f = discord.File(fp=io, filename='alex.png')
 		return f
+
+	@commands.command(aliases=['didyoumean'], help='"Did you mean" meme. Ex: dym "milk" "with your dad"')
+	async def dym(self, ctx, search: str, did_you_mean: str):
+		file = await self.alex_image(url=f'didyoumean?top={search}&bottom={did_you_mean}')
+		embed = discord.Embed(colour=0x2F3136)
+		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+		embed.set_image(url=f"attachment://alex.png")
+		embed.set_footer(text=f"Powered by the AlexFlipnote API")
+		await ctx.send(embed=embed, file=file)
+
+	@commands.command(aliases=['trigger'])
+	async def triggered(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		img = image or ctx.author
+		image = str(img.avatar_url_as(static_format='png', format='png', size=512))
+		file = await self.dagpi_image(url=f'triggered/?url={image}', fn='triggered.gif')
+		embed = discord.Embed(colour=0x2F3136)
+		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+		embed.set_image(url=f"attachment://triggered.gif")
+		embed.set_footer(text=f"Powered by the Dagpi API")
+		await ctx.send(embed=embed, file=file)
 
 	@commands.command(help='Makes an image rainbowey')
 	async def rainbow(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):

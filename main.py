@@ -1,6 +1,8 @@
 import os
 import discord
 import json
+import asyncio
+import aiohttp
 from discord.ext import commands
 from pretty_help import PrettyHelp 	
 from keep_alive import keep_alive
@@ -16,6 +18,8 @@ bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity,
 bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
 bot.start_time = datetime.datetime.utcnow()
+bot.loop = asyncio.get_event_loop()
+bot.session = aiohttp.ClientSession(loop=bot.loop)
 
 token = os.environ['DTOKEN']
 
