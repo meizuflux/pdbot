@@ -5,9 +5,13 @@ import functools
 import typing
 from typing import Optional
 import os
+import aiohttp
+from asyncdagpi import Client, ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
 dagpikey = os.environ['dagpikey']
+
+dagpi = Client(dagpikey)
 
 class Image(commands.Cog):
 	def __init__(self, bot):
@@ -37,14 +41,14 @@ class Image(commands.Cog):
 			await ctx.send(embed=embed, file=file)
 
 	async def dagpi_image(self, url, fn: Optional[str]):
-		cs = self.bot.session
-		r = await cs.get(f'https://api.dagpi.xyz/image/{url}', headers={'Authorization': dagpikey})
-		io = BytesIO(await r.read())
-		f = discord.File(fp=io, filename=fn or 'dagpi.png')
-		return f
+			cs = self.bot.session
+			r = await cs.get(f'https://api.dagpi.xyz/image/{url}', headers={'Authorization': dagpikey})
+			io = BytesIO(await r.read())
+			f = discord.File(fp=io, filename=fn or 'dagpi.png')
+			return f
 
 	async def alex_image(self, url):
-		cs = self.bot.session
+		cs = aiohttp.ClientSession()
 		r = await cs.get(f'https://api.alexflipnote.dev/{url}', headers={'Authorization': flipnotetoken})
 		io = BytesIO(await r.read())
 		f = discord.File(fp=io, filename='alex.png')
