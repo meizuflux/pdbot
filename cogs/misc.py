@@ -176,7 +176,7 @@ class Misc(commands.Cog):
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
 		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
 
-		emb.add_field(name='Command Count', value=f'```{len([x.name for x in self.bot.commands])} commands```', inline=False)
+		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))} commands```', inline=False)
 		emb.add_field(name='Guild Count', value=f'```{str(len(self.bot.guilds))} guilds```', inline=False)
 
 		emb.add_field(name='Member Count', value=f'```{str(sum([guild.member_count for guild in self.bot.guilds]))} members```', inline=True)
