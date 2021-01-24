@@ -18,6 +18,14 @@ class Image(commands.Cog):
 		self.bot = bot
 
 	@staticmethod
+	async def imgemb(ctx, file: discord.File, footername, powered):
+		embed = discord.Embed(colour=0x2F3136)
+		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+		embed.set_image(url=f"attachment://{footername}")
+		embed.set_footer(text=f"Powered by {powered}")
+		await ctx.send(embed=embed, file=file)
+
+	@staticmethod
 	async def manip(ctx, image, *, method: str, method_args: list = None, text: str = None):
 		async with ctx.typing():
 		# get the image
@@ -65,14 +73,22 @@ class Image(commands.Cog):
 
 	@commands.command(aliases=['trigger'])
 	async def triggered(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		img = image or ctx.author
-		image = str(img.avatar_url_as(static_format='png', format='png', size=512))
-		file = await self.dagpi_image(url=f'triggered/?url={image}', fn='triggered.gif')
-		embed = discord.Embed(colour=0x2F3136)
-		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-		embed.set_image(url=f"attachment://triggered.gif")
-		embed.set_footer(text=f"Powered by the Dagpi API")
-		await ctx.send(embed=embed, file=file)
+		async with ctx.typing():
+			#if ctx.message.attachments: busted rn
+				#url = str(ctx.message.attachments[0].url)
+			if isinstance(image, discord.PartialEmoji):
+				url = str(image.url)
+			else:
+				img = image or ctx.author
+				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
+			img = await dagpi.image_process(ImageFeatures.triggered(), url)
+			file = discord.File(fp=img.image,filename=f"triggered.{img.format}")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url=f"attachment://triggered.gif")
+			embed.set_footer(text=f"Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)
+			await self.imgemb(ctx, file=file, footername='triggered.gif', powered='the Dagpi API')
 
 	@commands.command(help='Makes an image rainbowey')
 	async def rainbow(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
