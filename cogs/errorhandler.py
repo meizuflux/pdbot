@@ -1,7 +1,9 @@
 import discord
 import traceback
 import sys
+from utils import default
 from discord.ext import commands
+import json
 
 
 class CommandErrorHandler(commands.Cog):
@@ -72,7 +74,16 @@ class CommandErrorHandler(commands.Cog):
                 'Ignoring exception in command {}:'.format(ctx.command),
                 file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-            await ctx.send(f'{type(error)} ```\n{error}\n```')
+            with open("prefixes.json", "r") as f:
+                prefix = json.load(f)
+            error_collection = []
+            error_collection.append(
+	                    [default.traceback_maker(error, advance=False)]
+                    )
+            output = "\n".join([f"```diff\n- {g[0]}```" for g in error_collection])
+            await ctx.send(
+                f"{output}\n Try doing ```python\n{prefix[str(ctx.guild.id)]}help {ctx.command}\n```"
+            )
 
 
 def setup(bot):
