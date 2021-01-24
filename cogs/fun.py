@@ -2,6 +2,8 @@ from discord.ext import commands
 import discord
 import os
 import random
+from async_translate import AsyncTranslate
+#from async_translate.providers import Google
 flipnotetoken = os.environ['tflipnote']
 
 class fun(commands.Cog):
@@ -36,6 +38,12 @@ class fun(commands.Cog):
 		embed.set_image(url='https://media.tenor.com/images/b5e65cd0e7a8c8fef19af759a29d1acd/tenor.gif')
 
 		await ctx.send(embed=embed)
+
+	@commands.command(name='translate', help='Translates text into another language')
+	async def gtr(self, ctx, language, text: str):
+		engine = AsyncTranslate()
+		await engine.add_provider(Google())
+		await ctx.send(await engine.translate(text, to=language))
 
 	@commands.command()
 	async def ppsize(self, ctx, user: discord.Member=None):

@@ -17,7 +17,7 @@ activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
 bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
 bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
-bot.start_time = datetime.datetime.utcnow()
+
 bot.session = aiohttp.ClientSession()
 
 token = os.environ['DTOKEN']
@@ -25,6 +25,7 @@ token = os.environ['DTOKEN']
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+    bot.start_time = datetime.datetime.utcnow()
 
 blist = []
 
