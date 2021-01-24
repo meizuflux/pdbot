@@ -18,12 +18,12 @@ class Image(commands.Cog):
 		self.bot = bot
 
 	@staticmethod
-	async def imgemb(ctx, file: discord.File, footername, powered):
+	async def imgemb(ctx, dfile: discord.File, footername, powered):
 		embed = discord.Embed(colour=0x2F3136)
 		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 		embed.set_image(url=f"attachment://{footername}")
 		embed.set_footer(text=f"Powered by {powered}")
-		await ctx.send(embed=embed, file=file)
+		await ctx.send(embed=embed, file=dfile)
 
 	@staticmethod
 	async def manip(ctx, image, *, method: str, method_args: list = None, text: str = None):
@@ -47,13 +47,6 @@ class Image(commands.Cog):
 			embed.set_image(url=f"attachment://polaroid.png")
 			embed.set_footer(text=f"Powered by Polaroid")
 			await ctx.send(embed=embed, file=file)
-
-	async def dagpi_image(self, url, fn: Optional[str]):
-			cs = self.bot.session
-			r = await cs.get(f'https://api.dagpi.xyz/image/{url}', headers={'Authorization': dagpikey})
-			io = BytesIO(await r.read())
-			f = discord.File(fp=io, filename=fn or 'dagpi.png')
-			return f
 
 	async def alex_image(self, url):
 		cs = aiohttp.ClientSession()
@@ -88,7 +81,25 @@ class Image(commands.Cog):
 			embed.set_image(url=f"attachment://triggered.gif")
 			embed.set_footer(text=f"Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
-			await self.imgemb(ctx, file=file, footername='triggered.gif', powered='the Dagpi API')
+			# await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
+
+	@commands.command(aliases=['communism'])
+	async def communist(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			#if ctx.message.attachments: busted rn
+				#url = str(ctx.message.attachments[0].url)
+			if isinstance(image, discord.PartialEmoji):
+				url = str(image.url)
+			else:
+				img = image or ctx.author
+				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
+			img = await dagpi.image_process(ImageFeatures.communism(), url)
+			file = discord.File(fp=img.image,filename=f"communism.{img.format}")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url=f"attachment://communism.gif")
+			embed.set_footer(text=f"Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)	
 
 	@commands.command(help='Makes an image rainbowey')
 	async def rainbow(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
