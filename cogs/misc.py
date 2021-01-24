@@ -84,17 +84,19 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
 		await ctx.send(f'Set activity to `{activity}` with type `{atype}` ')
 	
-	@commands.command(name='whois')
-	async def who(self, ctx, member: discord.Member):
+	@commands.command(name='whois', aliases=['ui', 'userinformation'])
+	async def who(self, ctx, member: discord.Member=None):
+		if member == None:
+			member = ctx.author
 		mention_roles = [i.mention for i in member.roles[1:]]
 		join = member.joined_at.strftime("%m/%d/%Y")
 		create = member.created_at.strftime("%m/%d/%Y")
 		embed=discord.Embed(title=str(member), description=f'**Joined:** {join}\n**Account Creation:** {create}')
 		embed.set_thumbnail(url=member.avatar_url)
-		try:
-			embed.add_field(name='Roles', value=', '.join(mention_roles))
-		except:
+		if len(mention_roles) == 0:
 			embed.add_field(name='Roles', value='This user has no roles')
+		else:
+			embed.add_field(name='Roles', value=', '.join(mention_roles))
 		if member.name != member.display_name:
 			embed.set_footer(text=f'{member.id} • {member.display_name}')
 		else:
