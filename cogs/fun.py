@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import os
+import random
 flipnotetoken = os.environ['tflipnote']
 
 class fun(commands.Cog):
@@ -11,9 +12,9 @@ class fun(commands.Cog):
 	
 
 	@commands.command(name='smolpp', hidden=True)
-	async def smolpp(self, ctx, *, message):
-		message = message.capitalize()
-		if message == 'You' or message == 'I':
+	async def smolpp(self, ctx, *, thing):
+		message = thing.capitalize()
+		if message == ('You', 'I', 'They'):
 			await ctx.send(f'{message} have a smol pp')
 		else: 
 			await ctx.send(f'{message} has a smol pp')
@@ -36,13 +37,26 @@ class fun(commands.Cog):
 
 		await ctx.send(embed=embed)
 
+	@commands.command()
+	async def ppsize(self, ctx, user: discord.Member=None):
+		if not user:
+			user = ctx.author
+		size = '='*random.randint(2, 20)
+		if user.id == self.bot.author_id:
+			size = '='*78
+		e = discord.Embed(description=f'8{size}D')
+		await ctx.send(embed=e)
+
 	@commands.command(name='blue', help='blue')
 	async def blue(self, ctx):
 		await ctx.send('https://www.youtube.com/watch?v=HiHPjwyzwNk')
 
 	@commands.command(name='multiply')
 	async def multiply(self, ctx, times: int, *, message=None):
-		await ctx.send(f'{message} '*times)
+		if ctx.author.id != self.bot.owner_id and times > 10:
+			await ctx.send('No more than 10 times.')
+		else:
+			await ctx.send(f'{message} '*times)
 		
 	@commands.command(name='rascal')
 	async def r(self, ctx):

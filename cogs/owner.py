@@ -92,7 +92,7 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
 
 
 			
-    @commands.command(name='eval', hidden=False, help='owner only suckers')
+    @commands.command(name='eval', hidden=True, help='owner only suckers')
     async def _eval(self, ctx, *, body: str):
         """Evaluates a code"""
 

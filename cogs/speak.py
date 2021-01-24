@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 
-class example(commands.Cog, command_attrs=dict(hidden=True)):
+class speak(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -11,11 +11,11 @@ class example(commands.Cog, command_attrs=dict(hidden=True)):
 		await ctx.send(message)
 		await ctx.message.delete()
 	
-	@commands.command(name='dm', hidden=False)
+	@commands.command(name='dm')
 	@commands.is_owner()
 	async def pm(self, ctx, target: discord.User, *, message: str):
   		await target.send(message)
 
 
 def setup(bot):
-	bot.add_cog(example(bot))
+	bot.add_cog(speak(bot))
