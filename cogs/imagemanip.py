@@ -3,6 +3,11 @@ import discord
 import polaroid
 import functools
 import typing
+import random
+from PIL import Image
+from PIL import Image as PILImage
+from PIL import (ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps,
+                 ImageSequence)
 from typing import Optional
 import os
 import aiohttp
@@ -49,11 +54,10 @@ class Image(commands.Cog):
 			await ctx.send(embed=embed, file=file)
 
 	async def alex_image(self, url):
-		cs = aiohttp.ClientSession()
-		r = await cs.get(f'https://api.alexflipnote.dev/{url}', headers={'Authorization': flipnotetoken})
-		io = BytesIO(await r.read())
-		f = discord.File(fp=io, filename='alex.png')
-		return f
+		async with self.bot.session.get(f'https://api.alexflipnote.dev/{url}', headers={'Authorization': flipnotetoken}) as r:
+			io = BytesIO(await r.read())
+			f = discord.File(fp=io, filename='alex.png')
+			return f
 
 	@commands.command(aliases=['didyoumean'], help='"Did you mean" meme. Ex: dym "milk" "with your dad"')
 	async def dym(self, ctx, search: str, did_you_mean: str):
@@ -116,6 +120,55 @@ class Image(commands.Cog):
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 			embed.set_image(url=f"attachment://wanted.png")
+			embed.set_footer(text=f"Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)
+
+	@commands.command()
+	async def obama(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			#if ctx.message.attachments: busted rn
+				#url = str(ctx.message.attachments[0].url)
+			if isinstance(image, discord.PartialEmoji):
+				url = str(image.url)
+			else:
+				img = image or ctx.author
+				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
+			img = await dagpi.image_process(ImageFeatures.obama(), url)
+			file = discord.File(fp=img.image,filename=f"obama.{img.format}")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url=f"attachment://obama.png")
+			embed.set_footer(text=f"Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)
+
+	@commands.command()
+	async def twitter(self, ctx, user: discord.Member, *, text: str):
+		async with ctx.typing():
+			url = str(user.avatar_url_as(static_format='png', format='png', size=512))
+			disname = user.display_name
+			name = disname.replace(' ', '')
+			img = await dagpi.image_process(ImageFeatures.tweet(), text=text, url=url, username=name)
+			file = discord.File(fp=img.image,filename=f"tweet.{img.format}")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url=f"attachment://tweet.png")
+			embed.set_footer(text=f"Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)
+			
+	@commands.command(name='5g1g')
+	async def fgog(self, ctx, user1: discord.Member, user2: discord.Member):
+		async with ctx.typing():
+			#if ctx.message.attachments: busted rn
+				#url = str(ctx.message.attachments[0].url)
+			#if isinstance(image, discord.PartialEmoji):
+				#url = str(image.url)
+			url = str(user1.avatar_url_as(static_format='png', format='png', size=512))
+			url2 = str(user2.avatar_url_as(static_format='png', format='png', size=512))
+			img = await dagpi.image_process(ImageFeatures.five_guys_one_girl(), url=url, url2=url2)
+			file = discord.File(fp=img.image,filename=f"five_guys_one_girl.{img.format}")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url=f"attachment://five_guys_one_girl.png")
 			embed.set_footer(text=f"Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 

@@ -21,7 +21,7 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 				embed.set_author(name=f'{message.author}', url='https://www.urbandictionary.com/define.php?term=Your%20mum%20gay', icon_url=f'{message.author.avatar_url}')
 				await channel.send(embed=embed)
 				return
-		if self.bot.user in message.mentions:
+		if message.content == '<@!777964578776285194>':
 			with open("prefixes.json", "r") as f:
 				prefix = json.load(f)
 			await message.add_reaction('<:what:791007602745671701>')

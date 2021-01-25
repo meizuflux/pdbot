@@ -6,7 +6,6 @@ import traceback
 from contextlib import redirect_stdout
 import time
 import aiohttp
-from utils import http
 import sys
 # to expose to the eval command
 import datetime
@@ -70,14 +69,14 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
     @change.command(name="avatar")
     @commands.is_owner()
     async def change_avatar(self, ctx, url: str = None):
-        """ Change avatar. """
+        cs = aiohttp.ClientSession()
         if url is None and len(ctx.message.attachments) == 1:
             url = ctx.message.attachments[0].url
         else:
             url = url.strip('<>') if url else None
 
         try:
-            bio = await http.get(url, res_method="read")
+            bio = await cs.get(url, res_method="read")
             await self.bot.user.edit(avatar=bio)
             await ctx.send(f"Successfully changed the avatar. Currently using:\n{url}")
         except aiohttp.InvalidURL:

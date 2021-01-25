@@ -7,6 +7,7 @@ from pkg_resources import get_distribution
 import time
 import humanize
 import platform
+import pathlib
 import psutil
 
 class Misc(commands.Cog):
@@ -96,7 +97,8 @@ class Misc(commands.Cog):
 		if len(mention_roles) == 0:
 			embed.add_field(name='Roles', value='This user has no roles')
 		else:
-			embed.add_field(name='Roles', value=', '.join(mention_roles))
+			embed.add_field(name='Top Role', value=member.top_role.mention)
+			embed.add_field(name='Roles', value=', '.join(mention_roles), inline=False)
 		if member.name != member.display_name:
 			embed.set_footer(text=f'{member.id} • {member.display_name}')
 		else:
@@ -163,6 +165,17 @@ class Misc(commands.Cog):
 		libVersion = get_distribution("discord.py").version
 		hosting = platform.platform()
 
+		
+		p = pathlib.Path('./')
+		ls = fc = 0
+		for f in p.rglob('*.py'):
+			if str(f).startswith("venv"):
+				continue
+			fc += 1
+			with f.open() as of:
+				for l in of.readlines():
+					ls += 1
+
 		emb = discord.Embed(colour=0x2F3136)
 		#emb.set_thumbnail(url=self.bot.user.avatar_url)
 		emb.set_author(name=self.bot.user.name, url='https://github.com/ppotatoo/pdbot', icon_url=self.bot.user.avatar_url)
@@ -178,8 +191,10 @@ class Misc(commands.Cog):
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
 		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
 
+		emb.add_field(name='Line Count', value=f'```{ls:,} lines```', inline=False)
 		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))} commands```', inline=False)
 		emb.add_field(name='Guild Count', value=f'```{str(len(self.bot.guilds))} guilds```', inline=False)
+		
 
 		emb.add_field(name='Member Count', value=f'```{str(sum([guild.member_count for guild in self.bot.guilds]))} members```', inline=True)
 		emb.add_field(name='Average Member Count', value=f'```{avgmembers:.1f}```')
