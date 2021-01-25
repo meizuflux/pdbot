@@ -82,7 +82,7 @@ class CommandErrorHandler(commands.Cog):
                     )
             output = "\n".join([f"```diff\n- {g[0]}```" for g in error_collection])
             await ctx.send(
-                f"{output}\n Try doing ```python\n{prefix[str(ctx.guild.id)]}help {ctx.command}\n```"
+                f"{output}\n¯\_(ツ)_/¯"
             )
 
 

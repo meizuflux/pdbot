@@ -13,7 +13,7 @@ async def pre(bot, message):
 		prefixes = json.load(f)
 	return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)
 
-activity = discord.Activity(type=discord.ActivityType.listening, name=f'!help')
+activity = discord.Activity(type=discord.ActivityType.listening, name=f'c//help')
 bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
 bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802

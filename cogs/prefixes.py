@@ -21,7 +21,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		with open('prefixes.json', 'r') as f:
 			prefixes = json.load(f)
 
-		prefixes[str(guild.id)] = 'c:/'
+		prefixes[str(guild.id)] = 'c//'
 
 		with open('prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)

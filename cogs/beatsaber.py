@@ -37,9 +37,10 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				user = urllib.parse.quote_plus(username.upper())
 				user = user.replace('+', '%20')
 				await message.edit(content=f'Searching for `{username}`\'s player ID ...')
-				url = requests.get(f'https://new.scoresaber.com/api/players/by-name/{username}').json()
-				await message.edit(content=f'Got it!')
-				ssid = url['players'][0]['playerId']
+				async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
+					url = await url.json()
+					await message.edit(content=f'Got it!')
+					ssid = url['players'][0]['playerId']
 		except KeyError:
 			await message.edit(content=url['error']['message'])
 		await message.edit(content=f'Grabbing `{username}`\'s stats ...')	

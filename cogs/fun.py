@@ -1,10 +1,18 @@
 from discord.ext import commands
 import discord
 import os
+import aiohttp
 import random
 from async_translate import AsyncTranslate
+from iso639 import languages
+import async_google_trans_new
+import datetime
 #from async_translate.providers import Google
+import lyricsgenius
+geniustoken = os.environ['genius']
+genius = lyricsgenius.Genius(geniustoken)
 flipnotetoken = os.environ['tflipnote']
+nasakey = os.environ['nasakey']
 
 class fun(commands.Cog):
 	"""For the fun commands"""
@@ -39,11 +47,15 @@ class fun(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name='translate', help='Translates text into another language')
-	async def gtr(self, ctx, language, text: str):
-		engine = AsyncTranslate()
-		await engine.add_provider(Google())
-		await ctx.send(await engine.translate(text, to=language))
+	@commands.command(name='translate', help='Translates text into another language with Google Translate')
+	async def gtr(self, ctx, language, *, text: str):
+		language = language.capitalize()
+		lang = languages.get(name=language)
+		g = async_google_trans_new.google_translator()
+		gemb = discord.Embed(title='Google Translation', color=0x2F3136)
+		gemb.add_field(name='Input', value=f'```\n{text}\n```')
+		gemb.add_field(name='Output', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
+		await ctx.send(embed=gemb)
 
 	@commands.command()
 	async def ppsize(self, ctx, user: discord.Member=None):
@@ -51,7 +63,7 @@ class fun(commands.Cog):
 			user = ctx.author
 		size = '='*random.randint(2, 20)
 		if user.id == self.bot.author_id:
-			size = '='*78
+			size = '='*50
 		e = discord.Embed(description=f'8{size}D')
 		await ctx.send(embed=e)
 
@@ -70,6 +82,68 @@ class fun(commands.Cog):
 	async def r(self, ctx):
 		await ctx.send('I cannot believe it. I can NOT fucking believe it. I simply REFUSE to believe the absolute imcompetent, negligence, of actually not, for ANY of these categories whatsoever, not picking up FUCKING Rascal. This guy doesn\'t get props by anyone, on no one\'s social media radar whatsoever. Everyone\'s talking about like "oh Smurf, ya know, Smurf he\'s-- poor Smurf!" think about Rascal! He literally came into the league at the start of the year, was the BEST Mei. He revolutionized the way you play Echo, and set the guidelines for everyone else in the league for MONTHS! Or pretty much like half the season! And then he comes into the Countdown Cup and plays the Genji, that actually turns the SanFranciscoShockaroundandtheywintheseriesagainstthePhiladelphiaFusion! How is NO ONE, on this PLANET talking about Rascal as one of the most underrated players of the year! It\'s absolutely... HURTING MY SOUL!')
 
+	@commands.command(name='lyrics')
+	async def lyric(self, ctx, *, songname):
+		cs = aiohttp.ClientSession()
+		song = await cs.get('')
+
+	@commands.command(name='chucknorris', aliases=['norris', 'chucknorrisjoke'])
+	async def norris(self, ctx):
+		data = await self.bot.session.get('https://api.chucknorris.io/jokes/random')
+		joke = await data.json()
+		e = discord.Embed(title='Chuck Norris Joke', url=joke['url'], description=joke['value'])
+		e.set_footer(text=joke['updated_at'])
+		e.set_thumbnail(url=joke['icon_url'])
+		await ctx.send(embed=e)
+
+	@commands.command(help='Sends a waifu')
+	async def waifu(self, ctx, user: discord.Member=None):
+		if not user:
+			user = ctx.author
+		async with self.bot.session.get('https://waifu.pics/api/sfw/waifu') as waifu: # https://waifu.pics/docs DOCS
+			waifu = await waifu.json()
+			w = discord.Embed(title=f'Waifu for {user.name}')
+			w.set_image(url=waifu['url'])
+			w.set_footer(text='Powered by waifu.pics')
+			await ctx.send(embed=w)
+
+	@commands.command(help='NASA Picture of the day. Optional date arg should be formatted like YYYY-MM-DD')
+	async def nasa(self, ctx, dateintime=None):
+		try:
+			if dateintime is None:
+				dateintime = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+			async with self.bot.session.get(f'https://api.nasa.gov/planetary/apod?date={dateintime}&api_key={nasakey}') as nasa:
+				nasa = await nasa.json()
+			nemb = discord.Embed(title=f'NASA Image of the day for {dateintime}')
+			nemb.add_field(name=nasa['title'], value=f"{nasa['explanation'][:1024]}")
+			nemb.set_image(url=nasa['url'])
+			try:
+				nemb.set_footer(text=f'Copyright: {nasa["copyright"]}')
+			except KeyError:
+				nemb.set_footer(text=f'Powered by the NASA APOD API')
+			await ctx.send(embed=nemb)
+		except KeyError:
+			await ctx.send('Enter a valid date please!')
+
+	@commands.command(help='Gets a random cat fact')
+	async def catfact(self, ctx):
+		async with self.bot.session.get('https://cat-fact.herokuapp.com/facts/random?animal_type=cat&amount=1') as cat:
+			cat = await cat.json()
+		async with self.bot.session.get('https://api.thecatapi.com/v1/images/search') as catimg:
+			catimg = await catimg.json()
+		catemb = discord.Embed(title='Random Cat Fact', description=cat['text'])
+		catemb.set_thumbnail(url=catimg[0]['url'])
+		catemb.set_footer(text='Powered by the Cat Facts API')
+		await ctx.send(embed=catemb)
+
+	@commands.command(help='Gets a random image of a cat')
+	async def cat(self, ctx):
+		async with self.bot.session.get('https://api.thecatapi.com/v1/images/search') as catimg:
+			catimg = await catimg.json()
+		catemb = discord.Embed(title='Random Cat')
+		catemb.set_image(url=catimg[0]['url'])
+		catemb.set_footer(text='Powered by TheCatAPI')
+		await ctx.send(embed=catemb)
 
 def setup(bot):
 	bot.add_cog(fun(bot))
