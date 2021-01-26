@@ -196,8 +196,8 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	async def bsr_error(self, ctx, error):
 		if isinstance(error, commands.MissingRequiredArgument):
 			await ctx.send('Please send a key along with the command.')
-		#if isinstance(error, commands.CommandInvokeError):
-		#	await ctx.send('Please send a valid key.')
+		if isinstance(error, commands.CommandInvokeError):
+			await ctx.send('Please send a valid key.')
 		else:
 			raise error
 
