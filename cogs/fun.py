@@ -114,8 +114,8 @@ class fun(commands.Cog):
 				dateintime = datetime.datetime.utcnow().strftime("%Y-%m-%d")
 			async with self.bot.session.get(f'https://api.nasa.gov/planetary/apod?date={dateintime}&api_key={nasakey}') as nasa:
 				nasa = await nasa.json()
-			nemb = discord.Embed(title=f'NASA Image of the day for {dateintime}')
-			nemb.add_field(name=nasa['title'], value=f"{nasa['explanation'][:1024]}")
+			nemb = discord.Embed(title=f'NASA Image of the day for {dateintime}', description=nasa['explanation'][:1024])
+			nemb.add_field(name=nasa['title'])
 			nemb.set_image(url=nasa['url'])
 			try:
 				nemb.set_footer(text=f'Copyright: {nasa["copyright"]}')
