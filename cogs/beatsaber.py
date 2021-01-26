@@ -3,6 +3,7 @@ import discord
 import urllib.parse
 import time
 import math
+import typing
 import json
 import asyncio
 import aiohttp
@@ -21,7 +22,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		    await ctx.send_help(str(ctx.command))
 
 	@ss.command(name='info', help='As long as your username doesn\'t contain \'+\'')
-	async def info(self, ctx, *, username: str=None):
+	async def info(self, ctx, *, username: typing.Union[str, discord.Member]=None):
 		if username is None:
 			try:
 				with open('data.json', 'r') as f:
@@ -43,25 +44,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		except KeyError:
 			await message.edit(content=url['error']['message'])
 		await message.edit(content=f'Grabbing `{username}`\'s stats ...')	
-		data = self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full")
-		data = await data.json()
-		grank = math.ceil(int(data['playerInfo']['rank'])/50)
-		crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-		embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
-		embed.color = 0x2f3136
-		embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-		embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-		embed.set_footer(text=f'Powered by the ScoreSaber API')
-		await message.edit(content=None, embed=embed)
-
-	@ss.command(name='user', help='Ping a user and get their stats')
-	async def u(self, ctx, person: discord.Member):
-		try:
-			with open('data.json', 'r') as f:
-						data = json.load(f)
-			message = await ctx.send(f'Getting stats for `{person.name}`')
-			ssid = data['ssinfo'][str(person.id)]
-			data = self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full")
+		async with self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full") as data:
 			data = await data.json()
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
 			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
@@ -71,15 +54,32 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text=f'Powered by the ScoreSaber API')
 			await message.edit(content=None, embed=embed)
+
+	@ss.command(name='user', help='Ping a user and get their stats')
+	async def u(self, ctx, person: discord.Member):
+		try:
+			with open('data.json', 'r') as f:
+						data = json.load(f)
+			message = await ctx.send(f'Getting stats for `{person.name}`')
+			ssid = data['ssinfo'][str(person.id)]
+			async with self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full") as data:
+				data = await data.json()
+				grank = math.ceil(int(data['playerInfo']['rank'])/50)
+				crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
+				embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
+				embed.color = 0x2f3136
+				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
+				embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
+				embed.set_footer(text=f'Powered by the ScoreSaber API')
+				await message.edit(content=None, embed=embed)
 		except KeyError:
 			await ctx.send('The user is not in the database.')
 
 	@ss.command(name='leaderboard', aliases=['top', 'ranking', 'lb'], help='Shows the top 10 players on the leaderboard right now.')
 	async def lb(self, ctx):
 		message = await ctx.send('Getting the leaderboard from ScoreSaber ...')
-		async with aiohttp.ClientSession() as cs:
-				async with cs.get('https://new.scoresaber.com/api/players/1') as r:
-					lb = await r.json()  # returns dict
+		async with self.bot.session.get('https://new.scoresaber.com/api/players/1') as r:
+			lb = await r.json()  # returns dict
 		await message.edit(content='Got it! Sending top players ...')
 		r = discord.Embed(title='Top Ten')
 		tten = lb['players']
@@ -96,44 +96,44 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		username = urllib.parse.quote_plus(username.upper())
 		username = username.replace('+', '%20')
 		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...')
-		url = self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}')
-		url = await url.json()
-		await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
-		try:
-			ssid = url['players'][0]['playerId']
-			data = self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full")
-			data = await data.json()
-			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
-			grank = math.ceil(int(data['playerInfo']['rank'])/50)
-			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-			embed = discord.Embed(title=f"Is this you?")
-			embed.color = 0x2f3136
-			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
-			embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp", inline=False)
-			embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
-			await message.edit(content=None, embed=embed, delete_after=15)
-			await message.add_reaction('✅')
-			await message.add_reaction('❌')
-			def gcheck(reaction, user):
-				return user == ctx.author and str(reaction.emoji) == '✅' or user == ctx.author and str(reaction.emoji) == '❌'
+		async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
+			url = await url.json()
+			await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...')
 			try:
-				reaction, user = await self.bot.wait_for('reaction_add', timeout=14.0, check=gcheck)
-			except asyncio.TimeoutError:
-				await ctx.send('You did not react in time.')
-			else:
-				if reaction.emoji == '✅':
-					await message.delete()
-					with open('data.json', 'r') as f:
-						data = json.load(f)
-					data['ssinfo'][str(ctx.author.id)] = ssid
-					with open('data.json', 'w') as f:
-						json.dump(data, f, indent=4)
-					await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
-				if reaction.emoji == '❌':
-					await message.delete()
-					await ctx.send('Sorry that I could not help you.')	
-		except KeyError:
-			await message.edit(content=url['error']['message'])
+				ssid = url['players'][0]['playerId']
+				async with self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full") as data:
+					data = await data.json()
+				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
+				grank = math.ceil(int(data['playerInfo']['rank'])/50)
+				crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
+				embed = discord.Embed(title=f"Is this you?")
+				embed.color = 0x2f3136
+				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
+				embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp", inline=False)
+				embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
+				await message.edit(content=None, embed=embed, delete_after=15)
+				await message.add_reaction('✅')
+				await message.add_reaction('❌')
+				def gcheck(reaction, user):
+					return user == ctx.author and str(reaction.emoji) == '✅' or user == ctx.author and str(reaction.emoji) == '❌'
+				try:
+					reaction, user = await self.bot.wait_for('reaction_add', timeout=14.0, check=gcheck)
+				except asyncio.TimeoutError:
+					await ctx.send('You did not react in time.')
+				else:
+					if reaction.emoji == '✅':
+						await message.delete()
+						with open('data.json', 'r') as f:
+							data = json.load(f)
+						data['ssinfo'][str(ctx.author.id)] = ssid
+						with open('data.json', 'w') as f:
+							json.dump(data, f, indent=4)
+						await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
+					if reaction.emoji == '❌':
+						await message.delete()
+						await ctx.send('Sorry that I could not help you.')	
+			except KeyError:
+				await message.edit(content=url['error']['message'])
 
 	@ss.command(name='unregister', help='Unregisters you from a ScoreSaber profile')
 	async def ureg(self, ctx):

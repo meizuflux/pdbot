@@ -220,22 +220,23 @@ class Image(commands.Cog):
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(ctx, image, method='rotate180')
 
-	@commands.command(help='me learning how to use executors', hidden=True)
-	async def exec(self, ctx, width: int=None, height: int=None):
-		byt = await ctx.author.avatar_url_as(format="png").read()
-		
-		def sync_func():
-			im = polaroid.Image(byt)
-			im.resize(1800, 900, 1)
-			file = discord.File(BytesIO(im.save_bytes()), filename=f"stretched.png")
-			return file
+	@commands.command(help='me learning how to use executors', hidden=False)
+	async def resize(self, ctx, width: int=None, height: int=None, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			byt = await ctx.author.avatar_url_as(format="png").read()
+			
+			def sync_func():
+				im = polaroid.Image(byt)
+				im.resize(width, height, 1)
+				file = discord.File(BytesIO(im.save_bytes()), filename=f"stretched.png")
+				return file
 
-		async def async_func():
-			thing = functools.partial(sync_func)
-			file = await self.bot.loop.run_in_executor(None, thing)
-			await ctx.send('ｗｉｄｅ', file=file)
+			async def async_func():
+				thing = functools.partial(sync_func)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				await ctx.send('ｒｅｓｉｚｅｄ', file=file)
 
-		await async_func()
+			await async_func()
 
 
 
