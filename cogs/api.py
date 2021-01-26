@@ -16,8 +16,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 		BattleTag = BattleTag.replace('#', '-')
 		if len(region) == 0:
 			region = 'us'
-		cs = self.bot.session
-		async with cs.get(f'https://ow-api.com/v1/stats/pc/{region}/{BattleTag}/profile') as data:
+		async with self.bot.session.get(f'https://ow-api.com/v1/stats/pc/{region}/{BattleTag}/profile') as data:
 			if data.status == 400:
 				await ctx.send('Player not found')
 			else:
@@ -38,6 +37,19 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 			m = await ctx.send('Getting random dank meme ...')
 			async with aiohttp.ClientSession() as cs:
 				async with cs.get('https://www.reddit.com/r/dankmemes/hot.json') as r:
+					res = await r.json()  # returns dict
+					e = discord.Embed(title=res['data']['children'][random.randint(3, 20)]['data']['title'])
+					e.set_image(url=res['data']['children'][random.randint(3, 20)]['data']['url_overridden_by_dest'])
+					await m.edit(content=None, embed=e)
+		except KeyError:
+			await ctx.send('Something went wrong.')
+
+	@commands.command(name='programming', help='Sends a programming meme 😎')
+	async def program(self, ctx):
+		try:
+			m = await ctx.send('Getting random dank meme ...')
+			async with aiohttp.ClientSession() as cs:
+				async with cs.get('https://www.reddit.com/r/ProgrammerHumor/hot.json') as r:
 					res = await r.json()  # returns dict
 					e = discord.Embed(title=res['data']['children'][random.randint(3, 20)]['data']['title'])
 					e.set_image(url=res['data']['children'][random.randint(3, 20)]['data']['url_overridden_by_dest'])
