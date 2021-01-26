@@ -145,5 +145,31 @@ class fun(commands.Cog):
 		catemb.set_footer(text='Powered by TheCatAPI')
 		await ctx.send(embed=catemb)
 
+	@commands.command()
+	async def xkcd(self, ctx, query: int = None):
+		async with ctx.typing():
+			if isinstance(query, int):
+				num = query
+			else:
+				async with self.bot.session.get("https://xkcd.com/info.0.json") as resp:
+					max_num = (await resp.json())["num"]
+					num = random.randint(1, max_num)
+
+			async with self.bot.session.get(f"https://xkcd.com/{num}/info.0.json") as resp:
+				if resp.status in range(400, 500):
+					return await ctx.send("Couldn't find a comic with that number.")
+				elif resp.status >= 500:
+					return await ctx.send("Server error.")
+				data = await resp.json()
+
+			embed = discord.Embed(
+			title=f"{data['safe_title']} (Number `{data['num']}`)",
+			description=data["alt"],
+			timestamp=datetime.datetime(year=int(data["year"]), month=int(data["month"]), day=int(data["day"])),
+			colour=0x2F3136)
+			embed.set_image(url=data["img"])
+			embed.set_footer(text="Powered by the XKCD API")
+			await ctx.send(embed=embed)
+
 def setup(bot):
 	bot.add_cog(fun(bot))

@@ -148,7 +148,8 @@ class Misc(commands.Cog):
 				branch = 'master'
 
 			final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
-			e=discord.Embed(description=final_url)
+			e=discord.Embed(title='Add a star if you like!', description=final_url)
+			e.set_footer(text='Don\'t forget the Licence!')
 			await ctx.send(embed=e)
 
 	@commands.command(aliases=['information', 'botinfo'])
@@ -156,10 +157,11 @@ class Misc(commands.Cog):
 		msg = await ctx.send('Getting bot information ...')
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
 		ramPerc = psutil.virtual_memory().percent
-		cpuUsage = psutil.cpu_percent(interval=0.5)
+		cpuUsage = psutil.cpu_percent()
 		cpuFreq = psutil.cpu_freq().current
 		memory_usage = self.process.memory_full_info().uss / 1024**2
 		cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
+		ramusage = humanize.naturalsize(psutil.Process(146).memory_full_info().pss)
 
 		pyVersion = platform.python_version()
 		libVersion = get_distribution("discord.py").version
@@ -186,7 +188,7 @@ class Misc(commands.Cog):
 
 		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage:.2f}%```', inline=True)
 		emb.add_field(name=f'CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
-		emb.add_field(name='Memory Usage', value=f'```{memory_usage:.2f} MB```', inline=True)
+		emb.add_field(name='Memory Usage', value=f'```{ramusage}```', inline=True)
 
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
 		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
@@ -197,7 +199,7 @@ class Misc(commands.Cog):
 		
 
 		emb.add_field(name='Member Count', value=f'```{str(sum([guild.member_count for guild in self.bot.guilds]))} members```', inline=True)
-		emb.add_field(name='Average Member Count', value=f'```{avgmembers:.1f}```')
+		emb.add_field(name='Average Member Count', value=f'```{avgmembers:.0f} members per guild```')
 
 		emb.set_footer(text=f'{ctx.author} • {ctx.author.id}', icon_url=ctx.author.avatar_url)
 
