@@ -220,23 +220,37 @@ class Image(commands.Cog):
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(ctx, image, method='rotate180')
 
-	@commands.command(help='me learning how to use executors', hidden=False)
-	async def resize(self, ctx, width: int=None, height: int=None, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		async with ctx.typing():
-			byt = await ctx.author.avatar_url_as(format="png").read()
-			
-			def sync_func():
-				im = polaroid.Image(byt)
-				im.resize(width, height, 1)
-				file = discord.File(BytesIO(im.save_bytes()), filename=f"stretched.png")
-				return file
+	@commands.command(help='Width limit is 1000 and height limit is 500, got that?', hidden=False)
+	async def resize(self, ctx, width: int, height: int, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		if height < 501 and width < 1001:
+			async with ctx.typing():
+				if ctx.message.attachments:
+					byt = await ctx.message.attachments[0].read()
+				elif isinstance(image, discord.PartialEmoji):
+					byt = await image.url.read()
+				else:
+					img = image or ctx.author
+					byt = await img.avatar_url_as(format="png").read()
+				
+				def sync_func():
+					im = polaroid.Image(byt)
+					im.resize(width, height, 1)
+					file = discord.File(BytesIO(im.save_bytes()), filename=f"stretched.png")
+					return file
 
-			async def async_func():
-				thing = functools.partial(sync_func)
-				file = await self.bot.loop.run_in_executor(None, thing)
-				await ctx.send('ｒｅｓｉｚｅｄ', file=file)
+				async def async_func():
+					thing = functools.partial(sync_func)
+					file = await self.bot.loop.run_in_executor(None, thing)
+					emed=discord.Embed(title='ｒｅｓｉｚｅｄ', color=0x2F3136)
+					emed.set_image(url='attachment://stretched.png')
+					emed.set_footer(text='Powered by Polaroid')
+					await ctx.send(embed=emed, file=file)
 
-			await async_func()
+				await async_func()
+		elif width > 1001:
+			await ctx.send('Width can be 1000 pixels wide at max!')
+		elif height > 501:
+			await ctx.send('Height can be 500 pixels tall at max!')
 
 
 
