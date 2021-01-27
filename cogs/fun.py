@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 import os
 import aiohttp
+import onetimepad
 import random
 from async_translate import AsyncTranslate
 from iso639 import languages
@@ -53,8 +54,8 @@ class fun(commands.Cog):
 		lang = languages.get(name=language)
 		g = async_google_trans_new.google_translator()
 		gemb = discord.Embed(title='Google Translation', color=0x2F3136)
-		gemb.add_field(name='Input', value=f'```\n{text}\n```')
-		gemb.add_field(name='Output', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
+		gemb.add_field(name='Input:', value=f'```\n{text}\n```')
+		gemb.add_field(name=f'Output in {language}:', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
 		await ctx.send(embed=gemb)
 
 	@commands.command()
@@ -170,6 +171,34 @@ class fun(commands.Cog):
 			embed.set_image(url=data["img"])
 			embed.set_footer(text="Powered by the XKCD API")
 			await ctx.send(embed=embed)
+
+	@commands.command(name='monke', help='reject discord return to monke')
+	async def monk(self, ctx, monke: discord.Member=None):
+		if not monke:
+			monke = ""
+		else:
+			monke = f"{monke.mention}, "
+		await ctx.send(f"https://tenor.com/view/reject-modernity-return-to-monke-monke-gif-19167526\n{monke}return to monke")
+
+	@commands.command(help='Encrypts a message')
+	async def encrypt(self, ctx, *, message: str):
+		cipher = onetimepad.encrypt(message, 'a_random_key')
+		gemb = discord.Embed(title='Encryption', color=0x2F3136)
+		gemb.add_field(name='Input:', value=f'```\n{message}\n```')
+		gemb.add_field(name='Output:', value=f'```\n{cipher}\n```', inline=False)
+		await ctx.send(embed=gemb)
+    	
+
+	@commands.command(help='Decrypts a message')
+	async def decrypt(self, ctx, *, text: str):
+		msg = onetimepad.decrypt(text, 'a_random_key')
+		gemb = discord.Embed(title='Decryption', color=0x2F3136)
+		gemb.add_field(name='Input:', value=f'```\n{text}\n```')
+		gemb.add_field(name='Output:', value=f'```\n{msg}\n```', inline=False)
+		await ctx.send(embed=gemb)
+
+
+
 
 def setup(bot):
 	bot.add_cog(fun(bot))
