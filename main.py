@@ -3,10 +3,13 @@ import discord
 import json
 import asyncio
 import aiohttp
+import asyncdagpi
 from discord.ext import commands
 from pretty_help import PrettyHelp 	
 from keep_alive import keep_alive
 import datetime
+dagpikey = os.environ['dagpikey']
+
 
 async def pre(bot, message):
 	with open("prefixes.json", "r") as f:
@@ -17,7 +20,7 @@ activity = discord.Activity(type=discord.ActivityType.listening, name=f'c//help'
 bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
 bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
-
+bot.dagpi = asyncdagpi.Client(dagpikey)
 bot.session = aiohttp.ClientSession()
 
 token = os.environ['DTOKEN']

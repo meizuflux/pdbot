@@ -3,20 +3,9 @@ import discord
 import polaroid
 import functools
 import typing
-import random
-from PIL import Image
-from PIL import Image as PILImage
-from PIL import (ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps,
-                 ImageSequence)
-from typing import Optional
 import os
-import aiohttp
-from asyncdagpi import Client, ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
-dagpikey = os.environ['dagpikey']
-
-dagpi = Client(dagpikey)
 
 class Image(commands.Cog):
 	def __init__(self, bot):
@@ -78,7 +67,7 @@ class Image(commands.Cog):
 			else:
 				img = image or ctx.author
 				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await dagpi.image_process(ImageFeatures.triggered(), url)
+			img = await self.bot.dagpi.image_process(ImageFeatures.triggered(), url)
 			file = discord.File(fp=img.image,filename=f"triggered.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -96,8 +85,8 @@ class Image(commands.Cog):
 				url = str(image.url)
 			else:
 				img = image or ctx.author
-				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await dagpi.image_process(ImageFeatures.communism(), url)
+				url = str(img.avatar_url_as(static_format='jpeg', format='jpeg', size=512))
+			img = await self.bot.dagpi.image_process(ImageFeatures.communism(), url)
 			file = discord.File(fp=img.image,filename=f"communism.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -115,7 +104,7 @@ class Image(commands.Cog):
 			else:
 				img = image or ctx.author
 				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await dagpi.image_process(ImageFeatures.wanted(), url)
+			img = await self.bot.dagpi.image_process(ImageFeatures.wanted(), url)
 			file = discord.File(fp=img.image,filename=f"wanted.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -133,7 +122,7 @@ class Image(commands.Cog):
 			else:
 				img = image or ctx.author
 				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await dagpi.image_process(ImageFeatures.obama(), url)
+			img = await self.bot.dagpi.image_process(ImageFeatures.obama(), url)
 			file = discord.File(fp=img.image,filename=f"obama.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -147,7 +136,7 @@ class Image(commands.Cog):
 			url = str(user.avatar_url_as(static_format='png', format='png', size=512))
 			disname = user.display_name
 			name = disname.replace(' ', '')
-			img = await dagpi.image_process(ImageFeatures.tweet(), text=text, url=url, username=name)
+			img = await self.bot.dagpi.image_process(ImageFeatures.tweet(), text=text, url=url, username=name)
 			file = discord.File(fp=img.image,filename=f"tweet.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -164,7 +153,7 @@ class Image(commands.Cog):
 				#url = str(image.url)
 			url = str(user1.avatar_url_as(static_format='png', format='png', size=512))
 			url2 = str(user2.avatar_url_as(static_format='png', format='png', size=512))
-			img = await dagpi.image_process(ImageFeatures.five_guys_one_girl(), url=url, url2=url2)
+			img = await self.bot.dagpi.image_process(ImageFeatures.five_guys_one_girl(), url=url, url2=url2)
 			file = discord.File(fp=img.image,filename=f"five_guys_one_girl.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
