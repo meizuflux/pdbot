@@ -161,7 +161,7 @@ class Misc(commands.Cog):
 		cpuFreq = psutil.cpu_freq().current
 		memory_usage = self.process.memory_full_info().uss / 1024**2
 		cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
-		ramusage = humanize.naturalsize(psutil.Process(146).memory_full_info().pss)
+		ramusage = humanize.naturalsize(psutil.Process().memory_full_info().pss)
 
 		pyVersion = platform.python_version()
 		libVersion = get_distribution("discord.py").version
