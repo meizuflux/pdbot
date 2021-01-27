@@ -4,11 +4,13 @@ import polaroid
 import functools
 import typing
 import os
+import PIL
+from PIL import Image
 from asyncdagpi import ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
 
-class Image(commands.Cog):
+class image(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -210,6 +212,26 @@ class Image(commands.Cog):
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(ctx, image, method='rotate180')
 
+
+	#some code from https://github.com/daggy1234, edited by me
+	@commands.command(help='makes an image communist')
+	async def fakecommunist(self, ctx):
+		avimg = BytesIO(await ctx.author.avatar_url_as(format="png").read())
+		image = Image.open(avimg)
+		w, h = image.size
+		fil = Image.open("assets/flag.jpg")
+		fil = image.convert("RGBA")
+		filled = fil.resize((w, h), 5)
+		ci = image.convert("RGBA")
+		ci.paste(filled, mask=filled)
+		byt = BytesIO()
+		ci.save(byt, format='png')
+		byt.seek(0)
+		file = discord.File(fp=byt, filename="communism.png")
+		embed=discord.Embed(title='Communism')
+		embed.set_image(url='attachment://communism.png')
+		await ctx.send(embed=embed, file=file)
+
 	@commands.command(help='Width limit is 1000 and height limit is 500, got that?', hidden=False)
 	async def resize(self, ctx, width: int, height: int, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		if height < 501 and width < 1001:
@@ -245,4 +267,4 @@ class Image(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(Image(bot))
+	bot.add_cog(image(bot))
