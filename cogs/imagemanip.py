@@ -4,6 +4,7 @@ import polaroid
 import functools
 import typing
 import os
+from asyncdagpi import ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
 
