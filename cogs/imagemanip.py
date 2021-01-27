@@ -80,7 +80,7 @@ class image(commands.Cog):
 			# await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
 
 	@commands.command(aliases=['communism'])
-	async def communist(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+	async def slowcommunist(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
 			#if ctx.message.attachments: busted rn
 				#url = str(ctx.message.attachments[0].url)
@@ -215,17 +215,18 @@ class image(commands.Cog):
 
 	#some code from https://github.com/daggy1234, edited by me
 	@commands.command(help='makes an image communist')
-	async def fakecommunist(self, ctx):
+	async def communist(self, ctx, img: discord.Member = None):
+		img = ctx.author or img
 		avimg = BytesIO(await ctx.author.avatar_url_as(format="png").read())
 		image = Image.open(avimg)
-		w, h = image.size
-		fil = Image.open("assets/flag.jpg")
-		fil = image.convert("RGBA")
-		filled = fil.resize((w, h), 5)
+		image = image.resize((500, 500))
 		ci = image.convert("RGBA")
-		ci.paste(filled, mask=filled)
+		file = Image.open("assets/flag.jpg")
+		file = file.convert("RGBA")
+		file = file.resize((500, 500))
+		blend = Image.blend(ci, file, 0.5)
 		byt = BytesIO()
-		ci.save(byt, format='png')
+		blend.save(byt, format='png')
 		byt.seek(0)
 		file = discord.File(fp=byt, filename="communism.png")
 		embed=discord.Embed(title='Communism')

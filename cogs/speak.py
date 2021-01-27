@@ -10,7 +10,10 @@ class speak(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.is_owner()
 	async def say(self, ctx, *, message: str):
 		await ctx.send(message)
-		await ctx.message.delete()
+		try:
+			await ctx.message.delete()
+		except discord.Forbidden:
+			pass
 	
 	@commands.command(name='dm')
 	@commands.is_owner()
