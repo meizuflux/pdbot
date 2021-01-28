@@ -6,7 +6,6 @@ import math
 import typing
 import json
 import asyncio
-import aiohttp
 
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
@@ -28,7 +27,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				with open('data.json', 'r') as f:
 					data = json.load(f)
 					ssid = data['ssinfo'][str(ctx.author.id)]
-					message = await ctx.send(f'Getting your stats ...')
+					message = await ctx.send('Getting stats ...')
 			except KeyError:
 				await ctx.send('You are not in the database')
 		try:
@@ -39,7 +38,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await message.edit(content=f'Searching for `{username}`\'s player ID ...')
 				async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
 					url = await url.json()
-					await message.edit(content=f'Got it!')
+					await message.edit(content='Got it!')
 					ssid = url['players'][0]['playerId']
 		except KeyError:
 			await message.edit(content=url['error']['message'])
@@ -52,7 +51,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.color = 0x2f3136
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-			embed.set_footer(text=f'Powered by the ScoreSaber API')
+			embed.set_footer(text='Powered by the ScoreSaber API')
 			await message.edit(content=None, embed=embed)
 
 	@ss.command(name='user', help='Ping a user and get their stats')
@@ -70,7 +69,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				embed.color = 0x2f3136
 				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 				embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
-				embed.set_footer(text=f'Powered by the ScoreSaber API')
+				embed.set_footer(text='Powered by the ScoreSaber API')
 				await message.edit(content=None, embed=embed)
 		except KeyError:
 			await ctx.send('The user is not in the database.')
@@ -86,7 +85,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		for number, thing in enumerate(tten, 1):
 			if number < 13:
 				r.add_field(name=f'#{number}: {tten[number-1]["playerName"]}', value=f'Performance Points: {tten[number-1]["pp"]}pp\nCountry: {tten[number-1]["country"]}\nRank Change: +{lb["players"][number-1]["difference"]}', inline=True)
-		r.set_footer(text=f'Powered by the ScoreSaber API')
+		r.set_footer(text='Powered by the ScoreSaber API')
 		await message.edit(content=None, embed=r)
 		
 	@ss.command(name='register', help='Registers you to a ScoreSaber profile')
@@ -106,11 +105,11 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 				grank = math.ceil(int(data['playerInfo']['rank'])/50)
 				crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-				embed = discord.Embed(title=f"Is this you?")
+				embed = discord.Embed(title="Is this you?")
 				embed.color = 0x2f3136
 				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 				embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp", inline=False)
-				embed.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
+				embed.set_footer(text='React to this message with ✅ to confirm and ❌ to cancel')
 				await message.edit(content=None, embed=embed, delete_after=15)
 				await message.add_reaction('✅')
 				await message.add_reaction('❌')
@@ -138,7 +137,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	@ss.command(name='unregister', help='Unregisters you from a ScoreSaber profile')
 	async def ureg(self, ctx):
 		e = discord.Embed(description='Would you like to remove yourself from the database?')
-		e.set_footer(text=f'React to this message with ✅ to confirm and ❌ to cancel')
+		e.set_footer(text='React to this message with ✅ to confirm and ❌ to cancel')
 		embed = await ctx.send(embed=e, delete_after=15)
 		await embed.add_reaction('✅')
 		await embed.add_reaction('❌')
@@ -158,7 +157,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 					json.dump(data, f, indent=4)
 				await embed.edit(content=None, embed=e)
 			if reaction.emoji == '❌':
-				e = discord.Embed(description=f'Cancelled unregistering.')
+				e = discord.Embed(description='Cancelled unregistering.')
 				await embed.edit(content=None, embed=e, delete_after=15)				
 
 	@commands.command(name='key', help='!key <keyfrombeatsaver> note: older songs do not show duration')
@@ -173,23 +172,23 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}")
 			embed.color = 0x2f3136
 			embed.set_thumbnail(url=f"https://beatsaver.com{data['coverURL']}")
-			embed.add_field(name=f"Author", value=f"{data['metadata']['songAuthorName']}", inline=False)
-			embed.add_field(name=f"Mapper", value=f"{data['metadata']['levelAuthorName']}", inline=False)
-			embed.add_field(name=f"Uploader", value=f"{data['uploader']['username']}", inline=True)
-			embed.add_field(name=f"Key", value=f"{data['key']}", inline=False)
+			embed.add_field(name="Author", value=f"{data['metadata']['songAuthorName']}", inline=False)
+			embed.add_field(name="Mapper", value=f"{data['metadata']['levelAuthorName']}", inline=False)
+			embed.add_field(name="Uploader", value=f"{data['uploader']['username']}", inline=True)
+			embed.add_field(name="Key", value=f"{data['key']}", inline=False)
 			if data['metadata']['duration'] != 0:
-				embed.add_field(name=f"Duration", value=f"{cortime}")
+				embed.add_field(name="Duration", value=f"{cortime}")
 			bad = ['Lawless', 'Lightshow']
 			charac = data['metadata']['characteristics'][0]['name']
 			if charac in bad:
-				embed.add_field(name=f"Playable on Quest?", value=f"No", inline=False)
+				embed.add_field(name="Playable on Quest?", value="No", inline=False)
 			else:
-				embed.add_field(name=f"Playable on Quest?", value=f"Yes", inline=False)
-			embed.add_field(name=f"BPM", value=f"{data['metadata']['bpm']:.1f}", inline=False)
-			embed.add_field(name=f"Download Link", value=f"https://beatsaver.com/api/download/key/{data['key']}", inline=False)
-			embed.add_field(name=f"OneClick Install", value=f"beatsaver://{data['key']}", inline=True)
-			embed.add_field(name=f"Preview", value=f"https://skystudioapps.com/bs-viewer/?id={data['key']}", inline=False)
-			embed.set_footer(text=f'Powered by the BeatSaver API')
+				embed.add_field(name="Playable on Quest?", value="Yes", inline=False)
+			embed.add_field(name="BPM", value=f"{data['metadata']['bpm']:.1f}", inline=False)
+			embed.add_field(name="Download Link", value=f"https://beatsaver.com/api/download/key/{data['key']}", inline=False)
+			embed.add_field(name="OneClick Install", value=f"beatsaver://{data['key']}", inline=True)
+			embed.add_field(name="Preview", value=f"https://skystudioapps.com/bs-viewer/?id={data['key']}", inline=False)
+			embed.set_footer(text='Powered by the BeatSaver API')
 			await ctx.send(embed=embed)
 
 	@bsr.error
