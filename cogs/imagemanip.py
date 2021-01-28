@@ -50,6 +50,13 @@ class image(commands.Cog):
 			io = BytesIO(await r.read())
 			f = discord.File(fp=io, filename='alex.png')
 			return f
+		
+	@commands.command()
+	async def comm(self, ctx):
+		async with self.bot.session.get(f'https://api.alexflipnote.dev/filter/communist?{ctx.author.avatar_url}', headers={'Authorization': flipnotetoken}) as r:
+			io = BytesIO(await r.read())
+			f = discord.File(fp=io, filename='alex.png')
+			await ctx.send(file=f)
 
 	@commands.command(aliases=['didyoumean'], help='"Did you mean" meme. Ex: dym "milk" "with your dad"')
 	async def dym(self, ctx, search: str, did_you_mean: str):
@@ -229,7 +236,7 @@ class image(commands.Cog):
 				image = Image.open(avimg)
 				image = image.resize((500, 500))
 				ci = image.convert("RGBA")
-				file = Image.open("assets/flag.jpg")
+				file = Image.open("assets/communist.png")
 				file = file.convert("RGBA")
 				file = file.resize((500, 500))
 				blend = Image.blend(ci, file, 0.5)
