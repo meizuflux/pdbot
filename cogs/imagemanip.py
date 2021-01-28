@@ -105,7 +105,7 @@ class image(commands.Cog):
 			await ctx.send(embed=embed, file=file)	
 
 	@commands.command()
-	async def wanted(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+	async def slowwanted(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
 			#if ctx.message.attachments: busted rn
 				#url = str(ctx.message.attachments[0].url)
@@ -220,7 +220,7 @@ class image(commands.Cog):
 		await self.manip(ctx, image, method='rotate180')
 
 
-	#some code from https://github.com/daggy1234, edited by me
+
 	@commands.command(help='makes an image communist')
 	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
@@ -236,7 +236,7 @@ class image(commands.Cog):
 				image = Image.open(avimg)
 				image = image.resize((500, 500))
 				ci = image.convert("RGBA")
-				file = Image.open("assets/communist.png")
+				file = Image.open("assets/cropflag.png")
 				file = file.convert("RGBA")
 				file = file.resize((500, 500))
 				blend = Image.blend(ci, file, 0.5)
@@ -253,6 +253,42 @@ class image(commands.Cog):
 				emed=discord.Embed(title='Communism', color=0x2F3136)
 				emed.set_image(url='attachment://communism.png')
 				emed.set_footer(text='Powered by Pillow')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
+	#some code from https://github.com/daggy1234, edited by me
+	@commands.command(help='makes an image wanted')
+	async def wanted(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			if ctx.message.attachments:
+				avimg = BytesIO(await ctx.message.attachments[0].read())
+			elif isinstance(image, discord.PartialEmoji):
+				avimg = BytesIO(await image.url.read())
+			else:
+				img = image or ctx.author
+				avimg = BytesIO(await img.avatar_url_as(format="png").read())
+
+			def sync_func():
+				image = Image.open(avimg)
+				image = image.resize((500, 500))
+				ci = image.convert("RGBA")
+				im = Image.open("assets/wanted.png")
+				im = im.convert("RGBA")
+				tp = ci.resize((800, 800), 0)
+				im.paste(tp, (200, 450))
+				byt = BytesIO()
+				im.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="communism.png")
+				return file
+
+			async def async_func():
+
+				thing = functools.partial(sync_func)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				emed=discord.Embed(title='Communism', color=0x2F3136)
+				emed.set_image(url='attachment://communism.png')
+				emed.set_footer(text='Powered by Pillow with code from Daggy1234')
 				await ctx.send(embed=emed, file=file)
 			await async_func()
 
