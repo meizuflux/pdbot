@@ -1,6 +1,5 @@
 from discord.ext import commands
 import discord
-import requests
 import aiohttp
 import random
 
@@ -22,12 +21,12 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 			else:
 				data = await data.json()
 				if data['private'] == True:
-					await ctx.send(f"Profile is private.")
+					await ctx.send("Profile is private.")
 				else:
 					embed = discord.Embed(title=data['name'], url=f'https://www.overbuff.com/players/pc/{BattleTag}?mode=competitive', color=0x2f3136, description=f"Level: {data['prestige']}{data['level']} \nEndorsement Level: {data['endorsement']} \nTotal Games Won: {data['gamesWon']}")
 					embed.set_thumbnail(url=data['icon'])
 					embed.add_field(name='Competitive Stats', value=f"Tank SR: {data['ratings'][0]['level']}sr \nDamage SR: {data['ratings'][1]['level']}sr \nSupport SR: {data['ratings'][2]['level']}sr")
-					embed.set_footer(text=f'Powered by https://ow-api.com')
+					embed.set_footer(text='Powered by https://ow-api.com')
 
 					await ctx.send(embed=embed)
 				

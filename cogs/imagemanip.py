@@ -4,7 +4,6 @@ import polaroid
 import functools
 import typing
 import os
-import PIL
 import time
 from PIL import Image
 from asyncdagpi import ImageFeatures
@@ -40,11 +39,11 @@ class image(commands.Cog):
 			        method_args = []
 			method = getattr(img, method)
 			method(*method_args)
-			file = discord.File(BytesIO(img.save_bytes()), filename=f"polaroid.png")
+			file = discord.File(BytesIO(img.save_bytes()), filename="polaroid.png")
 			end = time.perf_counter()
 			embed = discord.Embed(description=text, colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://polaroid.png")
+			embed.set_image(url="attachment://polaroid.png")
 			embed.set_footer(text=f"Backend finished in {end-start:.2f} seconds")
 			await ctx.send(embed=embed, file=file)
 
@@ -66,8 +65,8 @@ class image(commands.Cog):
 		file = await self.alex_image(url=f'didyoumean?top={search}&bottom={did_you_mean}')
 		embed = discord.Embed(colour=0x2F3136)
 		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-		embed.set_image(url=f"attachment://alex.png")
-		embed.set_footer(text=f"Powered by the AlexFlipnote API")
+		embed.set_image(url="attachment://alex.png")
+		embed.set_footer(text="Powered by the AlexFlipnote API")
 		await ctx.send(embed=embed, file=file)
 
 	@commands.command(aliases=['trigger'])
@@ -84,8 +83,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"triggered.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://triggered.gif")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://triggered.gif")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 			# await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
 
@@ -103,8 +102,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"communism.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://communism.gif")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://communism.gif")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)	
 
 	@commands.command()
@@ -121,8 +120,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"wanted.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://wanted.png")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://wanted.png")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 
 	@commands.command()
@@ -139,8 +138,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"obama.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://obama.png")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://obama.png")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 
 	@commands.command()
@@ -153,8 +152,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"tweet.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://tweet.png")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://tweet.png")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 			
 	@commands.command(name='5g1g')
@@ -170,8 +169,8 @@ class image(commands.Cog):
 			file = discord.File(fp=img.image,filename=f"five_guys_one_girl.{img.format}")
 			embed = discord.Embed(colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url=f"attachment://five_guys_one_girl.png")
-			embed.set_footer(text=f"Powered by the Dagpi API")
+			embed.set_image(url="attachment://five_guys_one_girl.png")
+			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 
 	@commands.command(help='Makes an image rainbowey')
@@ -314,7 +313,7 @@ class image(commands.Cog):
 				def sync_func():
 					im = polaroid.Image(byt)
 					im.resize(width, height, 1)
-					file = discord.File(BytesIO(im.save_bytes()), filename=f"stretched.png")
+					file = discord.File(BytesIO(im.save_bytes()), filename="stretched.png")
 					return file
 
 				async def async_func():

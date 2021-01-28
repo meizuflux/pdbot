@@ -160,11 +160,11 @@ class Misc(commands.Cog):
 	async def info(self, ctx):
 		msg = await ctx.send('Getting bot information ...')
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)
-		ramPerc = psutil.virtual_memory().percent
+		#ramPerc = psutil.virtual_memory().percent
 		cpuUsage = psutil.cpu_percent()
 		cpuFreq = psutil.cpu_freq().current
-		memory_usage = self.process.memory_full_info().uss / 1024**2
-		cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
+		#memory_usage = self.process.memory_full_info().uss / 1024**2
+		#cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
 		ramusage = humanize.naturalsize(psutil.Process().memory_full_info().pss)
 
 		pyVersion = platform.python_version()
@@ -186,16 +186,16 @@ class Misc(commands.Cog):
 		#emb.set_thumbnail(url=self.bot.user.avatar_url)
 		emb.set_author(name=self.bot.user.name, url='https://github.com/ppotatoo/pdbot', icon_url=self.bot.user.avatar_url)
 		emb.set_thumbnail(url=self.bot.user.avatar_url)
-		emb.add_field(name=f'Developer', value=f'```ppotatoo#6862 (777893499471265802)```', inline=False)
-		emb.add_field(name=f'<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```', inline=False)
-		emb.add_field(name=f'Hosting', value=f'```{hosting}```', inline=False)
+		emb.add_field(name='Developer', value=f'```ppotatoo#6862 (777893499471265802)```', inline=False)
+		emb.add_field(name='<:online:801444524148523088> Uptime', value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```', inline=False)
+		emb.add_field(name='Hosting', value=f'```{hosting}```', inline=False)
 
-		emb.add_field(name=f'CPU Usage', value=f'```{cpuUsage:.2f}%```', inline=True)
-		emb.add_field(name=f'CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
+		emb.add_field(name='CPU Usage', value=f'```{cpuUsage:.2f}%```', inline=True)
+		emb.add_field(name='CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
 		emb.add_field(name='Memory Usage', value=f'```{ramusage}```', inline=True)
 
 		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
-		emb.add_field(name=f'<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
+		emb.add_field(name='<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
 
 		emb.add_field(name='Line Count', value=f'```{ls:,} lines```', inline=False)
 		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))} commands```', inline=False)

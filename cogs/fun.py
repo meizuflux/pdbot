@@ -4,11 +4,9 @@ import os
 import aiohttp
 import onetimepad
 import random
-from async_translate import AsyncTranslate
 from iso639 import languages
 import async_google_trans_new
 import datetime
-#from async_translate.providers import Google
 import lyricsgenius
 geniustoken = os.environ['genius']
 genius = lyricsgenius.Genius(geniustoken)
