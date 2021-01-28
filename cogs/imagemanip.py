@@ -215,23 +215,40 @@ class image(commands.Cog):
 
 	#some code from https://github.com/daggy1234, edited by me
 	@commands.command(help='makes an image communist')
-	async def communist(self, ctx, img: discord.Member = None):
-		img = ctx.author or img
-		avimg = BytesIO(await ctx.author.avatar_url_as(format="png").read())
-		image = Image.open(avimg)
-		image = image.resize((500, 500))
-		ci = image.convert("RGBA")
-		file = Image.open("assets/flag.jpg")
-		file = file.convert("RGBA")
-		file = file.resize((500, 500))
-		blend = Image.blend(ci, file, 0.5)
-		byt = BytesIO()
-		blend.save(byt, format='png')
-		byt.seek(0)
-		file = discord.File(fp=byt, filename="communism.png")
-		embed=discord.Embed(title='Communism')
-		embed.set_image(url='attachment://communism.png')
-		await ctx.send(embed=embed, file=file)
+	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			if ctx.message.attachments:
+				avimg = BytesIO(await ctx.message.attachments[0].read())
+			elif isinstance(image, discord.PartialEmoji):
+				avimg = BytesIO(await image.url.read())
+			else:
+				img = image or ctx.author
+				avimg = BytesIO(await img.avatar_url_as(format="png").read())
+
+			def sync_func():
+				image = Image.open(avimg)
+				image = image.resize((500, 500))
+				ci = image.convert("RGBA")
+				file = Image.open("assets/flag.jpg")
+				file = file.convert("RGBA")
+				file = file.resize((500, 500))
+				blend = Image.blend(ci, file, 0.5)
+				byt = BytesIO()
+				blend.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="communism.png")
+				return file
+
+			async def async_func():
+
+				thing = functools.partial(sync_func)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				emed=discord.Embed(title='Communism', color=0x2F3136)
+				emed.set_image(url='attachment://communism.png')
+				emed.set_footer(text='Powered by Pillow')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
 
 	@commands.command(help='Width limit is 1000 and height limit is 500, got that?', hidden=False)
 	async def resize(self, ctx, width: int, height: int, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
