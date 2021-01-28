@@ -125,7 +125,7 @@ class image(commands.Cog):
 			await ctx.send(embed=embed, file=file)
 
 	@commands.command()
-	async def obama(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+	async def slowobama(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
 			#if ctx.message.attachments: busted rn
 				#url = str(ctx.message.attachments[0].url)
@@ -275,7 +275,6 @@ class image(commands.Cog):
 
 			def sync_func():
 				image = Image.open(avimg)
-				image = image.resize((500, 500))
 				ci = image.convert("RGBA")
 				im = Image.open("assets/wanted.png")
 				im = im.convert("RGBA")
@@ -292,6 +291,43 @@ class image(commands.Cog):
 				file = await self.bot.loop.run_in_executor(None, thing)
 				emed=discord.Embed(title='Arrest them!', color=0x2F3136)
 				emed.set_image(url='attachment://communism.png')
+				end = time.perf_counter()
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
+	#more daggy code, https://github.com/daggy1234
+	@commands.command(help='give a medal to youself! you deserve it!')
+	async def obama(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		start = time.perf_counter()
+		async with ctx.typing():
+			if ctx.message.attachments:
+				avimg = BytesIO(await ctx.message.attachments[0].read())
+			elif isinstance(image, discord.PartialEmoji):
+				avimg = BytesIO(await image.url.read())
+			else:
+				img = image or ctx.author
+				avimg = BytesIO(await img.avatar_url_as(format="png").read())
+
+			def sync_func():
+				image = Image.open(avimg)
+				ci = image.convert("RGBA")
+				obama_pic = Image.open("assets/obama.png")
+				obama_pic = obama_pic.convert("RGBA")
+				y = image.resize((300, 300), 1)
+				obama_pic.paste(y, (250, 100))
+				obama_pic.paste(y, (650, 0))
+				byt = BytesIO()
+				obama_pic.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="obama.png")
+				return file
+
+			async def async_func():
+				thing = functools.partial(sync_func)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				emed=discord.Embed(title='Treat yourself nicely!', color=0x2F3136)
+				emed.set_image(url='attachment://obama.png')
 				end = time.perf_counter()
 				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 				await ctx.send(embed=emed, file=file)
