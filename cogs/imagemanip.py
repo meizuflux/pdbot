@@ -5,6 +5,7 @@ import functools
 import typing
 import os
 import PIL
+import time
 from PIL import Image
 from asyncdagpi import ImageFeatures
 from io import BytesIO
@@ -24,6 +25,7 @@ class image(commands.Cog):
 
 	@staticmethod
 	async def manip(ctx, image, *, method: str, method_args: list = None, text: str = None):
+		start = time.perf_counter()
 		async with ctx.typing():
 		# get the image
 			if ctx.message.attachments:
@@ -39,10 +41,11 @@ class image(commands.Cog):
 			method = getattr(img, method)
 			method(*method_args)
 			file = discord.File(BytesIO(img.save_bytes()), filename=f"polaroid.png")
+			end = time.perf_counter()
 			embed = discord.Embed(description=text, colour=0x2F3136)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 			embed.set_image(url=f"attachment://polaroid.png")
-			embed.set_footer(text=f"Powered by Polaroid")
+			embed.set_footer(text=f"Backend finished in {end-start:.2f} seconds")
 			await ctx.send(embed=embed, file=file)
 
 	async def alex_image(self, url):
@@ -223,6 +226,7 @@ class image(commands.Cog):
 
 	@commands.command(help='makes an image communist')
 	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		start = time.perf_counter()
 		async with ctx.typing():
 			if ctx.message.attachments:
 				avimg = BytesIO(await ctx.message.attachments[0].read())
@@ -247,18 +251,20 @@ class image(commands.Cog):
 				return file
 
 			async def async_func():
-
+				
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
+				end = time.perf_counter()
 				emed=discord.Embed(title='Communism', color=0x2F3136)
 				emed.set_image(url='attachment://communism.png')
-				emed.set_footer(text='Powered by Pillow')
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 				await ctx.send(embed=emed, file=file)
 			await async_func()
 
 	#some code from https://github.com/daggy1234, edited by me
 	@commands.command(help='makes an image wanted')
 	async def wanted(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		start = time.perf_counter()
 		async with ctx.typing():
 			if ctx.message.attachments:
 				avimg = BytesIO(await ctx.message.attachments[0].read())
@@ -283,12 +289,12 @@ class image(commands.Cog):
 				return file
 
 			async def async_func():
-
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
-				emed=discord.Embed(title='Communism', color=0x2F3136)
+				emed=discord.Embed(title='Arrest them!', color=0x2F3136)
 				emed.set_image(url='attachment://communism.png')
-				emed.set_footer(text='Powered by Pillow with code from Daggy1234')
+				end = time.perf_counter()
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 				await ctx.send(embed=emed, file=file)
 			await async_func()
 

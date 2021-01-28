@@ -32,8 +32,12 @@ class Misc(commands.Cog):
 			await ctx.send(guild)
 
 	@commands.command(name='pfp', help='just use it 4Head')
-	async def pfp(self, ctx, *, member: discord.Member=None):
-			await ctx.send(member.avatar_url)
+	async def pfp(self, ctx, *, user: discord.Member=None):
+		if not user:
+			user = ctx.author
+		e = discord.Embed(title=f'Profile Picture for {user.name}')
+		e.set_image(url=user.avatar_url)
+		await ctx.send(embed=e)
 	
 	@commands.command(name='puppy', help='A cute little puppy doing cute things')
 	async def puppy(self, ctx):
