@@ -20,7 +20,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 			if data.status == 400:
 				await ctx.send('Player not found')
 			else:
-				data = data.json()
+				data = await data.json()
 				if data['private'] == True:
 					await ctx.send(f"Profile is private.")
 				else:
