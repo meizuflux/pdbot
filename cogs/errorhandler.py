@@ -55,6 +55,9 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(
                 'You do not have the correct permissions for this command')
 
+        if isinstance(error, discord.Forbidden):
+            await ctx.send('I do not have the correct permissions for this command.')
+
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.author.send(
