@@ -198,6 +198,17 @@ class fun(commands.Cog):
 		gemb.add_field(name='Output:', value=f'```\n{msg}\n```', inline=False)
 		await ctx.send(embed=gemb)
 
+	@commands.command(help='translates some text into pig latin')
+	async def piglatin(self, ctx, *, text: str):
+		async with self.bot.session.get(f'https://www.potatoapi.ml/piglatin/{text}') as resp:
+			resp = await resp.json()
+			emb = discord.Embed(title='Pig Latin!', color=0x2F3136)
+			emb.add_field(name='Input:', value=f'```\n{text}\n```')
+			emb.add_field(name='Output:', value=f'```\n{resp["text"]}\n```', inline=False)
+			await ctx.send(embed=emb)
+
+
+
 
 
 

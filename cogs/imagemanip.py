@@ -4,6 +4,7 @@ import polaroid
 import functools
 import typing
 import os
+from wand.image import Image
 import time
 from PIL import Image
 from asyncdagpi import ImageFeatures
@@ -13,14 +14,6 @@ flipnotetoken = os.environ['tflipnote']
 class image(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-	@staticmethod
-	async def imgemb(ctx, dfile: discord.File, footername, powered):
-		embed = discord.Embed(colour=0x2F3136)
-		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-		embed.set_image(url=f"attachment://{footername}")
-		embed.set_footer(text=f"Powered by {powered}")
-		await ctx.send(embed=embed, file=dfile)
 
 	@staticmethod
 	async def manip(ctx, image, *, method: str, method_args: list = None, text: str = None):
@@ -52,13 +45,6 @@ class image(commands.Cog):
 			io = BytesIO(await r.read())
 			f = discord.File(fp=io, filename='alex.png')
 			return f
-		
-	@commands.command()
-	async def comm(self, ctx):
-		async with self.bot.session.get(f'https://api.alexflipnote.dev/filter/communist?{ctx.author.avatar_url}', headers={'Authorization': flipnotetoken}) as r:
-			io = BytesIO(await r.read())
-			f = discord.File(fp=io, filename='alex.png')
-			await ctx.send(file=f)
 
 	@commands.command(aliases=['didyoumean'], help='"Did you mean" meme. Ex: dym "milk" "with your dad"')
 	async def dym(self, ctx, search: str, did_you_mean: str):
@@ -87,6 +73,24 @@ class image(commands.Cog):
 			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 			# await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
+
+	@commands.command(help='magik')
+	async def magik(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		async with ctx.typing():
+			if isinstance(image, discord.PartialEmoji):
+				url = str(image.url)
+			else:
+				img = image or ctx.author
+				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
+			img = await self.bot.dagpi.image_process(ImageFeatures.magik(), url)
+			file = discord.File(fp=img.image,filename=f"magik.png")
+			embed = discord.Embed(colour=0x2F3136)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url="attachment://magik.png")
+			embed.set_footer(text="Powered by the Dagpi API")
+			await ctx.send(embed=embed, file=file)
+
+	
 
 	@commands.command(aliases=['communism'])
 	async def slowcommunist(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
@@ -260,6 +264,45 @@ class image(commands.Cog):
 				await ctx.send(embed=emed, file=file)
 			await async_func()
 
+	@commands.command(help='blends stuff together')
+	async def blend(self, ctx, image1: typing.Union[discord.PartialEmoji, discord.Member], image2: typing.Union[discord.PartialEmoji, discord.Member] = None):
+		start = time.perf_counter()
+		async with ctx.typing():
+			if isinstance(image1, discord.PartialEmoji):
+				img1 = BytesIO(await image1.url.read())
+			else:
+				img1 = BytesIO(await image1.avatar_url_as(format="png").read())
+
+			if isinstance(image2, discord.PartialEmoji):
+				img2 = BytesIO(await image2.url.read())
+			else:
+				img = image2 or ctx.author
+				img2 = BytesIO(await img.avatar_url_as(format="png").read())
+			def sync_func():
+				image = Image.open(img1)
+				image = image.resize((500, 500))
+				ci = image.convert("RGBA")
+				file = Image.open(img2)
+				file = file.convert("RGBA")
+				file = file.resize((500, 500))
+				blend = Image.blend(ci, file, 0.5)
+				byt = BytesIO()
+				blend.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="communism.png")
+				return file
+
+			async def async_func():
+				
+				thing = functools.partial(sync_func)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				end = time.perf_counter()
+				emed=discord.Embed(title='Blended', color=0x2F3136)
+				emed.set_image(url='attachment://communism.png')
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
 	#some code from https://github.com/daggy1234, edited by me
 	@commands.command(help='makes an image wanted')
 	async def wanted(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
@@ -311,7 +354,7 @@ class image(commands.Cog):
 
 			def sync_func():
 				image = Image.open(avimg)
-				ci = image.convert("RGBA")
+				image = image.convert("RGBA")
 				obama_pic = Image.open("assets/obama.png")
 				obama_pic = obama_pic.convert("RGBA")
 				y = image.resize((300, 300), 1)
@@ -327,6 +370,80 @@ class image(commands.Cog):
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
 				emed=discord.Embed(title='Treat yourself nicely!', color=0x2F3136)
+				emed.set_image(url='attachment://obama.png')
+				end = time.perf_counter()
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
+	@commands.command(help='nut someone')
+	async def nut(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member]):
+		start = time.perf_counter()
+		async with ctx.typing():
+			if ctx.message.attachments:
+				avimg = BytesIO(await ctx.message.attachments[0].read())
+			elif isinstance(image, discord.PartialEmoji):
+				avimg = BytesIO(await image.url.read())
+			else:
+				avimg = BytesIO(await image.avatar_url_as(format="png").read())
+				img2 = BytesIO(await ctx.author.avatar_url_as(format="png").read())
+			def sync_func(img2):
+				image = Image.open(avimg)
+				image = image.convert("RGBA")
+				image = image.resize((45, 45), 1)
+				img2 = Image.open(img2)
+				img2 = img2.resize((50, 50))
+				nuts = Image.open("assets/stretchnuts.png")
+				nuts = nuts.convert("RGBA")
+				nuts.paste(image, (250, 100))
+				nuts.paste(img2, (650, 0))
+				byt = BytesIO()
+				nuts.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="obama.png")
+				return file
+
+			async def async_func():
+				thing = functools.partial(sync_func, img2)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				emed=discord.Embed(title='Treat yourself nicely!', color=0x2F3136)
+				emed.set_image(url='attachment://obama.png')
+				end = time.perf_counter()
+				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+				await ctx.send(embed=emed, file=file)
+			await async_func()
+
+	#more daggy code, https://github.com/daggy1234
+	@commands.command(help='give a medal to someone when they do something cool')
+	async def reward(self, ctx, user: discord.Member, user2: discord.Member=None):
+		start = time.perf_counter()
+		async with ctx.typing():
+			if user2:
+				uimg = BytesIO(await user2.avatar_url_as(format='png').read())
+			else:
+				uimg = BytesIO(await ctx.author.avatar_url_as(format='png').read())
+			avimg = BytesIO(await user.avatar_url_as(format="png").read())
+			def sync_func(uimg):
+				image2 = Image.open(uimg)
+				image = Image.open(avimg)
+				image = image.convert("RGBA")
+				uimg = image2.convert("RGBA")
+				obama_pic = Image.open("assets/obama.png")
+				obama_pic = obama_pic.convert("RGBA")
+				y = image.resize((320, 320), 1)
+				uimg = uimg.resize((300, 300), 1)
+				obama_pic.paste(y, (275, 95))
+				obama_pic.paste(uimg, (650, 0))
+				byt = BytesIO()
+				obama_pic.save(byt, format='png')
+				byt.seek(0)
+				file = discord.File(fp=byt, filename="obama.png")
+				return file
+
+			async def async_func():
+				thing = functools.partial(sync_func, uimg)
+				file = await self.bot.loop.run_in_executor(None, thing)
+				emed=discord.Embed(title='You deserve this', color=0x2F3136)
 				emed.set_image(url='attachment://obama.png')
 				end = time.perf_counter()
 				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
