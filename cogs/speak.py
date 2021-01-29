@@ -23,11 +23,11 @@ class speak(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.command()
 	@commands.is_owner()
 	async def send(self, ctx, chid: int, *, message):
-		async with ctx.typing():
+		dat = self.bot.get_channel(chid)
+		async with ctx.dat.typing():
 			tonk = len(message) * 0.15
 			await asyncio.sleep(tonk)
-			channel = self.bot.get_channel(chid)
-			await channel.send(message)
+			await dat.send(message)
 
 
 def setup(bot):
