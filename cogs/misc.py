@@ -70,6 +70,16 @@ class Misc(commands.Cog):
 		await ctx.channel.purge(limit=1+int(amount))
 		await ctx.send(f'Deleted {amount} message(s)', delete_after=2)
 
+	@commands.command(name='invite', help='A link to invite me to your server')
+	async def invite(self, ctx):
+		e = discord.Embed(title=self.bot.user.name, description=f'https://discordapp.com/oauth2/authorize?client_id=T{self.bot.user.id}&scope=bot&permissions=202374375')
+		await ctx.send(embed=e)
+
+	@commands.command(help='Sends the docs for my API')
+	async def potatoapi(self, ctx):
+		e = discord.Embed(title='PotatoAPI', description='https://www.potatoapi.ml/docs')
+		await ctx.send(embed=e)
+
 
 	@commands.command(name='activity', aliases=['a'])
 	@commands.is_owner()

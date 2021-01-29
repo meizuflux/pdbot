@@ -314,26 +314,26 @@ class image(commands.Cog):
 				avimg = BytesIO(await image.url.read())
 			else:
 				img = image or ctx.author
-				avimg = BytesIO(await img.avatar_url_as(format="png").read())
+				avimg = BytesIO(await img.avatar_url_as(format="jpeg").read())
 
 			def sync_func():
 				image = Image.open(avimg)
-				ci = image.convert("RGBA")
-				im = Image.open("assets/wanted.png")
-				im = im.convert("RGBA")
+				ci = image.convert("RGB")
+				im = Image.open("assets/wanted.jpeg")
+				im = im.convert("RGB")
 				tp = ci.resize((800, 800), 0)
 				im.paste(tp, (200, 450))
 				byt = BytesIO()
-				im.save(byt, format='png')
+				im.save(byt, format='jpeg')
 				byt.seek(0)
-				file = discord.File(fp=byt, filename="communism.png")
+				file = discord.File(fp=byt, filename="wanted.jpeg")
 				return file
 
 			async def async_func():
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
 				emed=discord.Embed(title='Arrest them!', color=0x2F3136)
-				emed.set_image(url='attachment://communism.png')
+				emed.set_image(url='attachment://wanted.jpeg')
 				end = time.perf_counter()
 				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 				await ctx.send(embed=emed, file=file)
@@ -395,19 +395,19 @@ class image(commands.Cog):
 				img2 = img2.resize((50, 50))
 				nuts = Image.open("assets/stretchnuts.png")
 				nuts = nuts.convert("RGBA")
-				nuts.paste(image, (250, 100))
-				nuts.paste(img2, (650, 0))
+				nuts.paste(image, (160, 8))
+				nuts.paste(img2, (16, 8))
 				byt = BytesIO()
 				nuts.save(byt, format='png')
 				byt.seek(0)
-				file = discord.File(fp=byt, filename="obama.png")
+				file = discord.File(fp=byt, filename="nut.png")
 				return file
 
 			async def async_func():
 				thing = functools.partial(sync_func, img2)
 				file = await self.bot.loop.run_in_executor(None, thing)
-				emed=discord.Embed(title='Treat yourself nicely!', color=0x2F3136)
-				emed.set_image(url='attachment://obama.png')
+				emed=discord.Embed(title='nutted', color=0x2F3136)
+				emed.set_image(url='attachment://nut.png')
 				end = time.perf_counter()
 				emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 				await ctx.send(embed=emed, file=file)
