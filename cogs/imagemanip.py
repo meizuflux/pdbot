@@ -111,42 +111,6 @@ class image(commands.Cog):
 			await ctx.send(embed=embed, file=file)	
 
 	@commands.command()
-	async def slowwanted(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		async with ctx.typing():
-			#if ctx.message.attachments: busted rn
-				#url = str(ctx.message.attachments[0].url)
-			if isinstance(image, discord.PartialEmoji):
-				url = str(image.url)
-			else:
-				img = image or ctx.author
-				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await self.bot.dagpi.image_process(ImageFeatures.wanted(), url)
-			file = discord.File(fp=img.image,filename=f"wanted.{img.format}")
-			embed = discord.Embed(colour=0x2F3136)
-			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url="attachment://wanted.png")
-			embed.set_footer(text="Powered by the Dagpi API")
-			await ctx.send(embed=embed, file=file)
-
-	@commands.command()
-	async def slowobama(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		async with ctx.typing():
-			#if ctx.message.attachments: busted rn
-				#url = str(ctx.message.attachments[0].url)
-			if isinstance(image, discord.PartialEmoji):
-				url = str(image.url)
-			else:
-				img = image or ctx.author
-				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await self.bot.dagpi.image_process(ImageFeatures.obama(), url)
-			file = discord.File(fp=img.image,filename=f"obama.{img.format}")
-			embed = discord.Embed(colour=0x2F3136)
-			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url="attachment://obama.png")
-			embed.set_footer(text="Powered by the Dagpi API")
-			await ctx.send(embed=embed, file=file)
-
-	@commands.command()
 	async def twitter(self, ctx, user: discord.Member, *, text: str):
 		async with ctx.typing():
 			url = str(user.avatar_url_as(static_format='png', format='png', size=512))
@@ -163,10 +127,6 @@ class image(commands.Cog):
 	@commands.command(name='5g1g')
 	async def fgog(self, ctx, user1: discord.Member, user2: discord.Member):
 		async with ctx.typing():
-			#if ctx.message.attachments: busted rn
-				#url = str(ctx.message.attachments[0].url)
-			#if isinstance(image, discord.PartialEmoji):
-				#url = str(image.url)
 			url = str(user1.avatar_url_as(static_format='png', format='png', size=512))
 			url2 = str(user2.avatar_url_as(static_format='png', format='png', size=512))
 			img = await self.bot.dagpi.image_process(ImageFeatures.five_guys_one_girl(), url=url, url2=url2)
@@ -225,8 +185,6 @@ class image(commands.Cog):
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(ctx, image, method='rotate180')
 
-
-
 	@commands.command(help='makes an image communist')
 	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		start = time.perf_counter()
@@ -254,7 +212,6 @@ class image(commands.Cog):
 				return file
 
 			async def async_func():
-				
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
 				end = time.perf_counter()
@@ -293,7 +250,6 @@ class image(commands.Cog):
 				return file
 
 			async def async_func():
-				
 				thing = functools.partial(sync_func)
 				file = await self.bot.loop.run_in_executor(None, thing)
 				end = time.perf_counter()
@@ -482,8 +438,6 @@ class image(commands.Cog):
 			await ctx.send('Width can be 1000 pixels wide at max!')
 		elif height > 501:
 			await ctx.send('Height can be 500 pixels tall at max!')
-
-
 
 def setup(bot):
 	bot.add_cog(image(bot))

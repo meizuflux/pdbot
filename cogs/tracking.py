@@ -25,7 +25,7 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 			with open("prefixes.json", "r") as f:
 				prefix = json.load(f)
 			await message.add_reaction('<:what:791007602745671701>')
-			await message.channel.send(f"Hello <@{message.author.id}>, my prefix on this server is `{prefix[str(message.guild.id)]}`")
+			await message.channel.send(f"Hello <@{message.author.id}>, my prefix on this server is `{prefix[str(message.guild.id)]}`. You can do `{prefix[str(message.guild.id)]}help` to view all my commands.")
 
 def setup(bot):
 	bot.add_cog(tracking(bot))

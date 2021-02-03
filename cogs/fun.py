@@ -58,13 +58,10 @@ class fun(commands.Cog):
 
 	@commands.command()
 	async def ppsize(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
-		size = '='*random.randint(2, 20)
-		if user.id == self.bot.author_id:
-			size = '='*50
-		e = discord.Embed(description=f'8{size}D')
-		await ctx.send(embed=e)
+		async with self.bot.session('https://www.potatoapi.com/ppsize') as f:
+			f = await f.json()
+			e = discord.Embed(description=f['size'])
+			await ctx.send(embed=e)
 
 	@commands.command(name='blue', help='blue')
 	async def blue(self, ctx):
