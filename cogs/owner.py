@@ -37,6 +37,24 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
+    @commands.command()
+    @commands.is_owner()
+    async def disable(self, ctx, command):
+        command = self.bot.get_command(command)
+        if not command.enabled:
+            return await ctx.send("This command is already disabled.")
+        command.enabled = False
+        await ctx.send(f"Disabled {command.name} command.")
+
+    @commands.command()
+    @commands.is_owner()
+    async def enable(self, ctx, command):
+        command = self.bot.get_command(command)
+        if command.enabled:
+            return await ctx.send("This command is already enabled.")
+        command.enabled = True
+        await ctx.send(f"Enabled {command.name} command.")
+
     @commands.group()
     @commands.is_owner()
     async def change(self, ctx):
@@ -138,12 +156,7 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
 
-    @commands.command()
-    @commands.is_owner()
-    async def reboot(self, ctx):
-    	await ctx.send('Rebooting now ...')
-    	time.sleep(1)
-    	sys.exit(0)
+
 
 	
 def setup(bot):
