@@ -23,7 +23,7 @@ bot.author_id = 777893499471265802
 bot.dagpi = asyncdagpi.Client(dagpikey)
 bot.session = aiohttp.ClientSession()
 bot.embed_color = 0x9c5cb4 #0x1E90FF
-bot.help_command = MyNewHelp()
+bot.help_command = MyNewHelp(command_attrs=dict(hidden=True))
 
 token = os.environ['DTOKEN']
 

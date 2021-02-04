@@ -2,15 +2,16 @@ import discord
 from discord.ext import commands
 
 class MyNewHelp(commands.MinimalHelpCommand):
+
 	def get_opening_note(self):
 		return "<> means the argument is required\n[] means the argument is optional"
 
 	def add_bot_commands_formatting(self, commands, heading):
 		if commands:
-			# U+2002 Middle Dot
-			joined = '\u2002•\u2002'.join(c.name for c in commands)
+			joined = '`\u2002•\u2002`'.join(c.name for c in commands)
 			self.paginator.add_line('**%s**' % heading)
-			self.paginator.add_line(joined)
+			self.paginator.add_line(f'`{joined}`')
+			self.paginator.add_line('')
 
 	def get_ending_note(self):
 		command_name = self.invoked_with
