@@ -15,6 +15,7 @@ class image(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	#thanks PB https://github.com/PB4162/PB-Bot
 	@staticmethod
 	async def manip(self, ctx, image, *, method: str, method_args: list = None, text: str = None):
 		start = time.perf_counter()
@@ -28,6 +29,7 @@ class image(commands.Cog):
 				img = image or ctx.author
 				img = polaroid.Image(await img.avatar_url_as(format="png").read())
 			# manipulate the image
+			img.resize(500, 500, 1)
 			if method_args is None:
 			        method_args = []
 			method = getattr(img, method)

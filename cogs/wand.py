@@ -54,6 +54,7 @@ class wand(commands.Cog, command_attrs=dict(hidden=True)):
 			i = Image(blob=avimg)
 			i.format = 'jpg'
 			#thanks daggy https://github.com/daggy1234/dagpi-image
+			i.virtual_pixel = "mirror"
 			i.resize(250, 250)
 			x, y = i.width, i.height
 			arguments = (0, 0, 77, 153, x, 0, 179, 153, 0, y, 51, 255, x, y, 204, 255)
