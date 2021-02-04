@@ -16,7 +16,7 @@ class image(commands.Cog):
 		self.bot = bot
 
 	@staticmethod
-	async def manip(ctx, image, *, method: str, method_args: list = None, text: str = None):
+	async def manip(self, ctx, image, *, method: str, method_args: list = None, text: str = None):
 		start = time.perf_counter()
 		async with ctx.typing():
 		# get the image
@@ -139,51 +139,51 @@ class image(commands.Cog):
 
 	@commands.command(help='Makes an image rainbowey')
 	async def rainbow(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='apply_gradient')
+		await self.manip(self, ctx, image, method='apply_gradient')
 
 	@commands.command(help='like putin')
 	async def wide(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='resize', method_args=(2000, 900, 1), text='ｗｉｄｅ')
+		await self.manip(self, ctx, image, method='resize', method_args=(2000, 900, 1), text='ｗｉｄｅ')
 
 	@commands.command(help='Inverts an image')
 	async def invert(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='invert')
+		await self.manip(self, ctx, image, method='invert')
 
 	@commands.command(help='It\'s like looking in a mirror')
 	async def flip(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='fliph')
+		await self.manip(self, ctx, image, method='fliph')
 
 	@commands.command(help='Blurs an image? Duh')
 	async def blur(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='box_blur')
+		await self.manip(self, ctx, image, method='box_blur')
 
 	@commands.command(help='cursed')
 	async def sobelh(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='sobel_horizontal')
+		await self.manip(self, ctx, image, method='sobel_horizontal')
 
 	@commands.command(help='cursed')
 	async def sobelv(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='sobel_vertical')
+		await self.manip(self, ctx, image, method='sobel_vertical')
 
 	@commands.command(help='Decomposes the image')
 	async def decompose(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='decompose_max')
+		await self.manip(self, ctx, image, method='decompose_max')
 
 	@commands.command(help='Turns an image black and white')
 	async def grayscale(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='grayscale')
+		await self.manip(self, ctx, image, method='grayscale')
 		
 	@commands.command(help='Solarizes an image')
 	async def solarize(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='solarize')
+		await self.manip(self, ctx, image, method='solarize')
 		
 	@commands.command(help='Rotates an image sideways')
 	async def sideways(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='rotate90')
+		await self.manip(self, ctx, image, method='rotate90')
 
 	@commands.command(help='Rotates an image upsidedown', example='upsidedown person')
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		await self.manip(ctx, image, method='rotate180')
+		await self.manip(self, ctx, image, method='rotate180')
 
 	@commands.command(help='makes an image communist')
 	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
