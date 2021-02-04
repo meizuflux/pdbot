@@ -9,6 +9,7 @@ from iso639 import languages
 import async_google_trans_new
 import datetime
 import lyricsgenius
+import utils.embed
 geniustoken = os.environ['genius']
 genius = lyricsgenius.Genius(geniustoken)
 flipnotetoken = os.environ['tflipnote']
@@ -151,7 +152,7 @@ class fun(commands.Cog):
 	@commands.command(help='OwO owoifys a text stwing ( ͡° ᴥ ͡°)')
 	async def owoify(self, ctx, *, text: str):
 		uwu = OwO()
-		await ctx.send(uwu.whatsthis(text))
+		await utils.embed.send_in_embed(ctx, uwu.whatsthis(text))
 
 	@commands.command()
 	async def xkcd(self, ctx, query: int = None):
