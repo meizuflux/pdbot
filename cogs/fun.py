@@ -3,6 +3,7 @@ import discord
 import os
 import aiohttp
 import onetimepad
+from owotext import OwO
 import random
 from iso639 import languages
 import async_google_trans_new
@@ -147,6 +148,11 @@ class fun(commands.Cog):
 		catemb.set_footer(text='Powered by TheCatAPI')
 		await ctx.send(embed=catemb)
 
+	@commands.command(help='OwO owoifys a text stwing ( ͡° ᴥ ͡°)')
+	async def owoify(self, ctx, *, text: str):
+		uwu = OwO()
+		await ctx.send(uwu.whatsthis(text))
+
 	@commands.command()
 	async def xkcd(self, ctx, query: int = None):
 		async with ctx.typing():
@@ -206,9 +212,6 @@ class fun(commands.Cog):
 			emb.add_field(name='Input:', value=f'```\n{text}\n```')
 			emb.add_field(name='Output:', value=f'```\n{resp["text"]}\n```', inline=False)
 			await ctx.send(embed=emb)
-
-
-
 
 
 

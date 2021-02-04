@@ -340,6 +340,14 @@ version = "1.4"
 
 [[package]]
 category = "main"
+description = "A Python library for converting text strings into OwO"
+name = "owotext"
+optional = false
+python-versions = "*"
+version = "1.1.1"
+
+[[package]]
+category = "main"
 description = "Python Imaging Library (Fork)"
 name = "pillow"
 optional = false
@@ -514,7 +522,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "bca8b04948d2c85c20ad74622351558ba11cdec13fd93348a153fe129bedbb99"
+content-hash = "d154d6334a463952b8e599ae7dce4428c404786b363061a54c3f62cbb826c97b"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -755,6 +763,10 @@ multidict = [
 ]
 onetimepad = [
     {file = "onetimepad-1.4.tar.gz", hash = "sha256:1eaade76d8036e1cb79e944b75874bfe5ee4046a571c0724564e1721565c73fd"},
+]
+owotext = [
+    {file = "owotext-1.1.1-py3-none-any.whl", hash = "sha256:cf7653d7b31609443be33fc49d4e1b494cd0d0fa4f48048e0a83c773ad8ae554"},
+    {file = "owotext-1.1.1.tar.gz", hash = "sha256:7ed4c07130911df9aa47fc94e12335a20ad972d471ac4cd43bb4747defb88236"},
 ]
 pillow = [
     {file = "Pillow-8.1.0-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:d355502dce85ade85a2511b40b4c61a128902f246504f7de29bbeec1ae27933a"},
