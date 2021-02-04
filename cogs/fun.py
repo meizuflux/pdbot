@@ -40,8 +40,7 @@ class fun(commands.Cog):
 
 	@commands.command(name='astrelladies')
 	async def fakeembed(self, ctx):
-		embed = discord.Embed(title='he ded', description='can we get an f in the chat')
-		embed.colour = 0xFFFFFF  # can be set in 'discord.Embed()' too
+		embed = discord.Embed(title='he ded', description='can we get an f in the chat', color=self.bot.embed_color)
 		embed.set_image(url='https://media.tenor.com/images/b5e65cd0e7a8c8fef19af759a29d1acd/tenor.gif')
 
 		await ctx.send(embed=embed)
@@ -51,16 +50,20 @@ class fun(commands.Cog):
 		language = language.capitalize()
 		lang = languages.get(name=language)
 		g = async_google_trans_new.google_translator()
-		gemb = discord.Embed(title='Google Translation', color=0x2F3136)
+		gemb = discord.Embed(title='Google Translation', color=self.bot.embed_color)
 		gemb.add_field(name='Input:', value=f'```\n{text}\n```')
 		gemb.add_field(name=f'Output in {language}:', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
 		await ctx.send(embed=gemb)
 
 	@commands.command()
 	async def ppsize(self, ctx, user: discord.Member=None):
-		async with self.bot.session('https://www.potatoapi.com/ppsize') as f:
+		if not user:
+			user = ctx.author.name
+		else: 
+			user = user.name
+		async with self.bot.session.get('https://www.potatoapi.ml/ppsize') as f:
 			f = await f.json()
-			e = discord.Embed(description=f['size'])
+			e = discord.Embed(title=f'{user}\'s ppsize:', description=f['size'], color=self.bot.embed_color)
 			await ctx.send(embed=e)
 
 	@commands.command(name='blue', help='blue')
@@ -181,7 +184,7 @@ class fun(commands.Cog):
 	@commands.command(help='Encrypts a message')
 	async def encrypt(self, ctx, *, message: str):
 		cipher = onetimepad.encrypt(message, 'a_random_key')
-		gemb = discord.Embed(title='Encryption', color=0x2F3136)
+		gemb = discord.Embed(title='Encryption', color=self.bot.embed_color)
 		gemb.add_field(name='Input:', value=f'```\n{message}\n```')
 		gemb.add_field(name='Output:', value=f'```\n{cipher}\n```', inline=False)
 		await ctx.send(embed=gemb)
@@ -190,7 +193,7 @@ class fun(commands.Cog):
 	@commands.command(help='Decrypts a message')
 	async def decrypt(self, ctx, *, text: str):
 		msg = onetimepad.decrypt(text, 'a_random_key')
-		gemb = discord.Embed(title='Decryption', color=0x2F3136)
+		gemb = discord.Embed(title='Decryption', color=self.bot.embed_color)
 		gemb.add_field(name='Input:', value=f'```\n{text}\n```')
 		gemb.add_field(name='Output:', value=f'```\n{msg}\n```', inline=False)
 		await ctx.send(embed=gemb)
@@ -199,7 +202,7 @@ class fun(commands.Cog):
 	async def piglatin(self, ctx, *, text: str):
 		async with self.bot.session.get(f'https://www.potatoapi.ml/piglatin/{text}') as resp:
 			resp = await resp.json()
-			emb = discord.Embed(title='Pig Latin!', color=0x2F3136)
+			emb = discord.Embed(title='Pig Latin!', color=self.bot.embed_color)
 			emb.add_field(name='Input:', value=f'```\n{text}\n```')
 			emb.add_field(name='Output:', value=f'```\n{resp["text"]}\n```', inline=False)
 			await ctx.send(embed=emb)

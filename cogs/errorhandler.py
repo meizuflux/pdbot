@@ -43,7 +43,8 @@ class CommandErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send(error)
+            lost = discord.Embed(title='Command not Found', description=f'```{error}```')
+            await ctx.send(embed=lost)
 
         if isinstance(error, commands.DisabledCommand):
             await ctx.send(f'{ctx.command} has been disabled.')

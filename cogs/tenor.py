@@ -24,8 +24,7 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 			if self.bot.user in ctx.message.mentions:
 				await ctx.send('Fuck you')
 			else:
-				embed = discord.Embed(description=f'**<@{ctx.author.id}> smacks {args}! <:POGGER:790605271898259516>**')
-				embed.color = 0x2f3136
+				embed = discord.Embed(description=f'**<@{ctx.author.id}> smacks {args}! <:POGGER:790605271898259516>**', color=self.bot.embed_color)
 				embed.set_image(url=t.random("anime smack"))
 				await ctx.send(embed=embed)
     
@@ -35,8 +34,7 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 		if len(args) == 0:
 			return
 		else:
-			cuteembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> calls {args} cute! <:woah:790662057141731378>')
-			cuteembed.color = 0x2f3136
+			cuteembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> calls {args} cute! <:woah:790662057141731378>', color=self.bot.embed_color)
 			cuteembed.set_image(url=t.random("anime cute"))
 			await ctx.send(embed=cuteembed)
 
@@ -46,18 +44,16 @@ class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False
 		if len(args) == 0:
 			return
 		else:
-			hugembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> hugs {args}! <:floshed:790667091022708757>')
+			hugembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> hugs {args}! <:floshed:790667091022708757>', color=self.bot.embed_color)
 			hugembed.set_image(url=t.random(f"{random.choice(hugtype)}"))
-			hugembed.color = 0x2f3136
 			await ctx.send(embed=hugembed)
 
 
 	@commands.command(name='kiss', help='!kiss <person>')
 	async def kiss(self, ctx, member: str):
 		kisstype = ['anime kiss','anime cute kiss','kiss']
-		hugembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> kisses {member}! <:floshed:790667091022708757>')
+		hugembed = discord.Embed(description=f'🎉 <@{ctx.author.id}> kisses {member}! <:floshed:790667091022708757>', color=self.bot.embed_color)
 		hugembed.set_image(url=t.random(f"{random.choice(kisstype)}"))
-		hugembed.color = 0x2f3136
 		await ctx.send(embed=hugembed)
 
 def setup(bot):

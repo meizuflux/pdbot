@@ -49,7 +49,7 @@ class Misc(commands.Cog):
 		message = await ctx.send("Pinging ...")
 		end = time.perf_counter()
 		duration = (end - start) * 1000
-		pong = discord.Embed(title='Ping', color=0x2F3136)
+		pong = discord.Embed(title='Ping', color=self.bot.embed_color)
 		pong.add_field(name='Typing Latency', value=f'```python\n{round(duration)} ms```')
 		pong.add_field(name='Websocket Latency', value=f'```python\n{round(self.bot.latency * 1000)} ms```')
 		await message.edit(content=None, embed=pong)
@@ -192,7 +192,7 @@ class Misc(commands.Cog):
 				for l in of.readlines():
 					ls += 1
 
-		emb = discord.Embed(colour=0x2F3136)
+		emb = discord.Embed(colour=self.bot.embed_color)
 		#emb.set_thumbnail(url=self.bot.user.avatar_url)
 		emb.set_author(name=self.bot.user.name, url='https://github.com/ppotatoo/pdbot', icon_url=self.bot.user.avatar_url)
 		emb.set_thumbnail(url=self.bot.user.avatar_url)

@@ -48,7 +48,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
 			crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
 			embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
-			embed.color = 0x2f3136
+			embed.color = self.bot.embed_color
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text='Powered by the ScoreSaber API')
@@ -66,7 +66,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				grank = math.ceil(int(data['playerInfo']['rank'])/50)
 				crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
 				embed = discord.Embed(title=f"{data['playerInfo']['playerName']}\'s Profile", url=f"https://new.scoresaber.com/u/{ssid}", description=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp")
-				embed.color = 0x2f3136
+				embed.color = self.bot.embed_color
 				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 				embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 				embed.set_footer(text='Powered by the ScoreSaber API')
@@ -105,8 +105,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				await message.edit(content=f'Searching for `{username}` ...\nFormatting `{username}` to use in the URL...\nGetting `{username}\'s` ID from API ...\nGetting `{username}\'s` stats ...')
 				grank = math.ceil(int(data['playerInfo']['rank'])/50)
 				crank = math.ceil(int(data['playerInfo']['countryRank'])/50)
-				embed = discord.Embed(title="Is this you?")
-				embed.color = 0x2f3136
+				embed = discord.Embed(title="Is this you?", color=self.bot.embed_color)
 				embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 				embed.add_field(name=data['playerInfo']['playerName'], value=f"**Player Ranking:** [#{data['playerInfo']['rank']}](https://new.scoresaber.com/rankings/{grank}) \n**Country Ranking:** {data['playerInfo']['country']} [#{data['playerInfo']['countryRank']}](https://scoresaber.com/global/{crank}&country={data['playerInfo']['country']}) \n**Performance Points:** {data['playerInfo']['pp']}pp", inline=False)
 				embed.set_footer(text='React to this message with ✅ to confirm and ❌ to cancel')
@@ -169,8 +168,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		async with self.bot.session.get(f'https://beatsaver.com/api/maps/detail/{key}', headers=headers) as data:
 			data = await data.json()
 			cortime = time.strftime('%H:%M:%S', time.gmtime(data['metadata']['duration']))
-			embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}")
-			embed.color = 0x2f3136
+			embed = discord.Embed(title=data['name'], url=f"https://beatsaver.com/beatmap/{data['key']}", color=self.bot.embed_color)
 			embed.set_thumbnail(url=f"https://beatsaver.com{data['coverURL']}")
 			embed.add_field(name="Author", value=f"{data['metadata']['songAuthorName']}", inline=False)
 			embed.add_field(name="Mapper", value=f"{data['metadata']['levelAuthorName']}", inline=False)
