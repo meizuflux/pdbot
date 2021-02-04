@@ -9,7 +9,7 @@ from iso639 import languages
 import async_google_trans_new
 import datetime
 import lyricsgenius
-import utils.embed
+import utils.embed as qembed
 geniustoken = os.environ['genius']
 genius = lyricsgenius.Genius(geniustoken)
 flipnotetoken = os.environ['tflipnote']
@@ -32,7 +32,7 @@ class fun(commands.Cog):
 	
 	@commands.command(name='garsh')
 	async def garsh(self, ctx):
-		await ctx.send('ASTRELLA OUTDATED <:Pog:790609728782073876> CERRET OVERRATED <:Pog:790609728782073876> GARSH ACTIVATED')
+		await qembed.send(ctx, 'ASTRELLA OUTDATED <:Pog:790609728782073876> CERRET OVERRATED <:Pog:790609728782073876> GARSH ACTIVATED')
 
 	@commands.command(name='copypasta')
 	async def copypasta(self, ctx):
@@ -70,7 +70,7 @@ class fun(commands.Cog):
 
 	@commands.command(name='blue', help='blue')
 	async def blue(self, ctx):
-		await ctx.send('https://www.youtube.com/watch?v=HiHPjwyzwNk')
+		await qembed.send(ctx, 'https://www.youtube.com/watch?v=HiHPjwyzwNk')
 
 	@commands.command(name='multiply')
 	async def multiply(self, ctx, times: int, *, message=None):
@@ -81,7 +81,7 @@ class fun(commands.Cog):
 		
 	@commands.command(name='rascal')
 	async def r(self, ctx):
-		await ctx.send('I cannot believe it. I can NOT fucking believe it. I simply REFUSE to believe the absolute imcompetent, negligence, of actually not, for ANY of these categories whatsoever, not picking up FUCKING Rascal. This guy doesn\'t get props by anyone, on no one\'s social media radar whatsoever. Everyone\'s talking about like "oh Smurf, ya know, Smurf he\'s-- poor Smurf!" think about Rascal! He literally came into the league at the start of the year, was the BEST Mei. He revolutionized the way you play Echo, and set the guidelines for everyone else in the league for MONTHS! Or pretty much like half the season! And then he comes into the Countdown Cup and plays the Genji, that actually turns the SanFranciscoShockaroundandtheywintheseriesagainstthePhiladelphiaFusion! How is NO ONE, on this PLANET talking about Rascal as one of the most underrated players of the year! It\'s absolutely... HURTING MY SOUL!')
+		await qembed.send(ctx, 'I cannot believe it. I can NOT fucking believe it. I simply REFUSE to believe the absolute imcompetent, negligence, of actually not, for ANY of these categories whatsoever, not picking up FUCKING Rascal. This guy doesn\'t get props by anyone, on no one\'s social media radar whatsoever. Everyone\'s talking about like "oh Smurf, ya know, Smurf he\'s-- poor Smurf!" think about Rascal! He literally came into the league at the start of the year, was the BEST Mei. He revolutionized the way you play Echo, and set the guidelines for everyone else in the league for MONTHS! Or pretty much like half the season! And then he comes into the Countdown Cup and plays the Genji, that actually turns the SanFranciscoShockaroundandtheywintheseriesagainstthePhiladelphiaFusion! How is NO ONE, on this PLANET talking about Rascal as one of the most underrated players of the year! It\'s absolutely... HURTING MY SOUL!')
 
 	@commands.command(name='lyrics')
 	async def lyric(self, ctx, *, songname):
@@ -152,7 +152,7 @@ class fun(commands.Cog):
 	@commands.command(help='OwO owoifys a text stwing ( ͡° ᴥ ͡°)')
 	async def owoify(self, ctx, *, text: str):
 		uwu = OwO()
-		await utils.embed.send_in_embed(ctx, uwu.whatsthis(text))
+		await qembed.send(ctx, uwu.whatsthis(text))
 
 	@commands.command()
 	async def xkcd(self, ctx, query: int = None):

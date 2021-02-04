@@ -4,7 +4,8 @@ import json
 import aiohttp
 import asyncdagpi
 from discord.ext import commands
-from pretty_help import PrettyHelp 	
+from pretty_help import PrettyHelp
+import utils.embed as qembed
 from keep_alive import keep_alive
 from help.help import MyNewHelp
 import datetime
