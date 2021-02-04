@@ -1,4 +1,5 @@
 import discord
+import itertools
 from discord.ext import commands
 
 class MyNewHelp(commands.MinimalHelpCommand):
@@ -11,7 +12,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 			joined = '`\u2002•\u2002`'.join(c.name for c in commands)
 			self.paginator.add_line('**%s**' % heading)
 			self.paginator.add_line(f'`{joined}`')
-			self.paginator.add_line('')
+			self.paginator.add_line()
 
 	def get_ending_note(self):
 		command_name = self.invoked_with
@@ -51,3 +52,32 @@ class MyNewHelp(commands.MinimalHelpCommand):
 			await ctx.send(embed=embed)
 		else:
 			raise error
+
+	async def send_bot_help(self, mapping):
+		ctx = self.context
+		bot = ctx.bot
+
+		if bot.description:
+			self.paginator.add_line(bot.description, empty=True)
+
+		note = self.get_opening_note()
+		if note:
+			self.paginator.add_line(note, empty=True)
+
+		no_category = '\u200b{0.no_category}'.format(self)
+		def get_category(command, *, no_category=no_category):
+			cog = command.cog
+			return cog.qualified_name if cog is not None else no_category
+
+		filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
+		to_iterate = itertools.groupby(filtered, key=get_category)
+
+		for category, commands in to_iterate:
+			commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
+			self.add_bot_commands_formatting(commands, category)
+
+		note = self.get_ending_note()
+		if note:
+			self.paginator.add_line(note)
+
+		await self.send_pages()

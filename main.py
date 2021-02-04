@@ -61,7 +61,8 @@ extensions = [
 	'jishaku',
 	'cogs.beatsaber',
 	'cogs.imagemanip',
-	'cogs.invites'
+	'cogs.invites',
+	'cogs.mongo'
 ]
 
 if __name__ == '__main__':
