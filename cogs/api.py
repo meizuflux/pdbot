@@ -23,7 +23,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 				if data['private'] == True:
 					await ctx.send("Profile is private.")
 				else:
-					embed = discord.Embed(title=data['name'], url=f'https://www.overbuff.com/players/pc/{BattleTag}?mode=competitive', color=0x2f3136, description=f"Level: {data['prestige']}{data['level']} \nEndorsement Level: {data['endorsement']} \nTotal Games Won: {data['gamesWon']}")
+					embed = discord.Embed(title=data['name'], url=f'https://www.overbuff.com/players/pc/{BattleTag}?mode=competitive', color=self.bot.embed_color, description=f"Level: {data['prestige']}{data['level']} \nEndorsement Level: {data['endorsement']} \nTotal Games Won: {data['gamesWon']}")
 					embed.set_thumbnail(url=data['icon'])
 					embed.add_field(name='Competitive Stats', value=f"Tank SR: {data['ratings'][0]['level']}sr \nDamage SR: {data['ratings'][1]['level']}sr \nSupport SR: {data['ratings'][2]['level']}sr")
 					embed.set_footer(text='Powered by https://ow-api.com')
@@ -37,7 +37,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 			async with aiohttp.ClientSession() as cs:
 				async with cs.get('https://www.reddit.com/r/dankmemes/hot.json') as r:
 					res = await r.json()  # returns dict
-					e = discord.Embed(title=res['data']['children'][random.randint(3, 20)]['data']['title'])
+					e = discord.Embed(title=res['data']['children'][random.randint(3, 20)]['data']['title'], color=self.bot.embed_color)
 					e.set_image(url=res['data']['children'][random.randint(3, 20)]['data']['url_overridden_by_dest'])
 					await m.edit(content=None, embed=e)
 		except KeyError:

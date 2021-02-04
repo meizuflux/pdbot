@@ -7,11 +7,6 @@ cogs/__pycache__/
 .py[cod]
 *$py.class
 
-#repl.it files
-.replit
-poetry.lock
-pyproject.toml
-
 # C extensions
 *.so
 
