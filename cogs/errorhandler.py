@@ -51,7 +51,8 @@ class CommandErrorHandler(commands.Cog):
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.author.qembed.send(f'`{ctx.command}` can not be used in Private Messages.')
+                e = discord.Embed(description=f'`{ctx.command}` can not be used in Private Messages.', color=self.bot.embed_color)
+                await ctx.author.send(embed=e)
             except discord.HTTPException:
                 pass
 

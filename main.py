@@ -31,6 +31,7 @@ async def get_prefix(bot, message):
         data = await db.pre.find_one({"_id": str(message.guild.id)})
         # Make sure we have a useable prefix
         if not data or "prefix" not in data:
+            await db.pre.insert_one({"_id": str(message.guild.id)}, {"prefix": "c//"})
             return commands.when_mentioned_or("c//")(bot, message)
         return commands.when_mentioned_or(data["prefix"])(bot, message)
     except:
