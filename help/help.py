@@ -78,15 +78,18 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		for category, commands in to_iterate:
 			commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
 			self.add_bot_commands_formatting(commands, category)
-			
+
 		async with aiohttp.ClientSession() as cs:
 			async with cs.get('https://api.github.com/repos/ppotatoo/pdbot/commits/master') as f:
 				resp = await f.json()
 
-		self.paginator.add_line('**Latest Github Commit:**')
-		self.paginator.add_line(resp["commit"]["message"].capitalize())
-		# self.paginator.add_line('you can also choose to write it yourself')
-		self.paginator.add_line()
+		if resp["commit"]["message"].capitalize().startswith('Minor'):
+			pass
+		else:
+			self.paginator.add_line('**Latest Github Commit:**')
+			self.paginator.add_line(resp["commit"]["message"].capitalize())
+			# self.paginator.add_line('you can also choose to write it yourself')
+			self.paginator.add_line()
 
 		note = self.get_ending_note()
 		if note:
