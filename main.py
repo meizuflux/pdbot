@@ -9,6 +9,12 @@ import utils.embed as qembed
 from keep_alive import keep_alive
 from help.help import MyNewHelp
 import datetime
+import motor.motor_asyncio
+
+client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
+
+db = client.prefixes
+
 dagpikey = os.environ['dagpikey']
 
 
@@ -17,8 +23,22 @@ async def pre(bot, message):
 		prefixes = json.load(f)
 	return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)
 
+async def get_prefix(bot, message):
+    # If dm's
+    if not message.guild:
+        return commands.when_mentioned_or("c//")(bot, message)
+
+    try:
+        data = await db.pre.find_one({"_id": str(message.guild.id)})
+        # Make sure we have a useable prefix
+        if not data or "prefix" not in data:
+            return commands.when_mentioned_or("c//")(bot, message)
+        return commands.when_mentioned_or(data["prefix"])(bot, message)
+    except:
+        return commands.when_mentioned_or("c//")(bot, message)
+
 activity = discord.Activity(type=discord.ActivityType.listening, name='c//help')
-bot = commands.Bot(command_prefix=pre, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, activity=activity, intents=discord.Intents(guilds=True, members=True, messages=True, reactions=True, presences=True))
 #bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
 bot.author_id = 777893499471265802
 bot.dagpi = asyncdagpi.Client(dagpikey)
