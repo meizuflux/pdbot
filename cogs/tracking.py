@@ -4,6 +4,11 @@ import discord
 class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
+		self.bot.counter = 0
+
+	@commands.Cog.listener()
+	async def on_command_completion(self, ctx):
+		self.bot.counter += 1
 		
 
 	@commands.Cog.listener()

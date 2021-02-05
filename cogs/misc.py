@@ -217,7 +217,8 @@ class Misc(commands.Cog):
 		emb.add_field(name='<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
 
 		emb.add_field(name='Line Count', value=f'```{ls:,} lines```', inline=False)
-		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))} commands```', inline=False)
+		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))} commands```', inline=True)
+		emb.add_field(name='Command Use:', value=f'```{self.bot.counter-1} commands since reboot```', inline=True)
 		emb.add_field(name='Guild Count', value=f'```{str(len(self.bot.guilds))} guilds```', inline=False)
 		
 
