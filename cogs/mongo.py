@@ -23,6 +23,7 @@ class mongo(commands.Cog, command_attrs=dict(hidden=True)):
 		await ctx.send(embed=e)
 
 	@commands.command()
+	@commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
 	async def getmongo(self, ctx):
 		prefix = await db.pre.find_one({"_id": str(ctx.guild.id)})
 		await ctx.send(prefix['prefix'])

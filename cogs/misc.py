@@ -11,15 +11,16 @@ import pathlib
 import psutil
 import motor.motor_asyncio
 
-client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
 
-db = client.prefixes
+
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
 	def __init__(self, bot):
 		self.bot = bot
 		self.process = psutil.Process(os.getpid())
+
+		
 
 	def mng_msg():
 		def predicate(ctx):
@@ -50,7 +51,7 @@ class Misc(commands.Cog):
 		end = time.perf_counter()
 		duration = (end - start) * 1000
 		dbstart = time.perf_counter()
-		await db.pre.find_one({"_id": str(ctx.guild.id)})
+		await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
 		dbend = time.perf_counter()
 		dbduration = (dbend - dbstart) * 1000
 		pong = discord.Embed(title='Ping', color=self.bot.embed_color)
