@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import json
+import os
 import motor.motor_asyncio
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
