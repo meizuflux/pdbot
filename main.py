@@ -46,7 +46,6 @@ bot.session = aiohttp.ClientSession()
 bot.embed_color = 0x9c5cb4 #0x1E90FF
 bot.help_command = MyNewHelp(command_attrs=dict(hidden=True))
 
-token = os.environ['DTOKEN']
 
 @bot.event
 async def on_ready():
@@ -78,7 +77,6 @@ extensions = [
 	'cogs.errorhandler',
 	'cogs.owner',
 	'cogs.prefixes',
-	'cogs.wand',
 	'jishaku',
 	'cogs.beatsaber',
 	'cogs.imagemanip',
@@ -91,4 +89,4 @@ if __name__ == '__main__':
 		bot.load_extension(extension)
 		
 keep_alive()
-bot.run(token)
+bot.run(os.environ['DTOKEN'])

@@ -4,7 +4,8 @@ import polaroid
 import functools
 import typing
 import os
-from wand.image import Image
+import wand, wand.color, wand.drawing
+from wand.image import Image as WandImage
 import time
 from PIL import Image
 from asyncdagpi import ImageFeatures
@@ -57,7 +58,7 @@ class image(commands.Cog):
 		embed.set_footer(text="Powered by the AlexFlipnote API")
 		await ctx.send(embed=embed, file=file)
 
-	@commands.command(aliases=['trigger'])
+	@commands.command(aliases=['trigger'], help='Makes you or a user TRIGGERED')
 	async def triggered(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
 			#if ctx.message.attachments: busted rn
@@ -76,25 +77,69 @@ class image(commands.Cog):
 			await ctx.send(embed=embed, file=file)
 			# await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
 
-	@commands.command(help='magik')
-	async def magik(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
-		async with ctx.typing():
-			if isinstance(image, discord.PartialEmoji):
-				url = str(image.url)
-			else:
-				img = image or ctx.author
-				url = str(img.avatar_url_as(static_format='png', format='png', size=512))
-			img = await self.bot.dagpi.image_process(ImageFeatures.magik(), url)
-			file = discord.File(fp=img.image,filename="magik.png")
-			embed = discord.Embed(colour=self.bot.embed_color)
-			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-			embed.set_image(url="attachment://magik.png")
-			embed.set_footer(text="Powered by the Dagpi API")
-			await ctx.send(embed=embed, file=file)
+	@commands.command(aliases=['magik'], help='Warps an image. You can also choose the scale.')
+	async def magic(self, ctx, user: discord.Member=None, scale: int=None):
+		start = time.perf_counter()
+
+		img = user or ctx.author
+		avimg = BytesIO(await img.avatar_url_as(format="jpeg").read())
+		def do_magic():
+			i = WandImage(blob=avimg)
+			i.format = 'jpg'
+			i.liquid_rescale(width=int(i.width * 0.5),
+								height=int(i.height * 0.5),
+								delta_x=int(0.5 * scale) if scale else 1,
+								rigidity=0)
+			i.liquid_rescale(width=int(i.width * 1.5),
+								height=int(i.height * 1.5),
+								delta_x=scale if scale else 2,
+								rigidity=0)
+			byt = i.make_blob()
+			im = polaroid.Image(byt)
+			im.resize(500, 500, 1)
+			file = discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
+			return file
+		final = await self.bot.loop.run_in_executor(None, do_magic)
+
+		emed=discord.Embed(title='mAgiK', color=self.bot.embed_color)
+		emed.set_image(url='attachment://magik.jpg')
+		end = time.perf_counter()
+		emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+
+		await ctx.send(embed=emed, file=final)
+
+	@commands.command(help='Some weird perspective stuff')
+	async def floor(self, ctx, user: discord.Member=None):
+		start = time.perf_counter()
+
+		img = user or ctx.author
+		avimg = BytesIO(await img.avatar_url_as(format="jpeg").read())
+		def do_magic():
+			i = WandImage(blob=avimg)
+			i.format = 'jpg'
+			#thanks daggy https://github.com/daggy1234/dagpi-image
+			i.virtual_pixel = "mirror"
+			i.resize(250, 250)
+			x, y = i.width, i.height
+			arguments = (0, 0, 77, 153, x, 0, 179, 153, 0, y, 51, 255, x, y, 204, 255)
+			i.distort("perspective", arguments)
+			byt = i.make_blob()
+			im = polaroid.Image(byt)
+			im.resize(500, 500, 1)
+			file = discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
+			return file
+		final = await self.bot.loop.run_in_executor(None, do_magic)
+
+		emed=discord.Embed(title='see the floor losers', color=self.bot.embed_color)
+		emed.set_image(url='attachment://magik.jpg')
+		end = time.perf_counter()
+		emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
+
+		await ctx.send(embed=emed, file=final)
 
 	
 
-	@commands.command(aliases=['communism'])
+	@commands.command(help='Overlays the communist logo on a users PFP')
 	async def slowcommunist(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		async with ctx.typing():
 			#if ctx.message.attachments: busted rn
@@ -112,7 +157,7 @@ class image(commands.Cog):
 			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)	
 
-	@commands.command()
+	@commands.command(help='Creates a fake tweet')
 	async def twitter(self, ctx, user: discord.Member, *, text: str):
 		async with ctx.typing():
 			url = str(user.avatar_url_as(static_format='png', format='png', size=512))
@@ -126,7 +171,7 @@ class image(commands.Cog):
 			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 			
-	@commands.command(name='5g1g')
+	@commands.command(name='5g1g', help='The five guys one girl meme')
 	async def fgog(self, ctx, user1: discord.Member, user2: discord.Member):
 		async with ctx.typing():
 			url = str(user1.avatar_url_as(static_format='png', format='png', size=512))
@@ -143,7 +188,7 @@ class image(commands.Cog):
 	async def rainbow(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(self, ctx, image, method='apply_gradient')
 
-	@commands.command(help='like putin')
+	@commands.command(help='Stretches an image')
 	async def wide(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(self, ctx, image, method='resize', method_args=(2000, 900, 1), text='ｗｉｄｅ')
 
@@ -159,7 +204,7 @@ class image(commands.Cog):
 	async def blur(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(self, ctx, image, method='box_blur')
 
-	@commands.command(help='cursed')
+	@commands.command(help='Don\'t really know what this is, but its scary')
 	async def sobelh(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(self, ctx, image, method='sobel_horizontal')
 
@@ -187,7 +232,7 @@ class image(commands.Cog):
 	async def upsidedown(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		await self.manip(self, ctx, image, method='rotate180')
 
-	@commands.command(help='makes an image communist')
+	@commands.command(help='makes an image communist', aliases=['communism'])
 	async def communist(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		start = time.perf_counter()
 		async with ctx.typing():
@@ -223,7 +268,7 @@ class image(commands.Cog):
 				await ctx.send(embed=emed, file=file)
 			await async_func()
 
-	@commands.command(help='blends stuff together')
+	@commands.command(help='blends two users together', aliases=['mesh'])
 	async def blend(self, ctx, image1: typing.Union[discord.PartialEmoji, discord.Member], image2: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		start = time.perf_counter()
 		async with ctx.typing():
@@ -262,7 +307,7 @@ class image(commands.Cog):
 			await async_func()
 
 	#some code from https://github.com/daggy1234, edited by me
-	@commands.command(help='makes an image wanted')
+	@commands.command(help='inserts a user onto a wanted poster')
 	async def wanted(self, ctx, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		start = time.perf_counter()
 		async with ctx.typing():
@@ -409,7 +454,7 @@ class image(commands.Cog):
 			await async_func()
 
 
-	@commands.command(help='Width limit is 1000 and height limit is 500, got that?', hidden=False)
+	@commands.command(help='Width limit is 1000 and height limit is 500, got that?', hidden=False, brief='Resizes an image.')
 	async def resize(self, ctx, width: int, height: int, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
 		if height < 501 and width < 1001:
 			async with ctx.typing():
