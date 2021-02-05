@@ -19,23 +19,11 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 
 	@commands.Cog.listener()
 	async def on_guild_join(self, guild):
-		with open('prefixes.json', 'r') as f:
-			prefixes = json.load(f)
-
-		prefixes[str(guild.id)] = 'c//'
-
-		with open('prefixes.json', 'w') as f:
-			json.dump(prefixes, f, indent=4)
+		await self.bot.prefix_db.pre.insert_one({"_id": str(guild.id)}, {"prefix": "c//"})
 
 	@commands.Cog.listener()
 	async def on_guild_remove(self, guild):
-		with open('prefixes.json', 'r') as f:
-			prefixes = json.load(f)
-
-		prefixes.pop(str(guild.id))
-
-		with open('prefixes.json', 'w') as f:
-			json.dump(prefixes, f, indent=4)
+		await self.bot.prefix_db.pre.delete_many({"_id": str(guild.id)}, {"prefix": "c//"})
 
 	@commands.command(help='Changes the bots prefix')
 	@mng_gld()
