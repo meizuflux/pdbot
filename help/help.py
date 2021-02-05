@@ -84,6 +84,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 
 		self.paginator.add_line('**Latest Github Commit**')
 		self.paginator.add_line(resp["commit"]["message"].capitalize())
+		# self.paginator.add_line('you can also choose to write it yourself')
 		self.paginator.add_line()
 
 		note = self.get_ending_note()
