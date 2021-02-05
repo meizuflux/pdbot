@@ -9,6 +9,7 @@ import humanize
 import platform
 import pathlib
 import psutil
+import utils.embed as qembed
 import motor.motor_asyncio
 
 
@@ -42,7 +43,7 @@ class Misc(commands.Cog):
 	
 	@commands.command(name='puppy', help='A cute little puppy doing cute things')
 	async def puppy(self, ctx):
-		await ctx.send('https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11')
+		await qembed.send(ctx, 'https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11')
 
 	@commands.command(name='ping', help='only for cool kids')
 	async def ping(self, ctx):
@@ -65,16 +66,17 @@ class Misc(commands.Cog):
 	async def creator(self, ctx):
 		thelist = ['<:sad:790608581615288320>', '<:DogKek:790932497856725013>', '<:4Head:790667956963115068>', '<:Sadge:789590510225457152>']
 		if ctx.author.id == self.bot.owner_id:
-			await ctx.send('you <:PogYou:791007602741739610>')
+			await qembed.send(ctx, 'you <:PogYou:791007602741739610>')
 		else:
-			await ctx.send(f'not you {random.choice(thelist)}')
+			await qembed.send(ctx, f'not you {random.choice(thelist)}')
 
 	
 	@commands.command(name='purge', help='Purges a set amount of messages in a channel. You and the bot must have manage messages permissions.', brief='Purges a set amount of messages.')
 	@mng_msg()
 	async def purge(self, ctx, amount: int):
 		await ctx.channel.purge(limit=1+int(amount))
-		await ctx.send(f'Deleted {amount} message(s)', delete_after=2)
+		e = discord.Embed(description=f'Deleted {amount} message(s)', color=self.bot.embed_color)
+		await ctx.send(embed=e, delete_after=2)
 
 	@commands.command(help='A link to invite the bot to your server')
 	async def invite(self, ctx):
@@ -85,7 +87,6 @@ class Misc(commands.Cog):
 	async def potatoapi(self, ctx):
 		e = discord.Embed(title='PotatoAPI', description='https://www.potatoapi.ml/docs')
 		await ctx.send(embed=e)
-
 
 	@commands.command(name='activity', aliases=['a', 'presence'], help='Changes the bot presence. Owner only.', hidden=True)
 	@commands.is_owner()
@@ -103,7 +104,7 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Streaming(name=activity, url='https://twitch.tv/ppotatoo_'))
 		if atype == 'competing':
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
-		await ctx.send(f'Set activity to `{activity}` with type `{atype}` ')
+		await qembed.send(ctx, f'Set activity to `{activity}` with type `{atype}` ')
 	
 	@commands.command(name='whois', aliases=['ui', 'userinformation'], help='Gets info about a user.')
 	async def who(self, ctx, member: discord.Member=None):
