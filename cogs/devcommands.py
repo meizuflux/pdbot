@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import os
 from utils import default
+import utils.embed as qembed
 
 
 class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hidden=True)):
@@ -28,9 +29,9 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 		if cog in extensions:
 			self.bot.unload_extension(cog)  # Unloads the cog
 			self.bot.load_extension(cog)  # Loads the cog
-			await ctx.send('Done')  # Sends a message where content='Done'
+			await qembed.send(ctx, 'Done')  # Sends a message where content='Done'
 		else:
-			await ctx.send('Unknown Cog')  # If the cog isn't found/loaded.
+			await qembed.send(ctx, 'Unknown Cog')  # If the cog isn't found/loaded.
 
 	@commands.command()
 	async def reloadall(self, ctx):
@@ -48,12 +49,12 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 
 	    if error_collection:
 	        output = "\n".join([f"**{g[0]}** ```diff\n- {g[1]}```" for g in error_collection])
-	        return await ctx.send(
+	        return await qembed.send(ctx, 
                 f"Attempted to reload all extensions, was able to reload, "
                 f"however the following failed...\n\n{output}"
             )
 
-	    await ctx.send("Successfully reloaded all extensions")
+	    await qembed.send(ctx, "Successfully reloaded all extensions")
 	
 	@commands.command(name="unload", aliases=['ul']) 
 	async def unload(self, ctx, cog):
@@ -62,10 +63,10 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 		'''
 		extensions = self.bot.extensions
 		if cog not in extensions:
-			await ctx.send("Cog is not loaded!")
+			await qembed.send(ctx, "Cog is not loaded!")
 			return
 		self.bot.unload_extension(cog)
-		await ctx.send(f"`{cog}` has successfully been unloaded.")
+		await qembed.send(ctx, f"`{cog}` has successfully been unloaded.")
 	
 	@commands.command(name="load")
 	async def load(self, ctx, cog):
@@ -75,10 +76,10 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 		try:
 
 			self.bot.load_extension(cog)
-			await ctx.send(f"`{cog}` has successfully been loaded.")
+			await qembed.send(ctx, f"`{cog}` has successfully been loaded.")
 
 		except commands.errors.ExtensionNotFound:
-			await ctx.send(f"`{cog}` does not exist!")
+			await qembed.send(ctx, f"`{cog}` does not exist!")
 
 	@commands.command(name="listcogs", aliases=['lc'])
 	async def listcogs(self, ctx):
@@ -88,7 +89,7 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 		base_string = "```css\n"  # Gives some styling to the list (on pc side)
 		base_string += "\n".join([str(cog) for cog in self.bot.extensions])
 		base_string += "\n```"
-		await ctx.send(base_string)
+		await qembed.send(ctx, base_string)
 
 
 
