@@ -82,8 +82,8 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		async with aiohttp.ClientSession().get('https://api.github.com/repos/ppotatoo/pdbot/commits/master') as f:
 			resp = await f.json()
 
-		self.paginator.add_line('**Updates**')
-		self.paginator.add_line(resp["message"])
+		self.paginator.add_line('**Latest Github Commit**')
+		self.paginator.add_line(resp["commit"]["message"])
 		self.paginator.add_line()
 
 		note = self.get_ending_note()
