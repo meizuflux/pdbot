@@ -42,7 +42,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		embed.add_field(
             name="Usage", value=f"```{self.get_command_signature(command)}```", inline=False
         )
-		embed.set_footer(self.get_ending_note())
+		embed.set_footer(text='<arg>  means the argument is required\n[arg]  means the argument is optional')
 		channel = self.get_destination()
 		await channel.send(embed=embed)
 
