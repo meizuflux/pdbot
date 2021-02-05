@@ -9,6 +9,11 @@ import humanize
 import platform
 import pathlib
 import psutil
+import motor.motor_asyncio
+
+client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
+
+db = client.prefixes
 
 class Misc(commands.Cog):
 	"""For commands that don't really have a category"""
@@ -25,13 +30,8 @@ class Misc(commands.Cog):
 			else: 
 				return False
 		return commands.check(predicate)
-		
-	@commands.command(name='guilds', help='list of guilds')
-	async def guilds(self, ctx):
-		for guild in self.bot.guilds:
-			await ctx.send(guild)
 
-	@commands.command(name='pfp', help='just use it 4Head')
+	@commands.command(aliases=['avatar'], help='Gets the profile picture of a user')
 	async def pfp(self, ctx, *, user: discord.Member=None):
 		if not user:
 			user = ctx.author
@@ -49,28 +49,33 @@ class Misc(commands.Cog):
 		message = await ctx.send("Pinging ...")
 		end = time.perf_counter()
 		duration = (end - start) * 1000
+		dbstart = time.perf_counter()
+		await db.pre.find_one({"_id": str(ctx.guild.id)})
+		dbend = time.perf_counter()
+		dbduration = (dbend - dbstart) * 1000
 		pong = discord.Embed(title='Ping', color=self.bot.embed_color)
 		pong.add_field(name='Typing Latency', value=f'```python\n{round(duration)} ms```')
 		pong.add_field(name='Websocket Latency', value=f'```python\n{round(self.bot.latency * 1000)} ms```')
+		pong.add_field(name='Database Latency', value=f'```python\n{round(dbduration)} ms```')
 		await message.edit(content=None, embed=pong)
 		
 		
-	@commands.command(name='creator', help='use it')
+	@commands.command(name='creator', help='Checks if you are the creator')
 	async def creator(self, ctx):
 		thelist = ['<:sad:790608581615288320>', '<:DogKek:790932497856725013>', '<:4Head:790667956963115068>', '<:Sadge:789590510225457152>']
-		if ctx.author.id == int(777893499471265802):
+		if ctx.author.id == self.bot.owner_id:
 			await ctx.send('you <:PogYou:791007602741739610>')
 		else:
 			await ctx.send(f'not you {random.choice(thelist)}')
 
 	
-	@commands.command(name='purge')
-	@mng_msg() # can also do manage_guild, your choice.
+	@commands.command(name='purge', help='Purges a set amount of messages in a channel. You and the bot must have manage messages permissions.', brief='Purges a set amount of messages.')
+	@mng_msg()
 	async def purge(self, ctx, amount: int):
 		await ctx.channel.purge(limit=1+int(amount))
 		await ctx.send(f'Deleted {amount} message(s)', delete_after=2)
 
-	@commands.command(name='invite', help='A link to invite me to your server')
+	@commands.command(help='A link to invite the bot to your server')
 	async def invite(self, ctx):
 		e = discord.Embed(title=self.bot.user.name, description=f'https://discordapp.com/oauth2/authorize?client_id=T{self.bot.user.id}&scope=bot&permissions=202374375')
 		await ctx.send(embed=e)
@@ -81,7 +86,7 @@ class Misc(commands.Cog):
 		await ctx.send(embed=e)
 
 
-	@commands.command(name='activity', aliases=['a'])
+	@commands.command(name='activity', aliases=['a', 'presence'], help='Changes the bot presence. Owner only.', hidden=True)
 	@commands.is_owner()
 	async def presence(self, ctx, atype: str, *, activity=None):
 		atype = atype.lower()
@@ -99,14 +104,14 @@ class Misc(commands.Cog):
 			await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=activity))
 		await ctx.send(f'Set activity to `{activity}` with type `{atype}` ')
 	
-	@commands.command(name='whois', aliases=['ui', 'userinformation'])
+	@commands.command(name='whois', aliases=['ui', 'userinformation'], help='Gets info about a user.')
 	async def who(self, ctx, member: discord.Member=None):
 		if member == None:
 			member = ctx.author
 		mention_roles = [i.mention for i in member.roles[1:]]
 		join = member.joined_at.strftime("%m/%d/%Y")
 		create = member.created_at.strftime("%m/%d/%Y")
-		embed=discord.Embed(title=str(member), description=f'**Joined:** {join}\n**Account Creation:** {create}')
+		embed=discord.Embed(title=str(member), description=f'**Joined:** {join}\n**Account Creation:** {create}', color=self.bot.embed_color)
 		embed.set_thumbnail(url=member.avatar_url)
 		if len(mention_roles) == 0:
 			embed.add_field(name='Roles', value='This user has no roles')
@@ -119,7 +124,7 @@ class Misc(commands.Cog):
 			embed.set_footer(text=member.id)
 		await ctx.send(embed=embed)
 
-	@commands.command(name='serverinfo', usage='', help='Shows info about the server')
+	@commands.command(name='serverinfo', usage='', help='Shows info about the server.')
 	async def sinfo(self, ctx):
 		guild = ctx.guild
 		roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
@@ -133,7 +138,7 @@ class Misc(commands.Cog):
 		e.set_footer(text='Created').timestamp = guild.created_at
 		await ctx.send(embed=e)
 
-	@commands.command()
+	@commands.command(help='Gets the link to the source of a command', brief='Gets the source of a command')
 	async def source(self, ctx, *, command: str = None):
 		source_url = 'https://github.com/ppotatoo/pdbot'
 		branch = 'master'
@@ -166,7 +171,7 @@ class Misc(commands.Cog):
 			e.set_footer(text='Don\'t forget the Licence!')
 			await ctx.send(embed=e)
 
-	@commands.command(aliases=['information', 'botinfo'])
+	@commands.command(aliases=['information', 'botinfo'], help='Gets info about the bot')
 	async def info(self, ctx):
 		msg = await ctx.send('Getting bot information ...')
 		avgmembers = sum([guild.member_count for guild in self.bot.guilds]) / len(self.bot.guilds)

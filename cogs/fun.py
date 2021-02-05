@@ -22,7 +22,7 @@ class fun(commands.Cog):
 
 	
 
-	@commands.command(name='smolpp', hidden=True)
+	@commands.command(name='smolpp', hidden=True, help='Tells someone that they have a smol pp')
 	async def smolpp(self, ctx, *, thing):
 		message = thing.capitalize()
 		if message == ('You', 'I', 'They'):
@@ -30,17 +30,17 @@ class fun(commands.Cog):
 		else: 
 			await ctx.send(f'{message} has a smol pp')
 	
-	@commands.command(name='garsh')
+	@commands.command(name='garsh', hidden=True)
 	async def garsh(self, ctx):
 		await qembed.send(ctx, 'ASTRELLA OUTDATED <:Pog:790609728782073876> CERRET OVERRATED <:Pog:790609728782073876> GARSH ACTIVATED')
 
-	@commands.command(name='copypasta')
+	@commands.command(name='copypasta', hidden=True)
 	async def copypasta(self, ctx):
 		await ctx.send('https://media.discordapp.net/attachments/788422986717200444/790627982813036580/Screenshot_2020-12-21_at_11.10.48_AM.png')
 		await ctx.send('https://media.discordapp.net/attachments/788422986717200444/790627978774183936/Screenshot_2020-12-21_at_11.13.03_AM.png')
 		await ctx.send('https://media.discordapp.net/attachments/788422986717200444/790627980681543730/Screenshot_2020-12-21_at_11.11.47_AM.png')
 
-	@commands.command(name='astrelladies')
+	@commands.command(name='astrelladies', help='The gif astrella used as he was losing the match')
 	async def fakeembed(self, ctx):
 		embed = discord.Embed(title='he ded', description='can we get an f in the chat', color=self.bot.embed_color)
 		embed.set_image(url='https://media.tenor.com/images/b5e65cd0e7a8c8fef19af759a29d1acd/tenor.gif')
@@ -57,7 +57,7 @@ class fun(commands.Cog):
 		gemb.add_field(name=f'Output in {language}:', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
 		await ctx.send(embed=gemb)
 
-	@commands.command()
+	@commands.command(help='Finds the PPSIZE of a user')
 	async def ppsize(self, ctx, user: discord.Member=None):
 		if not user:
 			user = ctx.author.name
@@ -68,27 +68,23 @@ class fun(commands.Cog):
 			e = discord.Embed(title=f'{user}\'s ppsize:', description=f['size'], color=self.bot.embed_color)
 			await ctx.send(embed=e)
 
-	@commands.command(name='blue', help='blue')
-	async def blue(self, ctx):
-		await qembed.send(ctx, 'https://www.youtube.com/watch?v=HiHPjwyzwNk')
-
-	@commands.command(name='multiply')
+	@commands.command(name='multiply', help='Multiplies a saying.')
 	async def multiply(self, ctx, times: int, *, message=None):
 		if ctx.author.id != self.bot.owner_id and times > 10:
 			await ctx.send('No more than 10 times.')
 		else:
 			await ctx.send(f'{message} '*times)
 		
-	@commands.command(name='rascal')
-	async def r(self, ctx):
+	@commands.command(help='Rascal MVP?')
+	async def rascal(self, ctx):
 		await qembed.send(ctx, 'I cannot believe it. I can NOT fucking believe it. I simply REFUSE to believe the absolute imcompetent, negligence, of actually not, for ANY of these categories whatsoever, not picking up FUCKING Rascal. This guy doesn\'t get props by anyone, on no one\'s social media radar whatsoever. Everyone\'s talking about like "oh Smurf, ya know, Smurf he\'s-- poor Smurf!" think about Rascal! He literally came into the league at the start of the year, was the BEST Mei. He revolutionized the way you play Echo, and set the guidelines for everyone else in the league for MONTHS! Or pretty much like half the season! And then he comes into the Countdown Cup and plays the Genji, that actually turns the SanFranciscoShockaroundandtheywintheseriesagainstthePhiladelphiaFusion! How is NO ONE, on this PLANET talking about Rascal as one of the most underrated players of the year! It\'s absolutely... HURTING MY SOUL!')
 
-	@commands.command(name='lyrics')
+	@commands.command(name='lyrics', help='WIP', hidden=True)
 	async def lyric(self, ctx, *, songname):
 		cs = aiohttp.ClientSession()
 		song = await cs.get('')
 
-	@commands.command(name='chucknorris', aliases=['norris', 'chucknorrisjoke'])
+	@commands.command(name='chucknorris', aliases=['norris', 'chucknorrisjoke'], help='Gets a random Chuck Norris Joke')
 	async def norris(self, ctx):
 		data = await self.bot.session.get('https://api.chucknorris.io/jokes/random')
 		joke = await data.json()
@@ -154,7 +150,7 @@ class fun(commands.Cog):
 		uwu = OwO()
 		await qembed.send(ctx, uwu.whatsthis(text))
 
-	@commands.command()
+	@commands.command(help='Gets a random comic from XKCD')
 	async def xkcd(self, ctx, query: int = None):
 		async with ctx.typing():
 			if isinstance(query, int):

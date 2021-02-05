@@ -20,7 +20,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		if ctx.invoked_subcommand is None:
 		    await ctx.send_help(str(ctx.command))
 
-	@ss.command(name='info', help='As long as your username doesn\'t contain \'+\'')
+	@ss.command(name='info', help='Gets info about a user. This can be yourself or anyone on the Leaderboards', brief='Gets info about a user')
 	async def info(self, ctx, *, username: typing.Union[str, discord.Member]=None):
 		if username is None:
 			try:
@@ -74,13 +74,13 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		except KeyError:
 			await ctx.send('The user is not in the database.')
 
-	@ss.command(name='leaderboard', aliases=['top', 'ranking', 'lb'], help='Shows the top 10 players on the leaderboard right now.')
+	@ss.command(name='leaderboard', aliases=['top', 'ranking', 'lb'], help='Shows the top 12 players on the leaderboard right now.')
 	async def lb(self, ctx):
 		message = await ctx.send('Getting the leaderboard from ScoreSaber ...')
 		async with self.bot.session.get('https://new.scoresaber.com/api/players/1') as r:
 			lb = await r.json()  # returns dict
 		await message.edit(content='Got it! Sending top players ...')
-		r = discord.Embed(title='Top Ten')
+		r = discord.Embed(title='ScoreSaber Leaderboard')
 		tten = lb['players']
 		for number, thing in enumerate(tten, 1):
 			if number < 13:
@@ -159,7 +159,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				e = discord.Embed(description='Cancelled unregistering.')
 				await embed.edit(content=None, embed=e, delete_after=15)				
 
-	@commands.command(name='key', help='!key <keyfrombeatsaver> note: older songs do not show duration')
+	@commands.command(name='key', help='note: older songs do not show duration', brief='Gets info about a song from BeatSaver')
 	async def bsr(self, ctx, key: str):
 		bad = ['Lawless', 'Lightshow']
 		headers = {

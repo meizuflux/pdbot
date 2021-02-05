@@ -1,6 +1,11 @@
 from discord.ext import commands
 import discord
 import json
+import motor.motor_asyncio
+
+client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
+
+db = client.prefixes
 
 class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
@@ -21,10 +26,10 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 				await channel.send(embed=embed)
 				return
 		if message.content == '<@!777964578776285194>':
-			with open("prefixes.json", "r") as f:
-				prefix = json.load(f)
+			prefix = await db.pre.find_one({"_id": str(message.guild.id)})
 			await message.add_reaction('<:what:791007602745671701>')
-			await message.channel.send(f"Hello <@{message.author.id}>, my prefix on this server is `{prefix[str(message.guild.id)]}`. You can do `{prefix[str(message.guild.id)]}help` to view all my commands.")
+			e = discord.Embed(description=f'Hello {message.author.mention}, my prefix on this server is `{prefix["prefix"]}`. You can do `{prefix["prefix"]}help` to view all my commands.', color=self.bot.enbed_color)
+			await message.channel.send(embed=e)
 
 def setup(bot):
 	bot.add_cog(tracking(bot))

@@ -18,7 +18,9 @@ class mongo(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.is_owner()
 	async def mongoprefix(self, ctx, *, test: str):
 		await db.pre.replace_one({"_id": str(ctx.guild.id)}, {"prefix": test})
-		await ctx.send('done')
+		prefix = await db.pre.find_one({"_id": str(ctx.guild.id)})
+		e = discord.Embed(description=f'Changed prefix to `{prefix["prefix"]}` successfully.', color=self.bot.embed_color)
+		await ctx.send(embed=e)
 
 	@commands.command()
 	async def getmongo(self, ctx):
