@@ -4,7 +4,7 @@ import polaroid
 import functools
 import typing
 import os
-import wand, wand.color, wand.drawing
+import wand
 from wand.image import Image as WandImage
 import time
 from PIL import Image

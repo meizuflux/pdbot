@@ -4,12 +4,7 @@ import textwrap
 import io
 import traceback
 from contextlib import redirect_stdout
-import time
 import aiohttp
-import sys
-# to expose to the eval command
-import datetime
-from collections import Counter
 
 
 class Admin(commands.Cog, command_attrs=dict(hidden=True)):
