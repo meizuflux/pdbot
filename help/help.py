@@ -83,7 +83,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 			resp = await f.json()
 
 		self.paginator.add_line('**Latest Github Commit**')
-		self.paginator.add_line(resp["commit"]["message"])
+		self.paginator.add_line(resp["commit"]["message"].capitalize())
 		self.paginator.add_line()
 
 		note = self.get_ending_note()
