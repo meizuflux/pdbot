@@ -30,19 +30,25 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 					message = await ctx.send('Getting stats ...')
 			except KeyError:
 				await ctx.send('You are not in the database')
-		try:
-			if username != None:
-				message = await ctx.send(f'Formatting `{username}` to use in the search ...')
+		else:
+			if isinstance(username, discord.Member):
+				try:
+					with open('data.json', 'r') as f:
+						data = json.load(f)
+						ssid = data['ssinfo'][str(ctx.author.id)]
+				except KeyError:
+					await ctx.send('User is not in the database')
+			
+			if isinstance(username, str):
+				username = username
+				message = await ctx.send('Getting stats ...')
 				user = urllib.parse.quote_plus(username.upper())
 				user = user.replace('+', '%20')
-				await message.edit(content=f'Searching for `{username}`\'s player ID ...')
 				async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
 					url = await url.json()
 					await message.edit(content='Got it!')
 					ssid = url['players'][0]['playerId']
-		except KeyError:
-			await message.edit(content=url['error']['message'])
-		await message.edit(content=f'Grabbing `{username}`\'s stats ...')	
+			
 		async with self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full") as data:
 			data = await data.json()
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
