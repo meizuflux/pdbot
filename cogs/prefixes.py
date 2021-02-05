@@ -23,7 +23,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 
 	@commands.Cog.listener()
 	async def on_guild_remove(self, guild):
-		await self.bot.prefix_db.pre.delete_many({"_id": str(guild.id)}, {"prefix": "c//"})
+		await self.bot.prefix_db.pre.delete_one({"_id": str(guild.id)})
 
 	@commands.command(help='Changes the bots prefix')
 	@mng_gld()

@@ -27,8 +27,9 @@ class Misc(commands.Cog):
 		def predicate(ctx):
 			if ctx.author.id == 777893499471265802:
 				return True
-			if ctx.author.guild_permissions.manage_messages == True:
-				return True
+			if ctx.guild:
+				if ctx.author.guild_permissions.manage_messages == True:
+					return True
 			else: 
 				return False
 		return commands.check(predicate)
@@ -72,6 +73,7 @@ class Misc(commands.Cog):
 
 	
 	@commands.command(name='purge', help='Purges a set amount of messages in a channel. You and the bot must have manage messages permissions.', brief='Purges a set amount of messages.')
+	@commands.guild_only()
 	@mng_msg()
 	async def purge(self, ctx, amount: int):
 		await ctx.channel.purge(limit=1+int(amount))
@@ -126,6 +128,7 @@ class Misc(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command(name='serverinfo', usage='', help='Shows info about the server.')
+	@commands.guild_only()
 	async def sinfo(self, ctx):
 		guild = ctx.guild
 		roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
