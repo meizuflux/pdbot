@@ -1,5 +1,6 @@
 import discord
 import itertools
+import aiohttp
 from discord.ext import commands
 
 class MyNewHelp(commands.MinimalHelpCommand):
@@ -13,6 +14,8 @@ class MyNewHelp(commands.MinimalHelpCommand):
 			self.paginator.add_line('**%s**' % heading)
 			self.paginator.add_line(f'`{joined}`')
 			self.paginator.add_line()
+			
+
 
 	def get_ending_note(self):
 		command_name = self.invoked_with
@@ -75,6 +78,13 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		for category, commands in to_iterate:
 			commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
 			self.add_bot_commands_formatting(commands, category)
+
+		async with aiohttp.ClientSession().get('https://api.github.com/repos/ppotatoo/pdbot/commits/master') as f:
+			resp = await f.json()
+
+		self.paginator.add_line('**Updates**')
+		self.paginator.add_line(resp["message"])
+		self.paginator.add_line()
 
 		note = self.get_ending_note()
 		if note:

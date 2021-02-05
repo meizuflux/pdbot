@@ -4,6 +4,7 @@ import sys
 from utils import default
 from discord.ext import commands
 import json
+import utils.embed as qembed
 
 
 class CommandErrorHandler(commands.Cog):
@@ -23,7 +24,9 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (commands.CommandNotFound, )
+
+        # ignored = (commands.CommandNotFound, ) #if you want to not send error messages
+        ignored = ()
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -34,28 +37,29 @@ class CommandErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.CommandNotFound):
-            lost = discord.Embed(title='Command not Found', description=f'```{error}```')
-            await ctx.send(embed=lost)
+            await qembed.send(ctx, f'{ctx.command} was not found.')
 
-        if isinstance(error, commands.DisabledCommand):
-            await ctx.send(f'{ctx.command} has been disabled.')
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(error)
 
         if isinstance(error, commands.CheckFailure):
-            await ctx.send(
-                'You do not have the correct permissions for this command')
+            await qembed.send('You do not have the correct permissions for this command')
 
         if isinstance(error, discord.Forbidden):
-            await ctx.send('I do not have the correct permissions for this command.')
+            await qembed.send(ctx, 'I do not have the correct permissions for this command.')
+
+        elif isinstance(error, commands.CommandOnCooldown):
+            await qembed.send(ctx, f"This command is on cooldown.\nTry again in `{error.retry_after:.1f}` seconds.")
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.author.send(
-                    f'{ctx.command} can not be used in Private Messages.')
+                await ctx.author.qembed.send(f'{ctx.command} can not be used in Private Messages.')
             except discord.HTTPException:
                 pass
+
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await qembed.send(ctx, f'{error}')
+
+        elif isinstance(error, commands.DisabledCommand):
+            await qembed.send(ctx, f'{ctx.command} has been disabled.')
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
@@ -69,8 +73,6 @@ class CommandErrorHandler(commands.Cog):
                 'Ignoring exception in command {}:'.format(ctx.command),
                 file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-            with open("prefixes.json", "r") as f:
-                prefix = json.load(f)
             error_collection = []
             error_collection.append(
 	                    [default.traceback_maker(error, advance=False)]
