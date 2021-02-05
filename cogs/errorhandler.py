@@ -37,21 +37,21 @@ class CommandErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.CommandNotFound):
-            await qembed.send(ctx, f'{ctx.command} was not found.')
+            await qembed.send(ctx, f'`{ctx.command}` was not found.')
 
 
         if isinstance(error, commands.CheckFailure):
-            await qembed.send('You do not have the correct permissions for this command')
+            await qembed.send(ctx, f'You do not have the correct permissions for `{ctx.command}`')
 
         if isinstance(error, discord.Forbidden):
-            await qembed.send(ctx, 'I do not have the correct permissions for this command.')
+            await qembed.send(ctx, f'I do not have the correct permissions for `{ctx.command}`')
 
         elif isinstance(error, commands.CommandOnCooldown):
             await qembed.send(ctx, f"This command is on cooldown.\nTry again in `{error.retry_after:.1f}` seconds.")
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.author.qembed.send(f'{ctx.command} can not be used in Private Messages.')
+                await ctx.author.qembed.send(f'`{ctx.command}` can not be used in Private Messages.')
             except discord.HTTPException:
                 pass
 
@@ -59,7 +59,7 @@ class CommandErrorHandler(commands.Cog):
             await qembed.send(ctx, f'{error}')
 
         elif isinstance(error, commands.DisabledCommand):
-            await qembed.send(ctx, f'{ctx.command} has been disabled.')
+            await qembed.send(ctx, f'`{ctx.command}` has been disabled.')
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
@@ -78,9 +78,7 @@ class CommandErrorHandler(commands.Cog):
 	                    [default.traceback_maker(error, advance=False)]
                     )
             output = "\n".join([f"```diff\n- {g[0]}```" for g in error_collection])
-            await ctx.send(
-                f"{output}\n¯\_(ツ)_/¯"
-            )
+            await qembed.send(ctx, f"{output}\n¯\_(ツ)_/¯")
 
 
 def setup(bot):
