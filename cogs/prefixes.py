@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import json
+import utils.embed as qembed
 
 class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
@@ -36,26 +37,12 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		with open('prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)
 
-	@commands.command(name='prefix')
+	@commands.command(help='Changes the bots prefix')
 	@mng_gld()
-	async def prefix(self, ctx, prefix: str):
-		if len(prefix) > 5:
-			await ctx.send('Prefixes must be under 5 characters!')
-		else:
-			with open('prefixes.json', 'r') as f:
-				prefixes = json.load(f)
-
-			prefixes[str(ctx.guild.id)] = prefix
-
-			with open('prefixes.json', 'w') as f:
-				json.dump(prefixes, f, indent=4)
-			await ctx.send(f'Set prefix to {prefixes[str(ctx.guild.id)]}')
-
-
-	@prefix.error
-	async def prefix_error(self, ctx, error):
-		if isinstance(error, commands.CheckFailure):
-			await ctx.send('You need manage guild permissions in order to change the prefix. The prefix on this server is '+prefixes[str(ctx.guild.id)])
+	async def prefix(self, ctx, *, prefix):
+		await self.bot.prefix_db.pre.replace_one({"_id": str(ctx.guild.id)}, {"prefix": prefix})
+		prefix = await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
+		await qembed.send(ctx, f'Changed prefix to `{prefix["prefix"]}` successfully.')
 
 def setup(bot):
 	bot.add_cog(prefixes(bot))
