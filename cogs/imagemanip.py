@@ -12,7 +12,7 @@ from asyncdagpi import ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
 
-class image(commands.Cog):
+class image(commands.Cog, name='Image Manipulation'):
 	def __init__(self, bot):
 		self.bot = bot
 

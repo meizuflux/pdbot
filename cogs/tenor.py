@@ -11,7 +11,7 @@ tokens = {'tenor': ttoken,
 t = TenGiphPy.Tenor(token=tokens['tenor'])
 g = TenGiphPy.Giphy(token=tokens['giphy'])
 
-class Tenor(commands.Cog, name='Tenor Commands', command_attrs=dict(hidden=False)):
+class Tenor(commands.Cog, command_attrs=dict(hidden=False)):
 	"""Collection of commands which draw GIFs from Tenor"""
 	def __init__(self, bot):
 		self.bot = bot
