@@ -6,12 +6,12 @@ from discord.ext import commands
 class MyNewHelp(commands.MinimalHelpCommand):
 
 	def get_opening_note(self):
-		return "<> means the argument is required\n[] means the argument is optional"
+		return "`<>` means the argument is required\n`[]` means the argument is optional"
 
 	def add_bot_commands_formatting(self, commands, heading):
 		if commands:
 			joined = '`\u2002•\u2002`'.join(c.name for c in commands)
-			self.paginator.add_line('**%s**' % heading)
+			self.paginator.add_line('**%s commands:**' % heading)
 			self.paginator.add_line(f'`{joined}`')
 			self.paginator.add_line()
 			
@@ -82,7 +82,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		async with aiohttp.ClientSession().get('https://api.github.com/repos/ppotatoo/pdbot/commits/master') as f:
 			resp = await f.json()
 
-		self.paginator.add_line('**Latest Github Commit**')
+		self.paginator.add_line('**Latest Github Commit:**')
 		self.paginator.add_line(resp["commit"]["message"].capitalize())
 		# self.paginator.add_line('you can also choose to write it yourself')
 		self.paginator.add_line()
