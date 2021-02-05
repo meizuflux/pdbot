@@ -50,12 +50,15 @@ class fun(commands.Cog):
 	@commands.command(name='translate', help='Translates text into another language with Google Translate')
 	async def gtr(self, ctx, language, *, text: str):
 		language = language.capitalize()
-		lang = languages.get(name=language)
-		g = async_google_trans_new.google_translator()
-		gemb = discord.Embed(title='Google Translation', color=self.bot.embed_color)
-		gemb.add_field(name='Input:', value=f'```\n{text}\n```')
-		gemb.add_field(name=f'Output in {language}:', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
-		await ctx.send(embed=gemb)
+		try:
+			lang = languages.get(name=language)
+			g = async_google_trans_new.google_translator()
+			gemb = discord.Embed(title='Google Translation', color=self.bot.embed_color)
+			gemb.add_field(name='Input:', value=f'```\n{text}\n```')
+			gemb.add_field(name=f'Output in {language}:', value=f'```\n{await g.translate(text, lang.alpha2)}\n```', inline=False)
+			await ctx.send(embed=gemb)
+		except KeyError:
+			await qembed.send(ctx, 'Language not found.')
 
 	@commands.command(help='Finds the PPSIZE of a user')
 	async def ppsize(self, ctx, user: discord.Member=None):
