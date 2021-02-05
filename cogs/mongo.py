@@ -15,7 +15,8 @@ class mongo(commands.Cog, command_attrs=dict(hidden=True)):
 		self.bot = bot
 
 	@commands.command()
-	async def mongo(self, ctx, *, test: str):
+	@commands.is_owner()
+	async def mongoprefix(self, ctx, *, test: str):
 		await db.pre.replace_one({"_id": str(ctx.guild.id)}, {"prefix": test})
 		await ctx.send('done')
 
