@@ -80,8 +80,7 @@ class Misc(commands.Cog):
 
 	@commands.command(help='A link to invite the bot to your server')
 	async def invite(self, ctx):
-		e = discord.Embed(title=self.bot.user.name, description=f'https://discordapp.com/oauth2/authorize?client_id=T{self.bot.user.id}&scope=bot&permissions=202374375')
-		await ctx.send(embed=e)
+		await qembed.send(ctx, 'https://discord.com/oauth2/authorize?client_id=777964578776285194&scope=bot&permissions=8')
 
 	@commands.command(help='Sends the docs for my API')
 	async def potatoapi(self, ctx):
