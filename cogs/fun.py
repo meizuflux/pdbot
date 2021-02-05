@@ -26,9 +26,9 @@ class fun(commands.Cog):
 	async def smolpp(self, ctx, *, thing):
 		message = thing.capitalize()
 		if message == ('You', 'I', 'They'):
-			await ctx.send(f'{message} have a smol pp')
+			await qembed.send(ctx, f'{message} have a smol pp')
 		else: 
-			await ctx.send(f'{message} has a smol pp')
+			await qembed.send(ctx, f'{message} has a smol pp')
 	
 	@commands.command(name='garsh', hidden=True)
 	async def garsh(self, ctx):
@@ -74,9 +74,9 @@ class fun(commands.Cog):
 	@commands.command(name='multiply', help='Multiplies a saying.')
 	async def multiply(self, ctx, times: int, *, message=None):
 		if ctx.author.id != self.bot.owner_id and times > 10:
-			await ctx.send('No more than 10 times.')
+			await qembed.send(ctx, 'No more than 10 times.')
 		else:
-			await ctx.send(f'{message} '*times)
+			await qembed.send(ctx, f'{message} '*times)
 		
 	@commands.command(help='Rascal MVP?')
 	async def rascal(self, ctx):
@@ -185,7 +185,7 @@ class fun(commands.Cog):
 			monke = ""
 		else:
 			monke = f"{monke.mention}, "
-		await ctx.send(f"https://tenor.com/view/reject-modernity-return-to-monke-monke-gif-19167526\n{monke}return to monke")
+		await qembed.send(ctx, f"https://tenor.com/view/reject-modernity-return-to-monke-monke-gif-19167526\n{monke}return to monke")
 
 	@commands.command(help='Encrypts a message')
 	async def encrypt(self, ctx, *, message: str):
