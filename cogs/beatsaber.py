@@ -27,6 +27,17 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text='Powered by the ScoreSaber API')
 			await ctx.send(embed=embed)
+	
+	@staticmethod
+	async def get_ssid(self, ctx, username):
+		try:
+			user = urllib.parse.quote_plus(username.upper())
+			user = user.replace('+', '%20')
+			async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
+				url = await url.json()
+			return url['players'][0]['playerId']
+		except:
+			return url['error']['message']
 
 	@commands.group(help='Collection of ScoreSaber commands')
 	async def ss(self, ctx):
@@ -36,41 +47,48 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 	@ss.command(help='Gets info about a user. This can be yourself or anyone on the Leaderboards', brief='Gets info about a user')
 	async def info(self, ctx, *, username: typing.Union[discord.Member, str]=None):
 		async with ctx.typing():
-			if username:
-				if isinstance(username, discord.Member):
-					uid = str(username.id)
-				try:
-					if isinstance(username, str):
-						username = username
-						user = urllib.parse.quote_plus(username.upper())
-						user = user.replace('+', '%20')
-						async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
-							url = await url.json()
-							ssid = url['players'][0]['playerId']
-				except KeyError:
-					pass
-			if not username:
-				uid = str(ctx.author.id)
 			try:
-				data = await self.bot.scoresaber.find_one({"_id": uid})
-			except UnboundLocalError:
-				pass
-			try:
-				ssid = data["ssid"]
+				if isinstance(username, str):
+					await self.get_ss_stats(self, ctx, str(username))
+					return
 			except KeyError:
-				await qembed.send(ctx, 'User is not registered!')
+				if len(username) < 3 or len(username) > 32:
+					await qembed.send(ctx, 'Please enter a player name between 3 and 32 characters!')
+				else:
+					await qembed.send(ctx, await self.get_ssid(self, ctx, str(username)))
 				return
-			except UnboundLocalError:
-				pass
-			except TypeError:
-				await qembed.send(ctx, 'You are not registered!')
 			try:
-				await self.get_ss_stats(self, ctx, ssid)
-			except:
+				if isinstance(username, discord.Member):
+					if username in ctx.message.mentions:
+						data = await self.bot.scoresaber.find_one({"_id": str(username.id)})
+						await self.get_ss_stats(self, ctx, data["ssid"])
+					else:
+						try:
+							await self.get_ss_stats(self, ctx, await self.get_ssid(self, ctx, str(username.display_name)))
+						except:
+							if len(username.display_name) < 3 or len(username.display_name) > 32:
+								await qembed.send(ctx, 'Please enter a player name between 3 and 32 characters!')
+							else:
+								await qembed.send(ctx, await self.get_ssid(self, ctx, str(username)))
+			except TypeError:
+				await qembed.send(ctx, 'User is not registered!')
+			if not username:
 				try:
-					await qembed.send(ctx, url['error']['message'])
-				except KeyError:
-					await qembed.send(ctx, 'An error occured!')
+					data = await self.bot.scoresaber.find_one({"_id": str(ctx.author.id)})
+					await self.get_ss_stats(self, ctx, data["ssid"])
+				except TypeError:
+					await qembed.send(ctx, f'You are not registered! Do `{ctx.prefix}help ss register` for info on how to register.')
+
+	@commands.command()
+	async def testing(self, ctx, user: discord.Member):
+		if isinstance(user, discord.Member):
+			if user in ctx.message.mentions:
+				await qembed.send(ctx, 'ok you mentioned someone')
+			else:
+				print(1+2)
+		else:
+			await qembed.send(ctx, 'nice')
+
 			
 
 	@ss.command(name='user', help='Ping a user and get their stats')
