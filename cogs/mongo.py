@@ -21,29 +21,6 @@ class mongo(commands.Cog, command_attrs=dict(hidden=True)):
 		prefix = await db.pre.find_one({"_id": str(ctx.guild.id)})
 		e = discord.Embed(description=f'Changed prefix to `{prefix["prefix"]}` successfully.', color=self.bot.embed_color)
 		await ctx.send(embed=e)
-
-	@commands.command()
-	@commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
-	async def getmongo(self, ctx):
-		prefix = await db.pre.find_one({"_id": str(ctx.guild.id)})
-		await ctx.send(prefix['prefix'])
-
-	@commands.command()
-	async def mongoregister(self, ctx, favorite_color: str):
-		await users.user.insert_one({"_id": str(ctx.author.id), "name": str(ctx.author.name), "favorite color": favorite_color})
-		await ctx.send('registered u')
-
-	@commands.command()
-	async def mongoupdate(self, ctx, favorite_color: str):
-		await users.user.replace_one({"_id": str(ctx.author.id)}, {"favorite color": favorite_color})
-		await ctx.send('yea I updated you loser')
-
-	@commands.command()
-	async def mongocolor(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
-		prefix = await users.user.find_one({"_id": str(user.id)})
-		await ctx.send(prefix['favorite color'])
 	
 def setup(bot):
 	bot.add_cog(mongo(bot))

@@ -66,7 +66,7 @@ class Misc(commands.Cog):
 	@commands.command(name='creator', help='Checks if you are the creator')
 	async def creator(self, ctx):
 		thelist = ['<:sad:790608581615288320>', '<:DogKek:790932497856725013>', '<:4Head:790667956963115068>', '<:Sadge:789590510225457152>']
-		if ctx.author.id == self.bot.owner_id:
+		if ctx.author.id == self.bot.author_id:
 			await qembed.send(ctx, 'you <:PogYou:791007602741739610>')
 		else:
 			await qembed.send(ctx, f'not you {random.choice(thelist)}')
