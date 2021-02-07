@@ -206,7 +206,7 @@ class fun(commands.Cog):
 
 	@commands.command(help='translates some text into pig latin')
 	async def piglatin(self, ctx, *, text: str):
-		async with self.bot.session.get(f'https://www.potatoapi.ml/piglatin/{text}') as resp:
+		async with self.bot.session.get(f'https://www.potatoapi.ml/piglatin?text={text}') as resp:
 			resp = await resp.json()
 			emb = discord.Embed(title='Pig Latin!', color=self.bot.embed_color)
 			emb.add_field(name='Input:', value=f'```\n{text}\n```')
