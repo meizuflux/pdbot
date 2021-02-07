@@ -6,49 +6,17 @@ import math
 import typing
 import json
 import asyncio
+import utils.embed as qembed
 
 
 class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False)):
 	'''Beat Saber Related Commands'''
 	def __init__(self, bot):
 		self.bot = bot
+		self.bot.scoresaber = self.bot.data.scoresaber
 
-	
-
-	@commands.group(help='Collection of ScoreSaber commands')
-	async def ss(self, ctx):
-		if ctx.invoked_subcommand is None:
-		    await ctx.send_help(str(ctx.command))
-
-	@ss.command(name='info', help='Gets info about a user. This can be yourself or anyone on the Leaderboards', brief='Gets info about a user')
-	async def info(self, ctx, *, username: typing.Union[str, discord.Member]=None):
-		if username is None:
-			try:
-				with open('data.json', 'r') as f:
-					data = json.load(f)
-					ssid = data['ssinfo'][str(ctx.author.id)]
-					message = await ctx.send('Getting stats ...')
-			except KeyError:
-				await ctx.send('You are not in the database')
-		else:
-			if isinstance(username, discord.Member):
-				try:
-					with open('data.json', 'r') as f:
-						data = json.load(f)
-						ssid = data['ssinfo'][str(ctx.author.id)]
-				except KeyError:
-					await ctx.send('User is not in the database')
-			
-			if isinstance(username, str):
-				username = username
-				message = await ctx.send('Getting stats ...')
-				user = urllib.parse.quote_plus(username.upper())
-				user = user.replace('+', '%20')
-				async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
-					url = await url.json()
-					await message.edit(content='Got it!')
-					ssid = url['players'][0]['playerId']
-			
+	@staticmethod
+	async def get_ss_stats(self, ctx, ssid):
 		async with self.bot.session.get(f"https://new.scoresaber.com/api/player/{ssid}/full") as data:
 			data = await data.json()
 			grank = math.ceil(int(data['playerInfo']['rank'])/50)
@@ -58,7 +26,45 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			embed.set_thumbnail(url=f"https://new.scoresaber.com{data['playerInfo']['avatar']}")
 			embed.add_field(name='Score Stats', value=f"**Play Count:** {data['scoreStats']['totalPlayCount']} \n**Ranked Play Count:** {data['scoreStats']['rankedPlayCount']} \n**Average Ranked Accuracy:** {data['scoreStats']['averageRankedAccuracy']:.2f}%", inline=False)
 			embed.set_footer(text='Powered by the ScoreSaber API')
-			await message.edit(content=None, embed=embed)
+			await ctx.send(embed=embed)
+
+	@commands.group(help='Collection of ScoreSaber commands')
+	async def ss(self, ctx):
+		if ctx.invoked_subcommand is None:
+		    await ctx.send_help(str(ctx.command))
+
+	@ss.command(help='Gets info about a user. This can be yourself or anyone on the Leaderboards', brief='Gets info about a user')
+	async def info(self, ctx, *, username: typing.Union[discord.Member, str]=None):
+		async with ctx.typing():
+			if username:
+				if isinstance(username, discord.Member):
+					uid = str(username.id)
+				try:
+					if isinstance(username, str):
+						username = username
+						user = urllib.parse.quote_plus(username.upper())
+						user = user.replace('+', '%20')
+						async with self.bot.session.get(f'https://new.scoresaber.com/api/players/by-name/{username}') as url:
+							url = await url.json()
+							ssid = url['players'][0]['playerId']
+				except KeyError:
+					pass
+			if not username:
+				uid = str(ctx.author.id)
+			data = await self.bot.scoresaber.find_one({"_id": "scoresaber"})
+			try:
+				ssid = data[uid]
+			except:
+				await qembed.send(ctx, 'User is not registered!')
+				return
+			try:
+				await self.get_ss_stats(self, ctx, ssid)
+			except:
+				try:
+					await qembed.send(ctx, url['error']['message'])
+				except KeyError:
+					await qembed.send(ctx, 'An error occured!')
+			
 
 	@ss.command(name='user', help='Ping a user and get their stats')
 	async def u(self, ctx, person: discord.Member):
@@ -96,7 +102,6 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		
 	@ss.command(name='register', help='Registers you to a ScoreSaber profile')
 	async def reg(self, ctx, *, username: str):
-
 		message = await ctx.send(f'Searching for `{username}` ...')
 		username = urllib.parse.quote_plus(username.upper())
 		username = username.replace('+', '%20')

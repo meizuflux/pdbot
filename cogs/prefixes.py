@@ -6,6 +6,8 @@ import utils.embed as qembed
 class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
+		self.bot.prefix_db = self.bot.mongo.prefixes
+
     
 	def mng_gld():
 		def predicate(ctx):
