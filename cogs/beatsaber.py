@@ -54,9 +54,11 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 			data = await self.bot.scoresaber.find_one({"_id": "scoresaber"})
 			try:
 				ssid = data[uid]
-			except:
+			except KeyError:
 				await qembed.send(ctx, 'User is not registered!')
 				return
+			except UnboundLocalError:
+				pass
 			try:
 				await self.get_ss_stats(self, ctx, ssid)
 			except:
