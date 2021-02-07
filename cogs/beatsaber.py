@@ -51,14 +51,19 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 					pass
 			if not username:
 				uid = str(ctx.author.id)
-			data = await self.bot.scoresaber.find_one({"_id": "scoresaber"})
 			try:
-				ssid = data[uid]
+				data = await self.bot.scoresaber.find_one({"_id": uid})
+			except UnboundLocalError:
+				pass
+			try:
+				ssid = data["ssid"]
 			except KeyError:
 				await qembed.send(ctx, 'User is not registered!')
 				return
 			except UnboundLocalError:
 				pass
+			except TypeError:
+				await qembed.send(ctx, 'You are not registered!')
 			try:
 				await self.get_ss_stats(self, ctx, ssid)
 			except:
@@ -134,11 +139,10 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 				else:
 					if reaction.emoji == '✅':
 						await message.delete()
-						with open('data.json', 'r') as f:
-							data = json.load(f)
-						data['ssinfo'][str(ctx.author.id)] = ssid
-						with open('data.json', 'w') as f:
-							json.dump(data, f, indent=4)
+						try:
+							await self.bot.scoresaber.insert_one({"_id": str(ctx.author.id), "ssid": ssid})
+						except:
+							await self.bot.scoresaber.replace_one({"_id": str(ctx.author.id)}, {"ssid": ssid})
 						await ctx.send(f'Successfully registered ID `{ssid}` with <@{ctx.author.id}>')
 					if reaction.emoji == '❌':
 						await message.delete()
@@ -162,11 +166,7 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		else:
 			if reaction.emoji == '✅':
 				e = discord.Embed(description=f'Sucessfully removed {ctx.author} and their corresponding ID from the database')
-				with open('data.json', 'r') as f:
-					data = json.load(f)
-					data['ssinfo'].pop(str(ctx.author.id))
-				with open('data.json', 'w') as f:
-					json.dump(data, f, indent=4)
+				await self.bot.scoresaber.delete_one({"_id": str(ctx.author.id)})
 				await embed.edit(content=None, embed=e)
 			if reaction.emoji == '❌':
 				e = discord.Embed(description='Cancelled unregistering.')
