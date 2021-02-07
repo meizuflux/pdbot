@@ -19,6 +19,14 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 category = "main"
+description = "An async wrapper made in Python for Zane API."
+name = "aiozaneapi"
+optional = false
+python-versions = "*"
+version = "1.6"
+
+[[package]]
+category = "main"
 description = "An AST unparser for Python"
 name = "astunparse"
 optional = false
@@ -522,7 +530,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "d154d6334a463952b8e599ae7dce4428c404786b363061a54c3f62cbb826c97b"
+content-hash = "4e6ab779896569a972e2752360976f12b2bb2fa51b6ef0c9ea3b4ba85e301a97"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -564,6 +572,10 @@ aiohttp = [
     {file = "aiohttp-3.7.3-cp39-cp39-win32.whl", hash = "sha256:3b0036c978cbcc4a4512278e98e3e6d9e6b834dc973206162eddf98b586ef1c6"},
     {file = "aiohttp-3.7.3-cp39-cp39-win_amd64.whl", hash = "sha256:e1b95972a0ae3f248a899cdbac92ba2e01d731225f566569311043ce2226f5e7"},
     {file = "aiohttp-3.7.3.tar.gz", hash = "sha256:9c1a81af067e72261c9cbe33ea792893e83bc6aa987bfbd6fdc1e5e7b22777c4"},
+]
+aiozaneapi = [
+    {file = "aiozaneapi-1.6-py3-none-any.whl", hash = "sha256:14d2e94af54604bd6524e44382ec8333ab70997bf626a4fb82541c6cfe0bc3e1"},
+    {file = "aiozaneapi-1.6.tar.gz", hash = "sha256:82b692ab527696089f455bc4aa8241309254db392d4ff3881b4973b853d75784"},
 ]
 astunparse = [
     {file = "astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"},
