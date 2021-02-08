@@ -49,13 +49,14 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 		async with ctx.typing():
 			try:
 				if isinstance(username, str):
-					await self.get_ss_stats(self, ctx, str(username))
+					ssid = await self.get_ssid(self, ctx, str(username))
+					await self.get_ss_stats(self, ctx, ssid)
 					return
 			except KeyError:
 				if len(username) < 3 or len(username) > 32:
 					await qembed.send(ctx, 'Please enter a player name between 3 and 32 characters!')
 				else:
-					await qembed.send(ctx, await self.get_ssid(self, ctx, str(username)))
+					await qembed.send(ctx, await self.get_ss_stats(self, ctx, ssid))
 				return
 			try:
 				if isinstance(username, discord.Member):
@@ -64,12 +65,13 @@ class BeatSaber(commands.Cog, name='Beat Saber', command_attrs=dict(hidden=False
 						await self.get_ss_stats(self, ctx, data["ssid"])
 					else:
 						try:
-							await self.get_ss_stats(self, ctx, await self.get_ssid(self, ctx, str(username.display_name)))
+							u = username.display_name or username
+							await self.get_ss_stats(self, ctx, await self.get_ssid(self, ctx, u))
 						except:
 							if len(username.display_name) < 3 or len(username.display_name) > 32:
 								await qembed.send(ctx, 'Please enter a player name between 3 and 32 characters!')
 							else:
-								await qembed.send(ctx, await self.get_ssid(self, ctx, str(username)))
+								await qembed.send(ctx, 'We could not find any players that matched your search!')
 			except TypeError:
 				await qembed.send(ctx, 'User is not registered!')
 			if not username:
