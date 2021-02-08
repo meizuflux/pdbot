@@ -84,7 +84,7 @@ extensions = [
 	'cogs.imagemanip',
 	'cogs.invites',
 	'cogs.mongo',
-	'cog.zane'
+	'cogs.zane'
 ]
 
 if __name__ == '__main__':
