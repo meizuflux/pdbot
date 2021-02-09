@@ -35,7 +35,6 @@ class Zane(commands.Cog, command_attrs=dict(hidden=False)):
 			embed.set_image(url=f"attachment://{fn}")
 			embed.set_footer(text=f"Backend finished in {end-start:.2f} seconds")
 			await ctx.send(embed=embed, file=file)
-			await self.bot.zaneapi.close()
 
 
 	
