@@ -125,7 +125,8 @@ class fun(commands.Cog):
         joke = await data.json()
         e = discord.Embed(title='Chuck Norris Joke',
                           url=joke['url'],
-                          description=joke['value'])
+                          description=joke['value'],
+						  color=self.bot.embed_color)
         e.set_footer(text=joke['updated_at'])
         e.set_thumbnail(url=joke['icon_url'])
         await ctx.send(embed=e)
@@ -138,7 +139,7 @@ class fun(commands.Cog):
                 'https://waifu.pics/api/sfw/waifu'
         ) as waifu:  # https://waifu.pics/docs DOCS
             waifu = await waifu.json()
-            w = discord.Embed(title=f'Waifu for {user.name}')
+            w = discord.Embed(title=f'Waifu for {user.name}', color=self.bot.embed_color)
             w.set_image(url=waifu['url'])
             w.set_footer(text='Powered by waifu.pics')
             await ctx.send(embed=w)
@@ -157,7 +158,7 @@ class fun(commands.Cog):
                 nasa = await nasa.json()
             nemb = discord.Embed(
                 title=f'NASA Image of the day for {dateintime}',
-                description=nasa['explanation'][:1024])
+                description=nasa['explanation'][:1024], color=self.bot.embed_color)
             try:
                 nemb.add_field(name=nasa['title'])
             except TypeError:
@@ -181,7 +182,8 @@ class fun(commands.Cog):
                 'https://api.thecatapi.com/v1/images/search') as catimg:
             catimg = await catimg.json()
         catemb = discord.Embed(title='Random Cat Fact',
-                               description=cat['text'])
+                               description=cat['text'],
+							   color=self.bot.embed_color)
         catemb.set_thumbnail(url=catimg[0]['url'])
         catemb.set_footer(text='Powered by the Cat Facts API')
         await ctx.send(embed=catemb)
@@ -191,7 +193,7 @@ class fun(commands.Cog):
         async with self.bot.session.get(
                 'https://api.thecatapi.com/v1/images/search') as catimg:
             catimg = await catimg.json()
-        catemb = discord.Embed(title='Random Cat')
+        catemb = discord.Embed(title='Random Cat', color=self.bot.embed_color)
         catemb.set_image(url=catimg[0]['url'])
         catemb.set_footer(text='Powered by TheCatAPI')
         await ctx.send(embed=catemb)
@@ -227,7 +229,7 @@ class fun(commands.Cog):
                 timestamp=datetime.datetime(year=int(data["year"]),
                                             month=int(data["month"]),
                                             day=int(data["day"])),
-                colour=0x2F3136)
+                colour=self.bot.embed_color)
             embed.set_image(url=data["img"])
             embed.set_footer(text="Powered by the XKCD API")
             await ctx.send(embed=embed)

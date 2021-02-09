@@ -36,7 +36,7 @@ class Misc(commands.Cog):
     async def pfp(self, ctx, *, user: discord.Member = None):
         if not user:
             user = ctx.author
-        e = discord.Embed(title=f'Profile Picture for {user.name}')
+        e = discord.Embed(title=f'Profile Picture for {user.name}', color=self.bot.embed_color)
         e.set_image(url=user.avatar_url)
         await ctx.send(embed=e)
 
@@ -102,7 +102,8 @@ class Misc(commands.Cog):
     @commands.command(help='Sends the docs for my API')
     async def potatoapi(self, ctx):
         e = discord.Embed(title='PotatoAPI',
-                          description='https://www.potatoapi.ml/docs')
+                          description='https://www.potatoapi.ml/docs',
+						  color=self.bot.embed_color)
         await ctx.send(embed=e)
 
     @commands.command(name='activity',
@@ -168,7 +169,7 @@ class Misc(commands.Cog):
     async def sinfo(self, ctx):
         guild = ctx.guild
         roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
-        e = discord.Embed()
+        e = discord.Embed(color=self.bot.embed_color)
         e.title = guild.name
         e.description = f'**ID:** {guild.id}'
         e.set_thumbnail(url=ctx.guild.icon_url)
@@ -189,10 +190,10 @@ class Misc(commands.Cog):
             return await ctx.send(source_url)
         if command == 'help':
             e = discord.Embed(
-                description='https://pypi.org/project/discord-pretty-help/')
+                description='https://pypi.org/project/discord-pretty-help/', color=self.bot.embed_color)
             await ctx.send(embed=e)
         elif command.startswith('jsk') or command.startswith('jishaku'):
-            e = discord.Embed(description='https://pypi.org/project/jishaku/')
+            e = discord.Embed(description='https://pypi.org/project/jishaku/', color=self.bot.embed_color)
             await ctx.send(embed=e)
         else:
             obj = self.bot.get_command(command.replace('.', ' '))
@@ -212,7 +213,8 @@ class Misc(commands.Cog):
 
             final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
             e = discord.Embed(title='Add a star if you like!',
-                              description=final_url)
+                              description=final_url,
+							  color=self.bot.embed_color)
             e.set_footer(text='Don\'t forget the Licence!')
             await ctx.send(embed=e)
 

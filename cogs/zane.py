@@ -76,6 +76,10 @@ class Zane(commands.Cog, command_attrs=dict(hidden=False)):
 	async def spread(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Emoji, discord.Member] = None):
 		await self.zane_manip(self, ctx, image, method='spread', fn='spread.gif')
 
+	@commands.command(help='Animates spreading out all the pixels in the image giving a cool explosion-esque look.')
+	async def pixelate(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Emoji, discord.Member] = None):
+		await self.zane_manip(self, ctx, image, method='pixelate', fn='pixelate.png')
+
 	@commands.command(help='Makes a 3D looking cube out of the image.')
 	async def cube(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Emoji, discord.Member] = None):
 		await self.zane_manip(self, ctx, image, method='cube', fn='cube.png')
