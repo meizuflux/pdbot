@@ -5,16 +5,22 @@ import functools
 import typing
 import os
 import wand
+import urllib
 from wand.image import Image as WandImage
 import time
 from PIL import Image
 from asyncdagpi import ImageFeatures
 from io import BytesIO
 flipnotetoken = os.environ['tflipnote']
+import alexflipnote
+from utils import argparser
+import utils.embed as qembed
+
 
 class image(commands.Cog, name='Image Manipulation'):
 	def __init__(self, bot):
 		self.bot = bot
+		self.bot.alex = alexflipnote.Client(flipnotetoken)
 
 	#thanks PB https://github.com/PB4162/PB-Bot
 	@staticmethod
@@ -51,12 +57,69 @@ class image(commands.Cog, name='Image Manipulation'):
 
 	@commands.command(aliases=['didyoumean'], help='"Did you mean" meme. Ex: dym "milk" "with your dad"')
 	async def dym(self, ctx, search: str, did_you_mean: str):
-		file = await self.alex_image(url=f'didyoumean?top={search}&bottom={did_you_mean}')
-		embed = discord.Embed(colour=self.bot.embed_color)
-		embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-		embed.set_image(url="attachment://alex.png")
-		embed.set_footer(text="Powered by the AlexFlipnote API")
-		await ctx.send(embed=embed, file=file)
+		async with ctx.typing():
+			file = await self.alex_image(url=f'didyoumean?top={search}&bottom={did_you_mean}')
+			embed = discord.Embed(colour=self.bot.embed_color)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url="attachment://alex.png")
+			embed.set_footer(text="Powered by the AlexFlipnote API")
+			await ctx.send(embed=embed, file=file)
+
+	@commands.command(help='Creates a fake MineCraft achievement')
+	async def achievement(self, ctx, *, text: str):
+		async with ctx.typing():
+			image = await self.bot.alex.achievement(text=text)
+			image_bytes = await image.read()
+			file = discord.File(image_bytes, "achievement.png")
+			embed = discord.Embed(colour=self.bot.embed_color)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url="attachment://achievement.png")
+			embed.set_footer(text="Powered by the AlexFlipnote API")
+			await ctx.send(embed=embed, file=file)
+
+
+	# https://github.com/AlexFlipnote/discord_bot.py/blob/master/cogs/fun.py
+	@commands.command()
+	async def supreme(self, ctx, *, text: str):
+		""" Make a fake Supreme logo
+        Arguments:
+            --dark | Make the background to dark colour
+            --light | Make background to light and text to dark colour
+        """
+		async with ctx.typing():
+			parser = argparser.Arguments()
+			parser.add_argument('input', nargs="+", default=None)
+			parser.add_argument('-d', '--dark', action='store_true')
+			parser.add_argument('-l', '--light', action='store_true')
+
+			args, valid_check = parser.parse_args(text)
+			if not valid_check:
+				return await ctx.send(args)
+
+			inputText = urllib.parse.quote(' '.join(args.input))
+			if len(inputText) > 500:
+				return await qembed.send(ctx, f"**{ctx.author.name}**, the Supreme API is limited to 500 characters, sorry.")
+			
+			dark = None
+			light = None
+
+			if args.dark:
+				dark = True
+				light = None
+			if args.light:
+				dark = None
+				light = True
+			if args.dark and args.light:
+				return await qembed.send(ctx, f"**{ctx.author.name}**, you can't define both --dark and --light, sorry..")
+
+			image = await self.bot.alex.supreme(text=inputText, dark = dark, light = light)
+			image_bytes = await image.read()
+			file = discord.File(image_bytes, "supreme.png")
+			embed = discord.Embed(colour=self.bot.embed_color)
+			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+			embed.set_image(url="attachment://supreme.png")
+			embed.set_footer(text="Powered by the AlexFlipnote API")
+			await ctx.send(embed=embed, file=file)
 
 	@commands.command(aliases=['trigger'], help='Makes you or a user TRIGGERED')
 	async def triggered(self, ctx, *, image: typing.Union[discord.PartialEmoji, discord.Member] = None):
@@ -157,7 +220,7 @@ class image(commands.Cog, name='Image Manipulation'):
 			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)	
 
-	@commands.command(help='Creates a fake tweet')
+	@commands.command(aliases=['tweet'], help='Creates a fake tweet')
 	async def twitter(self, ctx, user: discord.Member, *, text: str):
 		async with ctx.typing():
 			url = str(user.avatar_url_as(static_format='png', format='png', size=512))
@@ -171,7 +234,7 @@ class image(commands.Cog, name='Image Manipulation'):
 			embed.set_footer(text="Powered by the Dagpi API")
 			await ctx.send(embed=embed, file=file)
 			
-	@commands.command(name='5g1g', help='The five guys one girl meme')
+	@commands.command(name='5g1g', aliases=['fiveguysoneguy', '5guys1girl'], help='The five guys one girl meme')
 	async def fgog(self, ctx, user1: discord.Member, user2: discord.Member):
 		async with ctx.typing():
 			url = str(user1.avatar_url_as(static_format='png', format='png', size=512))

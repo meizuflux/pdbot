@@ -4,7 +4,7 @@ import json
 import aiohttp
 import asyncdagpi
 from discord.ext import commands
-from pretty_help import PrettyHelp
+#from pretty_help import PrettyHelp
 from keep_alive import keep_alive
 from help.help import MyNewHelp
 import datetime
@@ -28,16 +28,12 @@ async def get_prefix(bot, message):
 		return commands.when_mentioned_or("c//")(bot, message)
 
 	try:
-		prefixes = []
 		data = await db.pre.find_one({"_id": str(message.guild.id)})
 		# Make sure we have a useable prefix
 		if not data or "prefix" not in data:
 			await db.pre.insert_one({"_id": str(message.guild.id)}, {"prefix": "c//"})
 			return commands.when_mentioned_or("c//")(bot, message)
-		prefixes.append(data["prefix"])
-		if message.author.id == 777893499471265802:
-			prefixes.append('c//')
-		return commands.when_mentioned_or(prefixes)(bot, message)
+		return commands.when_mentioned_or(data['prefix'])(bot, message)
 	except:
 		return commands.when_mentioned_or("c//")(bot, message)
 

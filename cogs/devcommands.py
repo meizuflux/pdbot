@@ -91,6 +91,14 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 		base_string += "\n```"
 		await qembed.send(ctx, base_string)
 
+	@commands.command()
+	@commands.is_owner()
+	async def logout(self, ctx):
+		await self.zaneapi.close()
+		await self.bot.alex.close()
+		await qembed.send(ctx, 'Shutting down the bot')
+		await self.bot.logout()
+
 
 
 def setup(bot):
