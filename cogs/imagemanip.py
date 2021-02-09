@@ -5,7 +5,6 @@ import functools
 import typing
 import os
 import wand
-import urllib
 from wand.image import Image as WandImage
 import time
 from PIL import Image
@@ -108,14 +107,11 @@ class image(commands.Cog, name='Image Manipulation'):
 
             args, valid_check = parser.parse_args(text)
             if not valid_check:
-                return await ctx.send(args)
+            	return await ctx.send(args)
 
-            inputText = urllib.parse.quote(' '.join(args.input))
+            inputText = ' '.join(args.input)
             if len(inputText) > 500:
-                return await qembed.send(
-                    ctx,
-                    f"**{ctx.author.name}**, the Supreme API is limited to 500 characters, sorry."
-                )
+                return await ctx.send(f"**{ctx.author.name}**, the Supreme API is limited to 500 characters, sorry.")
 
             dark = None
             light = None

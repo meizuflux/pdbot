@@ -21,17 +21,17 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 
 	@commands.Cog.listener()
 	async def on_guild_join(self, guild):
-		await self.bot.prefix_db.pre.insert_one({"_id": str(guild.id)}, {"prefix": "c//"})
+		await self.bot.prefix_db.pre.insert_one({"_id": guild.id}, {"prefix": "c//"})
 
 	@commands.Cog.listener()
 	async def on_guild_remove(self, guild):
-		await self.bot.prefix_db.pre.delete_one({"_id": str(guild.id)})
+		await self.bot.prefix_db.pre.delete_one({"_id": guild.id})
 
 	@commands.command(help='Changes the bots prefix', aliases=['setprefix'])
 	@mng_gld()
 	async def prefix(self, ctx, *, prefix):
-		await self.bot.prefix_db.pre.replace_one({"_id": str(ctx.guild.id)}, {"prefix": prefix})
-		prefix = await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
+		await self.bot.prefix_db.pre.replace_one({"_id": ctx.guild.id}, {"prefix": prefix})
+		prefix = await self.bot.prefix_db.pre.find_one({"_id": ctx.guild.id})
 		await qembed.send(ctx, f'Changed prefix to `{prefix["prefix"]}` successfully.')
 
 	@commands.command(help='Shows the prefix for this server', aliases=['serverprefix'])
@@ -39,7 +39,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		if not ctx.guild:
 			await qembed.send(ctx, 'My prefix is `c//`')
 		else:
-			prefix = await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
+			prefix = await self.bot.prefix_db.pre.find_one({"_id": ctx.guild.id})
 			await qembed.send(ctx, f'My prefix on this server is `{prefix["prefix"]}`')
 
 def setup(bot):
