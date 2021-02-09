@@ -24,7 +24,6 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-
         # ignored = (commands.CommandNotFound, ) #if you want to not send error messages
         ignored = ()
 
@@ -37,21 +36,31 @@ class CommandErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.CommandNotFound):
-            await qembed.send(ctx, f'`{ctx.command}` was not found.')
+            #await qembed.send(ctx, f'`{ctx.command}` was not found.')
+            pass
 
-
-        if isinstance(error, commands.CheckFailure):
-            await qembed.send(ctx, f'You do not have the correct permissions for `{ctx.command}`')
+        elif isinstance(error, commands.CheckFailure):
+            await qembed.send(
+                ctx,
+                f'You do not have the correct permissions for `{ctx.command}`')
 
         if isinstance(error, discord.Forbidden):
-            await qembed.send(ctx, f'I do not have the correct permissions for `{ctx.command}`')
+            await qembed.send(
+                ctx,
+                f'I do not have the correct permissions for `{ctx.command}`')
 
         elif isinstance(error, commands.CommandOnCooldown):
-            await qembed.send(ctx, f"This command is on cooldown.\nTry again in `{error.retry_after:.1f}` seconds.")
+            await qembed.send(
+                ctx,
+                f"This command is on cooldown.\nTry again in `{error.retry_after:.1f}` seconds."
+            )
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                e = discord.Embed(description=f'`{ctx.command}` can not be used in Private Messages.', color=self.bot.embed_color)
+                e = discord.Embed(
+                    description=
+                    f'`{ctx.command}` can not be used in Private Messages.',
+                    color=self.bot.embed_color)
                 await ctx.author.send(embed=e)
             except discord.HTTPException:
                 pass
@@ -70,15 +79,17 @@ class CommandErrorHandler(commands.Cog):
 
         else:
             # All other Errors not returned come here. And we can just print the default TraceBack.
-            print(
-                'Ignoring exception in command {}:'.format(ctx.command),
-                file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            print('Ignoring exception in command {}:'.format(ctx.command),
+                  file=sys.stderr)
+            traceback.print_exception(type(error),
+                                      error,
+                                      error.__traceback__,
+                                      file=sys.stderr)
             error_collection = []
             error_collection.append(
-	                    [default.traceback_maker(error, advance=False)]
-                    )
-            output = "\n".join([f"```diff\n- {g[0]}```" for g in error_collection])
+                [default.traceback_maker(error, advance=False)])
+            output = "\n".join(
+                [f"```diff\n- {g[0]}```" for g in error_collection])
             await qembed.send(ctx, f"{output}\n¯\_(ツ)_/¯")
 
 
