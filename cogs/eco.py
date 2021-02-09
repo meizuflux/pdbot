@@ -9,6 +9,19 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		self.bot = bot
 		self.bot.eco = self.bot.data.economy
 
+	@staticmethod
+	async def get_stats(self, id: int):
+		try:
+			data = await self.bot.eco.find_one({"_id": id})
+			wallet = data["wallet"]
+			bank = data["bank"]
+		except:
+			await self.bot.eco.insert_one({"_id": id, "wallet": 100, "bank": 0})
+			data = await self.bot.eco.find_one({"_id": id})
+			wallet = data["wallet"]
+			bank = data["bank"]
+		return wallet, bank
+
 	@commands.command(help='Registers you into the database')
 	async def register(self, ctx):
 		try:
@@ -19,80 +32,91 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 
 	@commands.command(help='View yours or someone elses balance', aliases=['bal'])
 	async def balance(self, ctx, user: discord.Member = None):
-		try:
-			data = await self.bot.eco.find_one({"_id": user.id if user else ctx.author.id})
-			e = discord.Embed(title=f'{user.name if user else ctx.author.name}\'s balance', description=f'<:member_join:596576726163914752> **Wallet**: ${humanize.intcomma(data["wallet"])}\n<:member_join:596576726163914752> **Bank**: ${humanize.intcomma(data["bank"])}\n<:member_join:596576726163914752> **Total**: ${humanize.intcomma(data["wallet"] + data["bank"])}', color=self.bot.embed_color, timestamp=ctx.message.created_at)
-			e.set_thumbnail(url=user.avatar_url if user else ctx.author.avatar_url)
-			await ctx.send(embed=e)
-		except TypeError:
-			await qembed.send(ctx, f'You need to register! Do `{ctx.prefix}help register` for more info.')
+		data = await self.get_stats(self, user.id if user else ctx.author.id)
+		wallet = data[0]
+		bank = data[1]
+		e = discord.Embed(title=f'{user.name if user else ctx.author.name}\'s balance', description=f'<:member_join:596576726163914752> **Wallet**: ${humanize.intcomma(wallet)}\n<:member_join:596576726163914752> **Bank**: ${humanize.intcomma(bank)}\n<:member_join:596576726163914752> **Total**: ${humanize.intcomma(wallet + bank)}', color=self.bot.embed_color, timestamp=ctx.message.created_at)
+		e.set_thumbnail(url=user.avatar_url if user else ctx.author.avatar_url)
+		await ctx.send(embed=e)
 	
 	@commands.command(help='Deposits a set amount into your bank', aliases=['dep'])
 	async def deposit(self, ctx, amount):
-		data = await self.bot.eco.find_one({"_id": ctx.author.id})
-		wallet = data["wallet"]
-		bank = data["bank"]
+		data = await self.get_stats(self, ctx.author.id)
+		wallet = data[0]
+		bank = data[1]
 		message = 'An error occured'
 		if amount.lower() == 'all':
 			wallet = 0
-			bank = data["bank"] + data["wallet"]
-			message = f'You deposited your entire wallet of ${humanize.intcomma(data["wallet"])}'
+			bank = bank + wallet
+			message = f'You deposited your entire wallet of ${humanize.intcomma(wallet)}'
 		else: 
-			if int(amount) > data["wallet"]:
+			if int(amount) > wallet:
 				return await qembed.send(ctx, 'You don\'t have that much money in your wallet.')
 			if int(amount) < 0:
 				return await qembed.send(ctx, 'How exactly are you going to deposit a negative amount of money?')
 			else:
-				wallet = data["wallet"] - int(amount)
-				bank = data["bank"] + int(amount)
+				wallet = wallet - int(amount)
+				bank = bank + int(amount)
 				message = f'You deposited ${humanize.intcomma(amount)}'
 		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": wallet, "bank": bank})
 		await qembed.send(ctx, message)
 
-	@commands.command(help='Deposits a set amount into your bank', aliases=['wd', 'with'])
+	@commands.command(help='Deposits a set amount into your bank', aliases=['wd', 'with', 'withdraw'])
 	async def withdrawl(self, ctx, amount):
-		data = await self.bot.eco.find_one({"_id": ctx.author.id})
-		wallet = data["wallet"]
-		bank = data["bank"]
+		data = await self.get_stats(self, ctx.author.id)
+		wallet = data[0]
+		bank = data[1]
 		message = 'An error occured'
 		if amount.lower() == 'all':
-			wallet = data["bank"] + data["wallet"]
+			wallet = bank + wallet
 			bank = 0
-			message = f'You withdrew your entire bank of ${humanize.intcomma(data["bank"])}'
+			message = f'You withdrew your entire bank of ${humanize.intcomma(bank)}'
 		else: 
-			if int(amount) > data["wallet"]:
+			if int(amount) > bank:
 				return await qembed.send(ctx, 'You don\'t have that much money in your bank.')
 			if int(amount) < 0:
 				return await qembed.send(ctx, 'You can\'t exactly withdraw a negative amount of money')
+			if bank < int(amount):
+				return await qembed.send(ctx, 'You don\'t have that much money!')
 			else:
-				wallet = data["wallet"] + int(amount)
-				bank = data["bank"] - int(amount)
+				wallet = wallet + int(amount)
+				bank = bank - int(amount)
 				message = f'You withdrew ${humanize.intcomma(amount)}'
 		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": wallet, "bank": bank})
 		await qembed.send(ctx, message)
 
 	@commands.command(help='Lets you send money over to another user', alises=['send'])
 	async def transfer(self, ctx, user: discord.Member, amount):
-		data = await self.bot.eco.find_one({"_id": ctx.author.id})
-		data2 = await self.bot.eco.find_one({"_id": user.id})
-		wallet = data["wallet"]
-		wallet2 = data2["wallet"]
+		data = await self.get_stats(self, ctx.author.id)
+		author_wallet = data[0]
+		author_bank = data[1]
+
+		data2 = await self.get_stats(self, user.id)
+		target_wallet = data2[0]
+		target_bank = data2[1]
+
 		message = 'An error occured'
+
 		if amount.lower() == 'all':
-			wallet = 0
-			wallet2 = data2["wallet"] + data["wallet"]
-			message = f'You gave {user.name} your entire wallet of ${humanize.intcomma(data["wallet"])}!'
+			a_wallet = 0
+			t_wallet = author_wallet + target_wallet
+			message = f'You gave {user.name} your entire wallet of ${humanize.intcomma(author_wallet)}!'
+
 		else: 
-			if int(amount) > data["wallet"]:
+			if int(amount) > author_wallet:
 				return await qembed.send(ctx, 'You don\'t have that much money in your wallet.')
+
 			if int(amount) < 0:
 				return await qembed.send(ctx, f'{ctx.author.name}, it just isn\'t yet possible to send {user.name} a negative amount of money.')
+
 			else:
-				wallet = data["wallet"] - int(amount)
-				wallet2 = data2["wallet"] + int(amount)
+				a_wallet = author_wallet - int(amount)
+				t_wallet = target_wallet + int(amount)
 				message = f'You gave {user.name} ${humanize.intcomma(amount)}'
-		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": wallet, "bank": data["bank"]})
-		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": wallet2, "bank": data2["bank"]})
+
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": a_wallet, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": t_wallet, "bank": target_bank})
+
 		await qembed.send(ctx, message)
 
 def setup(bot):
