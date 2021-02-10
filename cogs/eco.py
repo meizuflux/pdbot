@@ -3,6 +3,7 @@ import discord
 import utils.embed as qembed
 import humanize
 import time
+import typing
 
 class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
@@ -35,7 +36,7 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		data = await self.get_stats(self, user.id if user else ctx.author.id)
 		wallet = data[0]
 		bank = data[1]
-		e = discord.Embed(title=f'{user.name if user else ctx.author.name}\'s balance', description=f'<:member_join:596576726163914752> **Wallet**: ${humanize.intcomma(wallet)}\n<:member_join:596576726163914752> **Bank**: ${humanize.intcomma(bank)}\n<:member_join:596576726163914752> **Total**: ${humanize.intcomma(wallet + bank)}', color=self.bot.embed_color, timestamp=ctx.message.created_at)
+		e = discord.Embed(title=f'{user.name if user else ctx.author.name}\'s balance', description=f'<:member_join:596576726163914752> **Wallet**: ${humanize.intcomma(wallet)}\n<:member_join:596576726163914752> **Bank**: ${humanize.intcomma(bank)}\n<:member_join:596576726163914752> **Total**: ${humanize.intcomma(wallet + bank)}', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
 		e.set_thumbnail(url=user.avatar_url if user else ctx.author.avatar_url)
 		await ctx.send(embed=e)
 	
@@ -86,7 +87,8 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		await qembed.send(ctx, message)
 
 	@commands.command(help='Lets you send money over to another user', alises=['send'])
-	async def transfer(self, ctx, user: discord.Member, amount):
+	async def transfer(self, ctx, user: discord.Member, amount: typing.Union[str, int]):
+		#data = self.get_stats()
 		data = await self.get_stats(self, ctx.author.id)
 		author_wallet = data[0]
 		author_bank = data[1]
@@ -95,29 +97,22 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		target_wallet = data2[0]
 		target_bank = data2[1]
 
-		message = 'An error occured'
-
-		if amount.lower() == 'all':
-			a_wallet = 0
-			t_wallet = author_wallet + target_wallet
-			message = f'You gave {user.name} your entire wallet of ${humanize.intcomma(author_wallet)}!'
-
-		else: 
-			if int(amount) > author_wallet:
+		if isinstance(amount, int): 
+			if amount > author_wallet:
 				return await qembed.send(ctx, 'You don\'t have that much money in your wallet.')
-
-			if int(amount) < 0:
+			elif amount <= 0:
 				return await qembed.send(ctx, f'{ctx.author.name}, it just isn\'t yet possible to send {user.name} a negative amount of money.')
+			amount = int(amount)
+		elif isinstance(amount, str) and amount.lower() == 'all':
+			amount = author_wallet 
 
-			else:
-				a_wallet = author_wallet - int(amount)
-				t_wallet = target_wallet + int(amount)
-				message = f'You gave {user.name} ${humanize.intcomma(amount)}'
+		author_wallet -= int(amount)
+		target_wallet += int(amount)     
 
-		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": a_wallet, "bank": author_bank})
-		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": t_wallet, "bank": target_bank})
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": target_wallet, "bank": target_bank})
 
-		await qembed.send(ctx, message)
+		await qembed.send(ctx, f'You gave {user.name} ${humanize.intcomma(amount)}')
 
 def setup(bot):
 	bot.add_cog(Economy(bot))
