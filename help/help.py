@@ -2,8 +2,20 @@ import discord
 import itertools
 import aiohttp
 from discord.ext import commands
+import utils.embed as qembed
+
+
 
 class MyNewHelp(commands.MinimalHelpCommand):
+
+	async def send_error_message(self, error):
+		ctx = self.context
+		destination = self.get_destination()
+		embed=discord.Embed(description=error, color=0x9c5cb4, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+		await destination.send(embed=embed)
+
+	def command_not_found(self, string):
+		return 'No command called "{}" found.'.format(string)
 
 	def get_opening_note(self):
 		return "`<arg>`  means the argument is required\n`[arg]`  means the argument is optional"
@@ -20,22 +32,23 @@ class MyNewHelp(commands.MinimalHelpCommand):
 	def get_ending_note(self):
 		command_name = self.invoked_with
 		return (
-			"Type `{0}{1} [command]` for more info on a command.\n"
-			"You can also type `{0}{1} [category]` for more info on a category.".format(
+			"Type {0}{1} [command] for more info on a command.\n"
+			"You can also type {0}{1} [category] for more info on a category.".format(
 				self.clean_prefix, command_name
 			)
 		)
 
 	async def send_pages(self):
 		destination = self.get_destination()
+		note = self.get_ending_note()
 		for page in self.paginator.pages:
-			emby = discord.Embed(description=page, color=0x9c5cb4)
+			emby = discord.Embed(description=page, color=0x9c5cb4,).set_footer(text=note)
 			await destination.send(embed=emby)
 
 	async def send_command_help(self, command):
 		embed = discord.Embed(title=command.name, color=0x9c5cb4)
-		if command.help:
-			embed.add_field(name="Help", value=f'```{command.help}```')
+		he = command.help if command.help else 'No help provided, suck it up'
+		embed.add_field(name="Help", value=f'```{he}```')
 		alias = command.aliases
 		if alias:
 			embed.add_field(name="Aliases", value=f"```{', '.join(alias)}```", inline=False)
@@ -45,6 +58,10 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		embed.set_footer(text='<arg>  means the argument is required\n[arg]  means the argument is optional')
 		channel = self.get_destination()
 		await channel.send(embed=embed)
+	
+	def add_subcommand_formatting(self, command):
+		fmt = '**{0}{1}** \N{EN DASH} {2}' if command.short_doc else '{0}{1}'
+		self.paginator.add_line(fmt.format(self.clean_prefix, command.qualified_name, command.short_doc))
 
 	async def on_help_command_error(self, ctx, error):
 		if isinstance(error, commands.BadArgument):
@@ -56,42 +73,12 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		else:
 			raise error
 
-	async def send_cog_help(self, cog):
-	    bot = self.context.bot
-	    if bot.description:
-	    	self.paginator.add_line(bot.description, empty=True)
-
-	    note = self.get_opening_note()
-	    if note:
-	        self.paginator.add_line(note, empty=True)
-
-	    if cog.description:
-	        self.paginator.add_line(cog.description, empty=True)
-
-	    filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
-	    if filtered:
-	        self.paginator.add_line('**%s %s**' % (cog.qualified_name, self.commands_heading))
-	        for command in filtered:
-	            self.add_subcommand_formatting(command)
-
-	        note = self.get_ending_note()
-	        if note:
-	            self.paginator.add_line()
-				self.paginator.add_line()
-				self.paginator.add_line()
-				self.paginator.add_line()
-	            self.paginator.add_line(note)
-
 	async def send_bot_help(self, mapping):
 		ctx = self.context
 		bot = ctx.bot
 
 		if bot.description:
-			self.paginator.add_line(bot.description, empty=True)
-
-		note = self.get_opening_note()
-		if note:
-			self.paginator.add_line(note, empty=True)
+			self.paginator.add_line(bot.description, empty=False)
 
 		no_category = '\u200b{0.no_category}'.format(self)
 		def get_category(command, *, no_category=no_category):
@@ -102,7 +89,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
 		to_iterate = itertools.groupby(filtered, key=get_category)
 
 		for category, commands in to_iterate:
-			commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
+			commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(f'**{commands}**')
 			self.add_bot_commands_formatting(commands, category)
 
 		async with aiohttp.ClientSession() as cs:
@@ -117,8 +104,24 @@ class MyNewHelp(commands.MinimalHelpCommand):
 			# self.paginator.add_line('you can also choose to write it yourself')
 			self.paginator.add_line()
 
-		note = self.get_ending_note()
-		if note:
-			self.paginator.add_line(note)
-
 		await self.send_pages()
+
+	async def send_cog_help(self, cog):
+	    bot = self.context.bot
+	    if bot.description:
+	        self.paginator.add_line(bot.description)
+
+	    note = self.get_opening_note()
+	    if note:
+	        self.paginator.add_line(note, empty=True)
+
+	    if cog.description:
+	        self.paginator.add_line(cog.description, empty=True)
+
+	    filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
+	    if filtered:
+	        self.paginator.add_line('**%s %s**' % (cog.qualified_name, self.commands_heading))
+	        for command in filtered:
+	            self.add_subcommand_formatting(command)
+
+	    await self.send_pages()

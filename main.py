@@ -51,6 +51,8 @@ bot.help_command = MyNewHelp(command_attrs=dict(hidden=True))
 bot.mongo = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
 bot.data = bot.mongo.data
 
+bot.description = '```py\n  ____      _       \n / ___|   _| |_ ___ \n| |  | | | | __/ _ \n| |__| |_| | ||  __/\n \____\__,_|\__\___|```'
+
 
 @bot.event
 async def on_ready():

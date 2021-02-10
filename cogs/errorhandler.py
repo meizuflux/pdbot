@@ -4,6 +4,7 @@ import sys
 from utils import default
 from discord.ext import commands
 import json
+import humanize
 import utils.embed as qembed
 
 
@@ -52,7 +53,7 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.CommandOnCooldown):
             await qembed.send(
                 ctx,
-                f"This command is on cooldown.\nTry again in `{error.retry_after:.1f}` seconds."
+                f"This command is on cooldown.\nTry again in {humanize.precisedelta(error.retry_after, minimum_unit='seconds')}"
             )
 
         elif isinstance(error, commands.NoPrivateMessage):

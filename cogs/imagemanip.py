@@ -245,8 +245,8 @@ class image(commands.Cog, name='Image Manipulation'):
                                                      url)
             file = discord.File(fp=img.image,
                                 filename=f"communism.{img.format}")
-            embed = discord.Embed(colour=self.bot.embed_color)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://communism.gif")
             await ctx.send(embed=embed, file=file)
 
