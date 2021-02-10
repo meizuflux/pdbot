@@ -5,12 +5,19 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 		self.bot.counter = 0
+		self.bot.snipes = {}
+		self.bot.edits = {}
+
+	@commands.Cog.listener()
+	async def on_message_delete(self, message):
+		self.bot.snipes[message.channel.id] = message
+		self.bot.snipes[message.author.id] = message
+
 
 	@commands.Cog.listener()
 	async def on_command_completion(self, ctx):
 		self.bot.counter += 1
 		
-
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if not message.guild:
@@ -30,6 +37,13 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 			await message.add_reaction('<:what:791007602745671701>')
 			e = discord.Embed(description=f'Hello {message.author.mention}, my prefix on this server is `{prefix["prefix"]}`. You can do `{prefix["prefix"]}help` to view all my commands.', color=self.bot.embed_color)
 			await message.channel.send(embed=e)
+
+	@commands.Cog.listener()
+	async def on_message_edit(self, before, after):
+		self.bot.edits[before.channel.id] = before
+		self.bot.edits[before.author.id] = before
+		if before.author.id == self.bot.author_id and not before.embeds and not after.embeds:
+			await self.bot.process_commands(after)
 
 def setup(bot):
 	bot.add_cog(tracking(bot))

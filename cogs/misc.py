@@ -5,6 +5,7 @@ import inspect
 import os
 from pkg_resources import get_distribution
 import time
+import typing
 import humanize
 import platform
 import pathlib
@@ -31,12 +32,55 @@ class Misc(commands.Cog):
 
         return commands.check(predicate)
 
+    @commands.command()  
+    async def snipe(self, ctx, *, channel: typing.Union[discord.TextChannel, discord.Member] = None):
+        try:
+            if isinstance(channel, discord.TextChannel):
+                msg = self.bot.snipes[channel.id]
+
+            if isinstance(channel, discord.Member):
+                msg = self.bot.snipes[channel.id]
+
+            if not channel:
+                l = ctx.channel or channel
+                msg = self.bot.snipes[l.id]
+
+        except KeyError:
+            return await qembed.send(ctx, 'Nothing to snipe!')
+
+        await ctx.send(embed=discord.Embed(description=msg.content, color=self.bot.embed_color, timestamp=msg.created_at).set_author(name=str(msg.author), icon_url=str(msg.author.avatar_url)).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url))
+
+    @commands.command()  
+    async def snipeedit(self, ctx, *, channel: typing.Union[discord.TextChannel, discord.Member] = None):
+        try:
+            if isinstance(channel, discord.TextChannel):
+                msg = self.bot.edits[channel.id]
+
+            if isinstance(channel, discord.Member):
+                msg = self.bot.edits[channel.id]
+
+            if not channel:
+                l = ctx.channel or channel
+                msg = self.bot.edits[l.id]
+            m = await ctx.fetch_message(msg.id)
+        except KeyError:
+            return await qembed.send(ctx, 'Nothing to snipe!')
+
+        await ctx.send(embed=discord.Embed(color=self.bot.embed_color, timestamp=msg.created_at).add_field(name='Before:', value=msg.content, inline=False).add_field(name='After:', value=m.content).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url).set_author(name=str(msg.author), icon_url=str(msg.author.avatar_url)))
+
+    @snipeedit.error
+    async def snipeedit_error(self, ctx, error):
+        if isinstance(error, discord.HTTPException):
+            await qembed.send(ctx, 'Nothing to snipe!')
+        else:
+            raise error
+
     @commands.command(aliases=['avatar'],
                       help='Gets the profile picture of a user')
     async def pfp(self, ctx, *, user: discord.Member = None):
         if not user:
             user = ctx.author
-        e = discord.Embed(title=f'Profile Picture for {user.name}', color=self.bot.embed_color)
+        e = discord.Embed(title=f'Profile Picture for {user.name}', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         e.set_image(url=user.avatar_url)
         await ctx.send(embed=e)
 
@@ -58,7 +102,7 @@ class Misc(commands.Cog):
         await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
         dbend = time.perf_counter()
         dbduration = (dbend - dbstart) * 1000
-        pong = discord.Embed(title='Ping', color=self.bot.embed_color)
+        pong = discord.Embed(title='Ping', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         pong.add_field(name='Typing Latency',
                        value=f'```python\n{round(duration)} ms```')
         pong.add_field(
@@ -89,7 +133,7 @@ class Misc(commands.Cog):
     async def purge(self, ctx, amount: int):
         await ctx.channel.purge(limit=1 + int(amount))
         e = discord.Embed(description=f'Deleted {amount} message(s)',
-                          color=self.bot.embed_color)
+                          color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=e, delete_after=2)
 
     @commands.command(help='A link to invite the bot to your server')
@@ -103,7 +147,7 @@ class Misc(commands.Cog):
     async def potatoapi(self, ctx):
         e = discord.Embed(title='PotatoAPI',
                           description='https://www.potatoapi.ml/docs',
-						  color=self.bot.embed_color)
+						  color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=e)
 
     @commands.command(name='activity',
@@ -147,7 +191,7 @@ class Misc(commands.Cog):
         embed = discord.Embed(
             title=str(member),
             description=f'**Joined:** {join}\n**Account Creation:** {create}',
-            color=self.bot.embed_color)
+            color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         embed.set_thumbnail(url=member.avatar_url)
         if len(mention_roles) == 0:
             embed.add_field(name='Roles', value='This user has no roles')
@@ -156,10 +200,6 @@ class Misc(commands.Cog):
             embed.add_field(name='Roles',
                             value=', '.join(mention_roles),
                             inline=False)
-        if member.name != member.display_name:
-            embed.set_footer(text=f'{member.id} • {member.display_name}')
-        else:
-            embed.set_footer(text=member.id)
         await ctx.send(embed=embed)
 
     @commands.command(name='serverinfo',
@@ -169,7 +209,7 @@ class Misc(commands.Cog):
     async def sinfo(self, ctx):
         guild = ctx.guild
         roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
-        e = discord.Embed(color=self.bot.embed_color)
+        e = discord.Embed(color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         e.title = guild.name
         e.description = f'**ID:** {guild.id}'
         e.set_thumbnail(url=ctx.guild.icon_url)
@@ -190,10 +230,10 @@ class Misc(commands.Cog):
             return await ctx.send(source_url)
         if command == 'help':
             e = discord.Embed(
-                description='https://pypi.org/project/discord-pretty-help/', color=self.bot.embed_color)
+                description='https://pypi.org/project/discord-pretty-help/', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=e)
         elif command.startswith('jsk') or command.startswith('jishaku'):
-            e = discord.Embed(description='https://pypi.org/project/jishaku/', color=self.bot.embed_color)
+            e = discord.Embed(description='https://pypi.org/project/jishaku/', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=e)
         else:
             obj = self.bot.get_command(command.replace('.', ' '))
@@ -214,7 +254,7 @@ class Misc(commands.Cog):
             final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
             e = discord.Embed(title='Add a star if you like!',
                               description=final_url,
-							  color=self.bot.embed_color)
+							  color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             e.set_footer(text='Don\'t forget the Licence!')
             await ctx.send(embed=e)
 
@@ -246,7 +286,7 @@ class Misc(commands.Cog):
                 for l in of.readlines():
                     ls += 1
 
-        emb = discord.Embed(colour=self.bot.embed_color)
+        emb = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         #emb.set_thumbnail(url=self.bot.user.avatar_url)
         emb.set_author(name=self.bot.user.name,
                        url='https://github.com/ppotatoo/pdbot',

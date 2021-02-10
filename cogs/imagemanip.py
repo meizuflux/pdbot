@@ -30,7 +30,6 @@ class image(commands.Cog, name='Image Manipulation'):
                     method: str,
                     method_args: list = None,
                     text: str = None):
-        start = time.perf_counter()
         async with ctx.typing():
             # get the image
             if ctx.message.attachments:
@@ -49,13 +48,12 @@ class image(commands.Cog, name='Image Manipulation'):
             method(*method_args)
             file = discord.File(BytesIO(img.save_bytes()),
                                 filename="polaroid.png")
-            end = time.perf_counter()
             embed = discord.Embed(description=text,
-                                  colour=self.bot.embed_color)
+                                  colour=self.bot.embed_color,
+                                  timestamp=ctx.message.created_at)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://polaroid.png")
-            embed.set_footer(
-                text=f"Backend finished in {end-start:.2f} seconds")
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed, file=file)
 
     async def alex_image(self, url):
@@ -73,10 +71,10 @@ class image(commands.Cog, name='Image Manipulation'):
         async with ctx.typing():
             file = await self.alex_image(
                 url=f'didyoumean?top={search}&bottom={did_you_mean}')
-            embed = discord.Embed(colour=self.bot.embed_color)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://alex.png")
-            embed.set_footer(text="Powered by the AlexFlipnote API")
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed, file=file)
 
     @commands.command(help='Creates a fake MineCraft achievement')
@@ -86,9 +84,9 @@ class image(commands.Cog, name='Image Manipulation'):
             image_bytes = await image.read()
             file = discord.File(image_bytes, "achievement.png")
             embed = discord.Embed(colour=self.bot.embed_color)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, timestamp=ctx.message.created_at)
             embed.set_image(url="attachment://achievement.png")
-            embed.set_footer(text="Powered by the AlexFlipnote API")
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed, file=file)
 
     # https://github.com/AlexFlipnote/discord_bot.py/blob/master/cogs/fun.py
@@ -133,7 +131,7 @@ class image(commands.Cog, name='Image Manipulation'):
                                                 light=light)
             image_bytes = await image.read()
             file = discord.File(image_bytes, "supreme.png")
-            embed = discord.Embed(colour=self.bot.embed_color)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://supreme.png")
             embed.set_footer(text="Powered by the AlexFlipnote API")
@@ -161,18 +159,15 @@ class image(commands.Cog, name='Image Manipulation'):
                                                      url)
             file = discord.File(fp=img.image,
                                 filename=f"triggered.{img.format}")
-            embed = discord.Embed(colour=self.bot.embed_color)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://triggered.gif")
-            embed.set_footer(text="Powered by the Dagpi API")
             await ctx.send(embed=embed, file=file)
             # await self.imgemb(ctx, dfile=file, footername='triggered.gif', powered='the Dagpi API') currently file doesn't send
 
     @commands.command(aliases=['magik'],
                       help='Warps an image. You can also choose the scale.')
     async def magic(self, ctx, user: discord.Member = None, scale: int = None):
-        start = time.perf_counter()
-
         img = user or ctx.author
         avimg = BytesIO(await img.avatar_url_as(format="jpeg").read())
 
@@ -195,17 +190,13 @@ class image(commands.Cog, name='Image Manipulation'):
 
         final = await self.bot.loop.run_in_executor(None, do_magic)
 
-        emed = discord.Embed(title='mAgiK', color=self.bot.embed_color)
+        emed = discord.Embed(title='mAgiK', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         emed.set_image(url='attachment://magik.jpg')
-        end = time.perf_counter()
-        emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 
         await ctx.send(embed=emed, file=final)
 
     @commands.command(help='Some weird perspective stuff')
     async def floor(self, ctx, user: discord.Member = None):
-        start = time.perf_counter()
-
         img = user or ctx.author
         avimg = BytesIO(await img.avatar_url_as(format="jpeg").read())
 
@@ -228,10 +219,8 @@ class image(commands.Cog, name='Image Manipulation'):
         final = await self.bot.loop.run_in_executor(None, do_magic)
 
         emed = discord.Embed(title='see the floor losers',
-                             color=self.bot.embed_color)
+                             color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         emed.set_image(url='attachment://magik.jpg')
-        end = time.perf_counter()
-        emed.set_footer(text=f'Backend finished in {end-start:.2f} seconds')
 
         await ctx.send(embed=emed, file=final)
 
@@ -257,9 +246,8 @@ class image(commands.Cog, name='Image Manipulation'):
             file = discord.File(fp=img.image,
                                 filename=f"communism.{img.format}")
             embed = discord.Embed(colour=self.bot.embed_color)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://communism.gif")
-            embed.set_footer(text="Powered by the Dagpi API")
             await ctx.send(embed=embed, file=file)
 
     @commands.command(aliases=['tweet'], help='Creates a fake tweet')
@@ -275,10 +263,9 @@ class image(commands.Cog, name='Image Manipulation'):
                                                      url=url,
                                                      username=name)
             file = discord.File(fp=img.image, filename=f"tweet.{img.format}")
-            embed = discord.Embed(colour=self.bot.embed_color)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://tweet.png")
-            embed.set_footer(text="Powered by the Dagpi API")
             await ctx.send(embed=embed, file=file)
 
     @commands.command(name='5g1g',
@@ -298,10 +285,9 @@ class image(commands.Cog, name='Image Manipulation'):
                 ImageFeatures.five_guys_one_girl(), url=url, url2=url2)
             file = discord.File(fp=img.image,
                                 filename=f"five_guys_one_girl.{img.format}")
-            embed = discord.Embed(colour=self.bot.embed_color)
+            embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             embed.set_image(url="attachment://five_guys_one_girl.png")
-            embed.set_footer(text="Powered by the Dagpi API")
             await ctx.send(embed=embed, file=file)
 
     @commands.command(help='Makes an image rainbowey')
@@ -440,10 +426,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 file = await self.bot.loop.run_in_executor(None, thing)
                 end = time.perf_counter()
                 emed = discord.Embed(title='Communism',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://communism.png')
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -486,10 +470,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 file = await self.bot.loop.run_in_executor(None, thing)
                 end = time.perf_counter()
                 emed = discord.Embed(title='Blended',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://communism.png')
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -527,11 +509,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 thing = functools.partial(sync_func)
                 file = await self.bot.loop.run_in_executor(None, thing)
                 emed = discord.Embed(title='Arrest them!',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://wanted.jpeg')
-                end = time.perf_counter()
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -570,11 +549,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 thing = functools.partial(sync_func)
                 file = await self.bot.loop.run_in_executor(None, thing)
                 emed = discord.Embed(title='Treat yourself nicely!',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://obama.png')
-                end = time.perf_counter()
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -613,11 +589,9 @@ class image(commands.Cog, name='Image Manipulation'):
                 thing = functools.partial(sync_func, img2)
                 file = await self.bot.loop.run_in_executor(None, thing)
                 emed = discord.Embed(title='nutted',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://nut.png')
                 end = time.perf_counter()
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -659,11 +633,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 thing = functools.partial(sync_func, uimg)
                 file = await self.bot.loop.run_in_executor(None, thing)
                 emed = discord.Embed(title='You deserve this',
-                                     color=self.bot.embed_color)
+                                     color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                 emed.set_image(url='attachment://obama.png')
-                end = time.perf_counter()
-                emed.set_footer(
-                    text=f'Backend finished in {end-start:.2f} seconds')
                 await ctx.send(embed=emed, file=file)
 
             await async_func()
@@ -700,9 +671,8 @@ class image(commands.Cog, name='Image Manipulation'):
                     thing = functools.partial(sync_func)
                     file = await self.bot.loop.run_in_executor(None, thing)
                     emed = discord.Embed(title='ｒｅｓｉｚｅｄ',
-                                         color=self.bot.embed_color)
+                                         color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
                     emed.set_image(url='attachment://stretched.png')
-                    emed.set_footer(text='Powered by Polaroid')
                     await ctx.send(embed=emed, file=file)
 
                 await async_func()

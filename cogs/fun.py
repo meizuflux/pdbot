@@ -55,7 +55,7 @@ class fun(commands.Cog):
     async def fakeembed(self, ctx):
         embed = discord.Embed(title='he ded',
                               description='can we get an f in the chat',
-                              color=self.bot.embed_color)
+                              color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         embed.set_image(
             url=
             'https://media.tenor.com/images/b5e65cd0e7a8c8fef19af759a29d1acd/tenor.gif'
@@ -73,7 +73,7 @@ class fun(commands.Cog):
             lang = languages.get(name=language)
             g = async_google_trans_new.google_translator()
             gemb = discord.Embed(title='Google Translation',
-                                 color=self.bot.embed_color)
+                                 color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             gemb.add_field(name='Input:', value=f'```\n{text}\n```')
             gemb.add_field(
                 name=f'Output in {language}:',
@@ -94,7 +94,7 @@ class fun(commands.Cog):
             f = await f.json()
             e = discord.Embed(title=f'{user}\'s ppsize:',
                               description=f['size'],
-                              color=self.bot.embed_color)
+                              color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=e)
 
     @commands.command(name='multiply', help='Multiplies a saying.')
@@ -126,8 +126,7 @@ class fun(commands.Cog):
         e = discord.Embed(title='Chuck Norris Joke',
                           url=joke['url'],
                           description=joke['value'],
-						  color=self.bot.embed_color)
-        e.set_footer(text=joke['updated_at'])
+						  color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         e.set_thumbnail(url=joke['icon_url'])
         await ctx.send(embed=e)
 
@@ -139,9 +138,8 @@ class fun(commands.Cog):
                 'https://waifu.pics/api/sfw/waifu'
         ) as waifu:  # https://waifu.pics/docs DOCS
             waifu = await waifu.json()
-            w = discord.Embed(title=f'Waifu for {user.name}', color=self.bot.embed_color)
+            w = discord.Embed(title=f'Waifu for {user.name}', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             w.set_image(url=waifu['url'])
-            w.set_footer(text='Powered by waifu.pics')
             await ctx.send(embed=w)
 
     @commands.command(
@@ -158,16 +156,12 @@ class fun(commands.Cog):
                 nasa = await nasa.json()
             nemb = discord.Embed(
                 title=f'NASA Image of the day for {dateintime}',
-                description=nasa['explanation'][:1024], color=self.bot.embed_color)
+                description=nasa['explanation'][:1024], color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             try:
                 nemb.add_field(name=nasa['title'])
             except TypeError:
                 pass
             nemb.set_image(url=nasa['url'])
-            try:
-                nemb.set_footer(text=f'Copyright: {nasa["copyright"]}')
-            except KeyError:
-                nemb.set_footer(text='Powered by the NASA APOD API')
             await ctx.send(embed=nemb)
         except KeyError:
             await ctx.send('Enter a valid date please!')
@@ -183,9 +177,8 @@ class fun(commands.Cog):
             catimg = await catimg.json()
         catemb = discord.Embed(title='Random Cat Fact',
                                description=cat['text'],
-							   color=self.bot.embed_color)
+							   color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         catemb.set_thumbnail(url=catimg[0]['url'])
-        catemb.set_footer(text='Powered by the Cat Facts API')
         await ctx.send(embed=catemb)
 
     @commands.command(help='Gets a random image of a cat')
@@ -193,9 +186,8 @@ class fun(commands.Cog):
         async with self.bot.session.get(
                 'https://api.thecatapi.com/v1/images/search') as catimg:
             catimg = await catimg.json()
-        catemb = discord.Embed(title='Random Cat', color=self.bot.embed_color)
+        catemb = discord.Embed(title='Random Cat', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         catemb.set_image(url=catimg[0]['url'])
-        catemb.set_footer(text='Powered by TheCatAPI')
         await ctx.send(embed=catemb)
 
     @commands.command(help='OwO owoifys a text stwing ( ͡° ᴥ ͡°)')
@@ -226,12 +218,8 @@ class fun(commands.Cog):
             embed = discord.Embed(
                 title=f"{data['safe_title']} (Number `{data['num']}`)",
                 description=data["alt"],
-                timestamp=datetime.datetime(year=int(data["year"]),
-                                            month=int(data["month"]),
-                                            day=int(data["day"])),
-                colour=self.bot.embed_color)
+                colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             embed.set_image(url=data["img"])
-            embed.set_footer(text="Powered by the XKCD API")
             await ctx.send(embed=embed)
 
     @commands.command(name='monke', help='reject discord return to monke')
@@ -248,7 +236,7 @@ class fun(commands.Cog):
     @commands.command(help='Encrypts a message')
     async def encrypt(self, ctx, *, message: str):
         cipher = onetimepad.encrypt(message, 'a_random_key')
-        gemb = discord.Embed(title='Encryption', color=self.bot.embed_color)
+        gemb = discord.Embed(title='Encryption', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         gemb.add_field(name='Input:', value=f'```\n{message}\n```')
         gemb.add_field(name='Output:',
                        value=f'```\n{cipher}\n```',
@@ -258,7 +246,7 @@ class fun(commands.Cog):
     @commands.command(help='Decrypts a message')
     async def decrypt(self, ctx, *, text: str):
         msg = onetimepad.decrypt(text, 'a_random_key')
-        gemb = discord.Embed(title='Decryption', color=self.bot.embed_color)
+        gemb = discord.Embed(title='Decryption', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         gemb.add_field(name='Input:', value=f'```\n{text}\n```')
         gemb.add_field(name='Output:', value=f'```\n{msg}\n```', inline=False)
         await ctx.send(embed=gemb)
@@ -268,7 +256,7 @@ class fun(commands.Cog):
         async with self.bot.session.get(
                 f'https://www.potatoapi.ml/piglatin?text={text}') as resp:
             resp = await resp.json()
-            emb = discord.Embed(title='Pig Latin!', color=self.bot.embed_color)
+            emb = discord.Embed(title='Pig Latin!', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             emb.add_field(name='Input:', value=f'```\n{text}\n```')
             emb.add_field(name='Output:',
                           value=f'```\n{resp["text"]}\n```',
