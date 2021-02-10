@@ -24,8 +24,8 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        # ignored = (commands.CommandNotFound, ) #if you want to not send error messages
-        ignored = ()
+        ignored = (commands.CommandNotFound, ) #if you want to not send error messages
+        #ignored = ()
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -74,7 +74,7 @@ class CommandErrorHandler(commands.Cog):
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
-                await ctx.send(
+                await qembed.send(ctx, 
                     'I could not find that member. Please try again.')
 
         else:

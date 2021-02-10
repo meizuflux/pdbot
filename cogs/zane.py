@@ -29,11 +29,9 @@ class Zane(commands.Cog, command_attrs=dict(hidden=False)):
 			image = getattr(self.bot.zaneapi, method)
 			m = await image(img)
 			file = discord.File(m, filename=f"{fn}")
-			end = time.perf_counter()
-			embed = discord.Embed(colour=self.bot.embed_color)
+			embed = discord.Embed(colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
 			embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 			embed.set_image(url=f"attachment://{fn}")
-			embed.set_footer(text=f"Backend finished in {end-start:.2f} seconds")
 			await ctx.send(embed=embed, file=file)
 
 

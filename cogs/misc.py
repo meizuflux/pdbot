@@ -72,6 +72,8 @@ class Misc(commands.Cog):
     async def snipeedit_error(self, ctx, error):
         if isinstance(error, discord.HTTPException):
             await qembed.send(ctx, 'Nothing to snipe!')
+        if isinstance(error, commands.CommandInvokeError):
+            await qembed.send(ctx, 'Nothing to snipe!')
         else:
             raise error
 
