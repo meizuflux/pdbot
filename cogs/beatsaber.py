@@ -120,16 +120,6 @@ class BeatSaber(commands.Cog,
                         f'You are not registered! Do `{ctx.prefix}help ss register` for info on how to register.'
                     )
 
-    @commands.command()
-    async def testing(self, ctx, user: discord.Member):
-        if isinstance(user, discord.Member):
-            if user in ctx.message.mentions:
-                await qembed.send(ctx, 'ok you mentioned someone')
-            else:
-                print(1 + 2)
-        else:
-            await qembed.send(ctx, 'nice')
-
     @ss.command(name='user', help='Ping a user and get their stats')
     async def u(self, ctx, person: discord.Member):
         try:

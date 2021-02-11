@@ -1,6 +1,10 @@
 import discord
 import itertools
 import aiohttp
+import contextlib
+import inspect
+import json
+import re
 from discord.ext import commands
 import utils.embed as qembed
 
@@ -8,53 +12,80 @@ import utils.embed as qembed
 
 class MyNewHelp(commands.MinimalHelpCommand):
 
-	async def send_error_message(self, error):
-		ctx = self.context
-		destination = self.get_destination()
-		embed=discord.Embed(description=error, color=0x9c5cb4, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-		await destination.send(embed=embed)
+    def get_command_signature(self, command, ctx=None):
+        """Method to return a commands name and signature"""
+        if not ctx:
+            if not command.signature and not command.parent:
+                return f'`{self.clean_prefix}{command.name}`'
+            if command.signature and not command.parent:
+                return f'`{self.clean_prefix}{command.name}` `{command.signature}`'
+            if not command.signature and command.parent:
+                return f'`{self.clean_prefix}{command.parent}` `{command.name}`'
+            else:
+                return f'`{self.clean_prefix}{command.parent}` `{command.name}` `{command.signature}`'
+        else:
+            def get_invoke_with():
+                msg = ctx.message.content
+                escape = "\\"
+                prefixmax = re.match(f'{escape}{escape.join(ctx.prefix)}', msg).regs[0][1]
+                return msg[prefixmax:msg.rindex(ctx.invoked_with)]
 
-	def command_not_found(self, string):
-		return 'No command called "{}" found.'.format(string)
+            if not command.signature and not command.parent:
+                return f'{ctx.prefix}{ctx.invoked_with}'
+            if command.signature and not command.parent:
+                return f'{ctx.prefix}{ctx.invoked_with} {command.signature}'
+            if not command.signature and command.parent:
+                return f'{ctx.prefix}{get_invoke_with()}{ctx.invoked_with}'
+            else:
+                return f'{ctx.prefix}{get_invoke_with()}{ctx.invoked_with} {command.signature}'
 
-	def get_opening_note(self):
-		return "`<arg>`  means the argument is required\n`[arg]`  means the argument is optional"
+    async def send_error_message(self, error):
+    	ctx = self.context
+    	destination = self.get_destination()
+    	embed=discord.Embed(description=error, color=0x9c5cb4, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+    	await destination.send(embed=embed)
 
-	def add_bot_commands_formatting(self, commands, heading):
-		if commands:
-			joined = '`\u2002•\u2002`'.join(c.name for c in commands)
-			self.paginator.add_line('**%s commands:**' % heading)
-			self.paginator.add_line(f'`{joined}`')
-			self.paginator.add_line()
+    def command_not_found(self, string):
+    	return 'No command called "{}" found.'.format(string)
+
+    def get_opening_note(self):
+    	return "`<arg>`  means the argument is required\n`[arg]`  means the argument is optional"
+
+    def add_bot_commands_formatting(self, commands, heading):
+    	if commands:
+    		joined = '`\u2002•\u2002`'.join(c.name for c in commands)
+    		self.paginator.add_line('**%s commands:**' % heading)
+    		self.paginator.add_line(f'`{joined}`')
+    		self.paginator.add_line()
 			
 
 
-	def get_ending_note(self):
-		command_name = self.invoked_with
-		return (
-			"Type {0}{1} [command] for more info on a command.\n"
+    def get_ending_note(self):
+    	command_name = self.invoked_with
+    	return (
+    		"Type {0}{1} [command] for more info on a command.\n"
 			"You can also type {0}{1} [category] for more info on a category.".format(
 				self.clean_prefix, command_name
 			)
 		)
 
-	async def send_pages(self):
-		destination = self.get_destination()
-		note = self.get_ending_note()
-		for page in self.paginator.pages:
-			emby = discord.Embed(description=page, color=0x9c5cb4,).set_footer(text=note)
-			await destination.send(embed=emby)
+    async def send_pages(self):
+    	destination = self.get_destination()
+    	note = self.get_ending_note()
+    	for page in self.paginator.pages:
+    	    emby = discord.Embed(description=page, color=0x9c5cb4,).set_footer(text=note)
+            await destination.send(embed=emby)
 
-	async def send_command_help(self, command):
-		embed = discord.Embed(title=command.name, color=0x9c5cb4)
+    async def send_command_help(self, command):
+	embed = discord.Embed(title=f'`{self.get_command_signature(command)}`', color=0x9c5cb4)
 		he = command.help if command.help else 'No help provided, suck it up'
 		embed.add_field(name="Help", value=f'```{he}```')
 		alias = command.aliases
 		if alias:
 			embed.add_field(name="Aliases", value=f"```{', '.join(alias)}```", inline=False)
-		embed.add_field(
-            name="Usage", value=f"```{self.get_command_signature(command)}```", inline=False
-        )
+		#embed.add_field(
+            #name="Usage", value=f"```{self.get_command_signature(command)}```", inline=False
+        #)
 		embed.set_footer(text='<arg>  means the argument is required\n[arg]  means the argument is optional')
 		channel = self.get_destination()
 		await channel.send(embed=embed)
@@ -125,3 +156,24 @@ class MyNewHelp(commands.MinimalHelpCommand):
 	            self.add_subcommand_formatting(command)
 
 	    await self.send_pages()
+
+    def get_command_help(self, command):
+        """Returns an Embed version of the command object given."""
+		embed = discord.Embed(title=self.get_command_signature(command), description=self.get_help(command, brief=False))
+        if alias := self.get_aliases(command):
+            embed.add_field(name="Aliases", value=f'[{" | ".join(f"`{x}`" for x in alias)}]', inline=False)
+        if isinstance(command, commands.Group):
+            subcommand = command.commands
+            value = "\n".join(self.get_command_signature(c) for c in subcommand)
+            embed.add_field(name=plural("Subcommand(s)", len(subcommand)), value=value)
+
+        return embed
+
+    async def handle_help(self, command):
+        with contextlib.suppress(commands.CommandError):
+            await command.can_run(self.context)
+            return await self.context.reply(embed=self.get_command_help(command), mention_author=False)
+        raise CantRun("You don't have enough permission to see this help.") from None
+
+    async def send_group_help(self, group):
+        await self.handle_help(group)

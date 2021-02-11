@@ -44,19 +44,11 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.command(help='Gets the top 5 users.', aliases=['top', 'lb', 'top5'])
 	async def leaderboard(self, ctx):
 		ed = self.bot.eco.find().sort("bank")
-
-		docs = await ed.to_list(None)
-		def myFunc(e):
-  			return e['wallet'] + e['bank']
-		docs.sort(reverse=True, key=myFunc)
-		number = 0
-		l = []
-		for i in range(5):
-			number += 1
-			l.append(f'{number}) {self.bot.get_user(docs[number-1]["_id"]).name} » ${docs[number-1]["wallet"]+docs[number-1]["bank"]}')
+		docs = await ed.sort("bank").to_list(None)
+		docs.sort(reverse=True, key=lambda e: e["wallet"] + e["bank"])
+		l = [f'{number}) {self.bot.get_user(docs[number-1]["_id"]).name} » ${docs[number-1]["wallet"]+docs[number-1]["bank"]}' for number, i in enumerate(range(5), start=1)]
 		lmao = "\n"
-		lb = discord.Embed(title='Leaderboard', description=f'**TOP 5 PLAYERS:**\n```py\n{lmao.join(l)}```', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-		await ctx.send(embed=lb)
+		await ctx.send(embed=discord.Embed(title='Leaderboard', description=f'**TOP 5 PLAYERS:**\n```py\n{lmao.join(l)}```', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url))
 	
 	@commands.command(help='Deposits a set amount into your bank', aliases=['dep'])
 	async def deposit(self, ctx, amount):
@@ -65,7 +57,6 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		bank = data[1]
 		message = 'An error occured'
 		if amount.lower() == 'all':
-			
 			bank = bank + wallet
 			wallete = 0
 			message = f'You deposited your entire wallet of ${humanize.intcomma(wallet)}'
@@ -148,8 +139,8 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 
 		amount = random.randint(1, target_wallet)
 
-		author_wallet -= int(amount)
-		target_wallet += int(amount)     
+		author_wallet += int(amount)
+		target_wallet -= int(amount)     
 
 		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet, "bank": author_bank})
 		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": target_wallet, "bank": target_bank})
@@ -176,11 +167,8 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.cooldown(rate=1, per=86400, type=commands.BucketType.user)
 	async def daily(self, ctx):
 		data = await self.get_stats(self, ctx.author.id)
-		author_wallet = data[0]
-		author_bank = data[1]
-
 		cash = random.randint(500, 700)
-		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet + cash, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": data[0] + cash, "bank": data[1]})
 		await qembed.send(ctx, f'You collected ${cash} from the daily gift!')
 			
 
@@ -188,14 +176,11 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.cooldown(rate=1, per=7200, type=commands.BucketType.user)
 	async def fish(self, ctx):
 		data = await self.get_stats(self, ctx.author.id)
-		author_wallet = data[0]
-		author_bank = data[1]
-
 		price = random.randint(20, 35)
 		fish = random.randint(5, 20)
 		cash = price * fish
 		
-		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet + cash, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": data[0] + cash, "bank": data[1]})
 		emoji = ['🐟', '🐠', '🐡']
 		await qembed.send(ctx, f'You travel to the local lake and catch {fish} fish {random.choice(emoji)}. Then you sell them to the market at a price of ${price}, totaling in at ${cash} for a days work.')
 
@@ -205,15 +190,10 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		async with self.bot.session.get('https://pipl.ir/v1/getPerson') as f:
 			cities = await f.json()
 		data = await self.get_stats(self, ctx.author.id)
-		author_wallet = data[0]
-		author_bank = data[1]
 		gender = ['man', 'woman']
 		cash = random.randint(0, 500)
-		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet + cash, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": data[0] + cash, "bank": data[1]})
 		await qembed.send(ctx, f'You sit on the streets of {cities["person"]["personal"]["city"]} and a nice {random.choice(gender)} hands you ${cash}.')
-
-
-			
 
 def setup(bot):
 	bot.add_cog(Economy(bot))
