@@ -124,7 +124,7 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 
 		await qembed.send(ctx, f'You gave {user.mention} ${humanize.intcomma(amount)}')
 
-	@commands.command(help='Lets you send money over to another user', alises=['mug', 'steal'])
+	@commands.command(help='Takes a random amount of $ from someone', alises=['mug', 'steal'])
 	async def rob(self, ctx, user: discord.Member):
 		data = await self.get_stats(self, ctx.author.id)
 		author_wallet = data[0]

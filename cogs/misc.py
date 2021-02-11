@@ -3,6 +3,7 @@ import discord
 import random
 import inspect
 import os
+import json
 from pkg_resources import get_distribution
 import time
 import typing
@@ -11,7 +12,6 @@ import platform
 import pathlib
 import psutil
 import utils.embed as qembed
-import motor.motor_asyncio
 
 
 class Misc(commands.Cog):
@@ -147,6 +147,32 @@ class Misc(commands.Cog):
             return m.author == self.bot.user
         deleted = await ctx.channel.purge(limit=amount, check=is_me)
         await ctx.send('Deleted {} message(s)'.format(len(deleted)))
+
+    # from pb https://github.com/PB4162/PB-Bot
+    @commands.command(aliases=["rawmessage", "rawmsg"])
+    async def raw_message(self, ctx, *, message: discord.Message = None):
+        """
+        Get the raw info for a message.
+        `message` - The message.
+        """
+        message = message or ctx.message
+
+        try:
+            msg = await self.bot.http.get_message(ctx.channel.id, message.id)
+        except discord.NotFound:
+            return await ctx.send("Sorry, I couldn't find that message.")
+
+        raw = json.dumps(msg, indent=4)
+        if len(raw) > 1989:
+            return await qembed.send(ctx, 'Sorry, the message was too long')
+        await qembed.send(ctx, f"```json\n{raw}```")
+
+    @commands.command(help='Builds an embed from a dict. You can use https://eb.nadeko.bot/ to get one', brief='Builds an embed', aliases=['make_embed', 'embed_builder'])
+    async def embedbuilder(self, ctx, *, embed: json.loads):
+        try:
+            await ctx.send(embed=discord.Embed().from_dict(embed))
+        except:
+            await qembed.send(ctx, 'You clearly don\'t know what this is')
 
     @commands.command(help='A link to invite the bot to your server')
     async def invite(self, ctx):
