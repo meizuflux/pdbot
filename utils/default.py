@@ -30,6 +30,13 @@ def date(target, clock=True):
         return target.strftime("%d %B %Y")
     return target.strftime("%d %B %Y, %H:%M")
 
+def plural(text, size):
+    logic = size == 1
+    target = (("(s)", ("s", "")), ("(is/are)", ("are", "is")))
+    for x, y in target:
+        text = text.replace(x, y[logic])
+    return text
+
 
 def responsible(target, reason):
     """ Default responsible maker targeted to find user in AuditLogs """
