@@ -44,9 +44,10 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.command(help='Gets the top 5 users.', aliases=['top', 'lb', 'top5'])
 	async def leaderboard(self, ctx):
 		ed = self.bot.eco.find().sort("bank")
+
+		docs = await ed.to_list(None)
 		def myFunc(e):
   			return e['wallet'] + e['bank']
-		docs = await ed.to_list(None)
 		docs.sort(reverse=True, key=myFunc)
 		number = 0
 		l = []

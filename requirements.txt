@@ -135,7 +135,6 @@ python-dateutil==2.8.1
 python-jsonrpc-server==0.4.0
 python-language-server==0.36.2
 pyxdg==0.27
-pyxel==1.0.1
 referenceqvm==0.3
 regex==2020.11.13
 replit==2.0.0
