@@ -521,7 +521,6 @@ class image(commands.Cog, name='Image Manipulation'):
                     ctx,
                     image: typing.Union[discord.PartialEmoji,
                                         discord.Member] = None):
-        start = time.perf_counter()
         async with ctx.typing():
             if ctx.message.attachments:
                 avimg = BytesIO(await ctx.message.attachments[0].read())
@@ -555,10 +554,43 @@ class image(commands.Cog, name='Image Manipulation'):
 
             await async_func()
 
+    @commands.command(help='laugh at someone')
+    async def laugh(self,
+                    ctx,
+                    image: typing.Union[discord.PartialEmoji,
+                                        discord.Member] = None):
+        async with ctx.typing():
+            if ctx.message.attachments:
+                avimg = BytesIO(await ctx.message.attachments[0].read())
+            elif isinstance(image, discord.PartialEmoji):
+                avimg = BytesIO(await image.url.read())
+            else:
+                img = image or ctx.author
+                avimg = BytesIO(await img.avatar_url_as(format="png").read())
+
+            def sync_func():
+                image = Image.open(avimg)
+                image = image.convert("RGBA")
+                obama_pic = Image.open("assets/unknown.png")
+                obama_pic = obama_pic.convert("RGBA")
+                y = image.resize((200, 200), 1)
+                obama_pic.paste(y, (20, 400))
+                byt = BytesIO()
+                obama_pic.save(byt, format='png')
+                byt.seek(0)
+                file = discord.File(fp=byt, filename="laugh.png")
+                return file
+
+            thing = functools.partial(sync_func)
+            file = await self.bot.loop.run_in_executor(None, thing)
+            emed = discord.Embed(title='lmao stoopid',
+                                color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            emed.set_image(url='attachment://laugh.png')
+            await ctx.send(embed=emed, file=file)
+
     @commands.command(help='nut someone')
     async def nut(self, ctx, image: typing.Union[discord.PartialEmoji,
                                                  discord.Member]):
-        start = time.perf_counter()
         async with ctx.typing():
             if ctx.message.attachments:
                 avimg = BytesIO(await ctx.message.attachments[0].read())

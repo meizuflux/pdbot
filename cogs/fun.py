@@ -3,11 +3,14 @@ import discord
 import os
 import aiohttp
 import onetimepad
+import asyncio
+import random
 from owotext import OwO
 import random
 from iso639 import languages
 import async_google_trans_new
 import datetime
+import time
 import lyricsgenius
 import utils.embed as qembed
 geniustoken = os.environ['genius']
@@ -115,6 +118,31 @@ class fun(commands.Cog):
     async def lyric(self, ctx, *, songname):
         cs = aiohttp.ClientSession()
         song = await cs.get('')
+
+    @commands.command(help='Checks your speed.')
+    async def react(self, ctx, seconds: int=None):
+        if seconds and seconds > 31:
+            return await qembed.send(ctx, 'You cannot specify more than 30 seconds. Sorry.')
+        emg = str(random.choice(self.bot.emojis))
+        if not seconds:
+            seconds = 5
+        embed = discord.Embed(description=f'React to this message with {emg} in {seconds} seconds.', timestamp=ctx.message.created_at, color=self.bot.embed_color).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction(emg)
+        start = time.perf_counter()
+        def gcheck(reaction, user):
+            return user == ctx.author and str(reaction.emoji) == emg
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=seconds * 1.5, check=gcheck)
+        except asyncio.TimeoutError:
+            embed = discord.Embed(description='You did not react in time', timestamp=ctx.message.created_at, color=self.bot.embed_color).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await msg.edit(embed=embed)
+        else:
+            end = time.perf_counter()
+            tim = end - start
+            embed = discord.Embed(description=f'You reacted in **{tim:.2f}** seconds, **{seconds - tim:.2f}** off.', timestamp=ctx.message.created_at, color=self.bot.embed_color).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await msg.edit(embed=embed)
+                
 
     @commands.command(name='chucknorris',
                       aliases=['norris', 'chucknorrisjoke'],
