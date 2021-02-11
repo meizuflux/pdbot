@@ -41,7 +41,7 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		e.set_thumbnail(url=user.avatar_url if user else ctx.author.avatar_url)
 		await ctx.send(embed=e)
 
-	@commands.command(help='Gets the top 5 users.')
+	@commands.command(help='Gets the top 5 users.', aliases=['top', 'lb', 'top5'])
 	async def leaderboard(self, ctx):
 		ed = self.bot.eco.find().sort("bank")
 		def myFunc(e):
@@ -130,7 +130,30 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet, "bank": author_bank})
 		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": target_wallet, "bank": target_bank})
 
-		await qembed.send(ctx, f'You gave {user.name} ${humanize.intcomma(amount)}')
+		await qembed.send(ctx, f'You gave {user.mention} ${humanize.intcomma(amount)}')
+
+	@commands.command(help='Lets you send money over to another user', alises=['mug', 'steal'])
+	async def rob(self, ctx, user: discord.Member):
+		data = await self.get_stats(self, ctx.author.id)
+		author_wallet = data[0]
+		author_bank = data[1]
+
+		data2 = await self.get_stats(self, user.id)
+		target_wallet = data2[0]
+		target_bank = data2[1]
+
+		if target_wallet == 0:
+			return await qembed.send(ctx, 'That user has no money in their wallet. Shame on you for trying to rob them.')
+
+		amount = random.randint(1, target_wallet)
+
+		author_wallet -= int(amount)
+		target_wallet += int(amount)     
+
+		await self.bot.eco.replace_one({"_id": ctx.author.id}, {"wallet": author_wallet, "bank": author_bank})
+		await self.bot.eco.replace_one({"_id": user.id}, {"wallet": target_wallet, "bank": target_bank})
+
+		await qembed.send(ctx, f'You stole ${humanize.intcomma(amount)} from {user.mention}!')
 
 	@commands.command(help='Work for some $$$')
 	@commands.cooldown(rate=1, per=7200, type=commands.BucketType.user)
