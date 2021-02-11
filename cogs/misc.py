@@ -138,6 +138,16 @@ class Misc(commands.Cog):
                           color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=e, delete_after=2)
 
+    @commands.command(help='Purges a set amount of messages by the bot', brief='Purges bot messages')
+    @mng_msg()
+    async def botpurge(self, ctx, amount: int):
+        if amount > 75:
+            return await qembed.send(ctx, 'Please keep the amount of messages to purge under 75.')
+        def is_me(m):
+            return m.author == self.bot.user
+        deleted = await ctx.channel.purge(limit=amount, check=is_me)
+        await ctx.send('Deleted {} message(s)'.format(len(deleted)))
+
     @commands.command(help='A link to invite the bot to your server')
     async def invite(self, ctx):
         await qembed.send(
