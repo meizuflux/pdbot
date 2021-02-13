@@ -43,7 +43,7 @@ bot = commands.Bot(command_prefix=get_prefix,
                                            reactions=True,
                                            presences=True))
 #bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
-bot.author_id = 777893499471265802
+bot.author_id = 809587169520910346
 bot.dagpi = asyncdagpi.Client(dagpikey)
 bot.session = aiohttp.ClientSession()
 bot.embed_color = 0x9c5cb4  #0x1E90FF
