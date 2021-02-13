@@ -178,7 +178,7 @@ class Misc(commands.Cog):
     async def invite(self, ctx):
         await qembed.send(
             ctx,
-            'https://discord.com/oauth2/authorize?client_id=777964578776285194&scope=bot&permissions=8'
+            f'https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=205388999'
         )
 
     @commands.command(help='Sends the docs for my API')
