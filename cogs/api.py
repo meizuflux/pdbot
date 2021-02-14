@@ -46,7 +46,7 @@ class api(commands.Cog, command_attrs=dict(hidden=False)):
 	@commands.command(name='programming', help='Sends a programming meme 😎')
 	async def program(self, ctx):
 		try:
-			m = await ctx.send('Getting random dank meme ...')
+			m = await ctx.send('Getting random meme ...')
 			async with aiohttp.ClientSession() as cs:
 				async with cs.get('https://www.reddit.com/r/ProgrammerHumor/hot.json') as r:
 					res = await r.json()  # returns dict
