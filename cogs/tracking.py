@@ -7,6 +7,7 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 		self.bot.counter = 0
 		self.bot.snipes = {}
 		self.bot.edits = {}
+		self.context = None
 
 	@commands.Cog.listener()
 	async def on_message_delete(self, message):
@@ -32,11 +33,6 @@ class tracking(commands.Cog, command_attrs=dict(hidden=True)):
 				embed.set_author(name=f'{message.author}', url='https://www.urbandictionary.com/define.php?term=Your%20mum%20gay', icon_url=f'{message.author.avatar_url}')
 				await channel.send(embed=embed)
 				return
-		if message.content == '<@!777964578776285194>':
-			prefix = await self.bot.prefix_db.pre.find_one({"_id": str(message.guild.id)})
-			await message.add_reaction('<:what:791007602745671701>')
-			e = discord.Embed(description=f'Hello {message.author.mention}, my prefix on this server is `{prefix["prefix"]}`. You can do `{prefix["prefix"]}help` to view all my commands.', color=self.bot.embed_color)
-			await message.channel.send(embed=e)
 
 	@commands.Cog.listener()
 	async def on_message_edit(self, before, after):

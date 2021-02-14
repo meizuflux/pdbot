@@ -1,20 +1,16 @@
-import os
 import discord
-import json
-import aiohttp
-import asyncdagpi
 from discord.ext import commands
-#from pretty_help import PrettyHelp
-from keep_alive import keep_alive
-from help.help import MyNewHelp
+import os
+import asyncdagpi
+import aiohttp
+import re
 import datetime
+from keep_alive import keep_alive
 import motor.motor_asyncio
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
-
 db = client.prefixes
 
-dagpikey = os.environ['dagpikey']
 
 async def get_prefix(bot, message):
     # If dm's
@@ -32,59 +28,64 @@ async def get_prefix(bot, message):
         return commands.when_mentioned_or("c//")(bot, message)
 
 
-activity = discord.Activity(type=discord.ActivityType.listening,
-                            name='c//help')
-bot = commands.Bot(command_prefix=get_prefix,
-                   case_insensitive=True,
-                   activity=activity,
-                   intents=discord.Intents(guilds=True,
-                                           members=True,
-                                           messages=True,
-                                           reactions=True,
-                                           presences=True))
-#bot.help_command = PrettyHelp(active_time=30, color=discord.Colour.blue(), index_name='Cute Bot', sort_commands=False, show_index=True)
-bot.author_id = 809587169520910346
-bot.dagpi = asyncdagpi.Client(dagpikey)
-bot.session = aiohttp.ClientSession()
-bot.embed_color = 0x9c5cb4  #0x1E90FF
-bot.help_command = MyNewHelp(command_attrs=dict(hidden=True))
-bot.mongo = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
-bot.data = bot.mongo.data
+class Cute(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.members = True
+        intents.presences = True
+        super().__init__(
+            command_prefix=get_prefix,
+            case_insensitive=True,
+            intents=intents,
+            owner_ids={809587169520910346},
+            description=
+            '```py\n  ____      _       \n / ___|   _| |_ ___ \n| |  | | | | __/ _ \n| |__| |_| | ||  __/\n \____\__,_|\__\___|```'
+        )
+        self._BotBase__cogs = commands.core._CaseInsensitiveDict()
+        self.author_id = 809587169520910346
+        self.dagpi = asyncdagpi.Client(os.environ['dagpikey'])
+        self.session = aiohttp.ClientSession()
+        self.embed_color = 0x9c5cb4  #0x1E90FF
+        self.mongo = motor.motor_asyncio.AsyncIOMotorClient(
+            os.environ['MongoDB'])
+        self.data = self.mongo.data
 
-bot.description = '```py\n  ____      _       \n / ___|   _| |_ ___ \n| |  | | | | __/ _ \n| |__| |_| | ||  __/\n \____\__,_|\__\___|```'
+    def starter(self):
+        self.start_time = datetime.datetime.utcnow()
+        extensions = [
+            'cogs.misc', 'cogs.fun', 'cogs.tenor', 'cogs.devcommands',
+            'cogs.tracking', 'cogs.speak', 'cogs.api', 'cogs.errorhandler',
+            'cogs.owner', 'cogs.prefixes', 'jishaku', 'cogs.beatsaber',
+            'cogs.imagemanip', 'cogs.invites', 'cogs.mongo', 'cogs.zane',
+            'cogs.eco', 'cogs.useful'
+        ]
+        for extension in extensions:
+            self.load_extension(extension)
+
+        keep_alive()
+        self.run(os.environ['DTOKEN'])
+
+    async def get_context(self, message: discord.Message, *, cls=None):
+            return await super().get_context(message, cls=cls)
+
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+        if re.fullmatch(f"^(<@!?{self.user.id}>)\s*", message.content):
+            await message.add_reaction('<:what:791007602745671701>')
+            ctx = await self.get_context(message)
+            return await ctx.invoke(self.get_command("botprefix"))
+        await self.process_commands(message)
 
 
-@bot.event
-async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
-    bot.start_time = datetime.datetime.utcnow()
-
-
-blist = []
-
-
-@bot.check
-async def blacklist(ctx):
-    if ctx.author.id in blist:
-        return False
-    else:
-        return True
-
-
+bot = Cute()
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
 os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
 os.environ["JISHAKU_HIDE"] = "True"
 
-extensions = [
-    'cogs.misc', 'cogs.fun', 'cogs.tenor', 'cogs.devcommands', 'cogs.tracking',
-    'cogs.speak', 'cogs.api', 'cogs.errorhandler', 'cogs.owner',
-    'cogs.prefixes', 'jishaku', 'cogs.beatsaber', 'cogs.imagemanip',
-    'cogs.invites', 'cogs.mongo', 'cogs.zane', 'cogs.eco'
-]
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!\nGuilds: {len(bot.guilds)}\nMembers: {str(sum([guild.member_count for guild in bot.guilds]))}')
 
-if __name__ == '__main__':
-    for extension in extensions:
-        bot.load_extension(extension)
-
-keep_alive()
-bot.run(os.environ['DTOKEN'])
+if __name__ == "__main__":
+    bot.starter()
