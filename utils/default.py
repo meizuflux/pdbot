@@ -2,6 +2,7 @@ import time
 import json
 import discord
 import traceback
+from discord.ext import commands
 import timeago as timesince
 
 from io import BytesIO
@@ -71,3 +72,7 @@ async def prettyResults(ctx, filename: str = "Results", resultmsg: str = "Here's
         content=resultmsg,
         file=discord.File(data, filename=timetext(filename.title()))
     )
+
+class CantRun(commands.CommandError):
+    def __init__(self, message, *arg):
+        super().__init__(message=message, *arg)

@@ -2,17 +2,18 @@ import discord
 import itertools
 import aiohttp
 import contextlib
+import psutil
+import platform
+import pathlib
+from pkg_resources import get_distribution
+import humanize
 import re
-from utils.default import plural
+from utils.default import plural, CantRun
 from discord.ext import commands
 
-class CantRun(commands.CommandError):
-    def __init__(self, message, *arg):
-        super().__init__(message=message, *arg)
 
 
-class MyNewHelp(commands.MinimalHelpCommand):
-
+class Help(commands.MinimalHelpCommand):
     def get_command_signature(self, command, ctx=None):
         """Method to return a commands name and signature"""
         if not ctx:
@@ -163,10 +164,74 @@ class MyNewHelp(commands.MinimalHelpCommand):
         with contextlib.suppress(commands.CommandError):
             await command.can_run(self.context)
             return await self.context.reply(embed=self.get_command_help(command), mention_author=False)
-        raise CantRun("You don't have enough permission to see this help.") from None
+        raise CantRun("You don't have enough permissions to see this help.") from None
 
     async def send_group_help(self, group):
         await self.handle_help(group)
 
     async def send_command_help(self, command):
         await self.handle_help(command)
+
+class Useful(commands.Cog, command_attrs=dict(hidden=False)):
+	def __init__(self, bot):
+		self.bot = bot
+		self._original_help_command = bot.help_command
+		bot.help_command = Help(command_attrs=dict(hidden=True))
+		bot.help_command.cog = self
+
+	def cog_unload(self):
+		self.bot.help_command = self._original_help_command
+
+	@commands.command(aliases=['information', 'botinfo'],
+	help='Gets info about the bot')
+	async def info(self, ctx):
+		msg = await ctx.send('Getting bot information ...')
+		avgmembers = sum([guild.member_count
+		for guild in self.bot.guilds]) / len(self.bot.guilds)
+		cpuUsage = psutil.cpu_percent()
+		cpuFreq = psutil.cpu_freq().current
+		ramusage = humanize.naturalsize(
+		psutil.Process().memory_full_info().pss)
+
+		pyVersion = platform.python_version()
+		libVersion = get_distribution("discord.py").version
+		hosting = platform.platform()
+
+		p = pathlib.Path('./')
+		ls = fc = 0
+		for f in p.rglob('*.py'):
+			if str(f).startswith("venv"):
+				continue
+			fc += 1
+			with f.open() as of:
+				for l in of.readlines():
+					ls += 1
+
+		emb = discord.Embed(description=self.bot.description, colour=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+		emb.set_author(name=self.bot.user.name,
+		url='https://github.com/ppotatoo/pdbot',
+		icon_url=self.bot.user.avatar_url)
+		emb.add_field(name='Developer',
+		value=f'```ppotatoo#9688 ({self.bot.author_id})```',
+		inline=False)
+		emb.add_field(name='<:online:801444524148523088> Uptime',value=f'[Check Bot Status](https://stats.uptimerobot.com/Gzv84sJ9oV \"UptimeRobot\")\n```{humanize.precisedelta(self.bot.start_time, format="%0.0f")}```',inline=False)
+		emb.add_field(name='Hosting', value=f'```{hosting}```', inline=False)
+
+		emb.add_field(name='CPU Usage', value=f'```{cpuUsage:.2f}%```', inline=True)
+		emb.add_field(name='CPU Frequency', value=f'```{cpuFreq} MHZ```', inline=True)
+		emb.add_field(name='Memory Usage', value=f'```{ramusage}```', inline=True)
+		emb.add_field(name='<:python:801444523623710742> Python Version', value=f'```{pyVersion}```', inline=True)
+		emb.add_field(name='<:discordpy:801444523854135307> Discord.py Version', value=f'```{libVersion}```', inline=True)
+
+		emb.add_field(name='Line Count', value=f'```{ls:,} lines```', inline=False)
+		emb.add_field(name='Command Count', value=f'```{len(set(self.bot.walk_commands()))-31} commands```',inline=True)
+		emb.add_field(name='Command Use:',value=f'```{self.bot.counter-1} commands since reboot```',inline=True)
+		emb.add_field(name='Guild Count',value=f'```{str(len(self.bot.guilds))} guilds```',inline=False)
+
+		emb.add_field(name='Member Count',value=f'```{str(sum([guild.member_count for guild in self.bot.guilds]))} members```',inline=True)
+		emb.add_field(name='Average Member Count',value=f'```{avgmembers:.0f} members per guild```')
+		await msg.edit(content=None, embed=emb)
+
+
+def setup(bot):
+	bot.add_cog(Useful(bot))
