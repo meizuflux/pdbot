@@ -156,6 +156,8 @@ class Help(commands.MinimalHelpCommand):
         if isinstance(command, commands.Group):
             subcommand = command.commands
             value = "\n".join(f'{self.get_command_signature(c)} \N{EN DASH} {c.short_doc}' for c in subcommand)
+            if len(value) > 1024:
+                value = "\n".join(f'{self.get_command_signature(c)}' for c in subcommand)
             embed.add_field(name=plural("Subcommand(s)", len(subcommand)), value=value)
 
         return embed

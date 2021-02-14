@@ -12,29 +12,13 @@ client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
 db = client.prefixes
 
 
-async def get_prefix(bot, message):
-    # If dm's
-    if not message.guild:
-        return commands.when_mentioned_or("c//")(bot, message)
-
-    try:
-        data = await db.pre.find_one({"_id": message.guild.id})
-        # Make sure we have a useable prefix
-        if not data or "prefix" not in data:
-            await db.pre.insert_one({"_id": message.guild.id, "prefix": "c//"})
-            return commands.when_mentioned_or("c//")(bot, message)
-        return commands.when_mentioned_or(data['prefix'])(bot, message)
-    except:
-        return commands.when_mentioned_or("c//")(bot, message)
-
-
 class Cute(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.members = True
         intents.presences = True
         super().__init__(
-            command_prefix=get_prefix,
+            command_prefix=self.get_prefix,
             case_insensitive=True,
             intents=intents,
             owner_ids={809587169520910346},
@@ -49,13 +33,28 @@ class Cute(commands.Bot):
         self.mongo = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
         self.data = self.mongo.data
 
+    async def get_prefix(bot, message):
+        # If dm's
+        if not message.guild:
+            return commands.when_mentioned_or("c//")(bot, message)
+
+        try:
+            data = await db.pre.find_one({"_id": message.guild.id})
+            # Make sure we have a useable prefix
+            if not data or "prefix" not in data:
+                await db.pre.insert_one({"_id": message.guild.id, "prefix": "c//"})
+                return commands.when_mentioned_or("c//")(bot, message)
+            return commands.when_mentioned_or(data['prefix'])(bot, message)
+        except:
+            return commands.when_mentioned_or("c//")(bot, message)
+
     def starter(self):
         self.start_time = datetime.datetime.utcnow()
         extensions = [
             'cogs.misc', 'cogs.fun', 'cogs.tenor', 'cogs.devcommands',
             'cogs.tracking', 'cogs.speak', 'cogs.api', 'cogs.errorhandler',
             'cogs.owner', 'cogs.prefixes', 'jishaku', 'cogs.beatsaber',
-            'cogs.imagemanip', 'cogs.invites', 'cogs.mongo', 'cogs.zane',
+            'cogs.imagemanip', 'cogs.invites', 'cogs.zane',
             'cogs.eco', 'cogs.useful'
         ]
         for extension in extensions:
