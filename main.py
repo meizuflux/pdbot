@@ -46,8 +46,7 @@ class Cute(commands.Bot):
         self.dagpi = asyncdagpi.Client(os.environ['dagpikey'])
         self.session = aiohttp.ClientSession()
         self.embed_color = 0x9c5cb4  #0x1E90FF
-        self.mongo = motor.motor_asyncio.AsyncIOMotorClient(
-            os.environ['MongoDB'])
+        self.mongo = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
         self.data = self.mongo.data
 
     def starter(self):
@@ -66,7 +65,7 @@ class Cute(commands.Bot):
         self.run(os.environ['DTOKEN'])
 
     async def get_context(self, message: discord.Message, *, cls=None):
-            return await super().get_context(message, cls=cls)
+            return await super().get_context(message, cls=cls or commands.Context)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
