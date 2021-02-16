@@ -178,7 +178,7 @@ class Useful(commands.Cog, command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 		self._original_help_command = bot.help_command
-		bot.help_command = Help(command_attrs=dict(hidden=True))
+		bot.help_command = Help(command_attrs=dict(aliases=['h', 'halp'], hidden=True, help='Literally it shows this message. If you need more explanation you should uh go back to school.'))
 		bot.help_command.cog = self
 
 	def cog_unload(self):

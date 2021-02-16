@@ -2,10 +2,13 @@ from discord.ext import commands
 import discord
 import textwrap
 import io
+import asyncpg
 import traceback
 from contextlib import redirect_stdout
 import aiohttp
-
+import time
+from utils.embed import send as qembed
+from prettytable import PrettyTable
 
 class Admin(commands.Cog, command_attrs=dict(hidden=True)):
     """Admin-only commands that make the bot dynamic."""
@@ -31,6 +34,38 @@ class Admin(commands.Cog, command_attrs=dict(hidden=True)):
         if e.text is None:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
+
+    @commands.is_owner()
+    @commands.command()
+    async def sql(self, ctx, *, command):
+        start = time.perf_counter()
+        res = await self.bot.db.fetch(command)
+        end = time.perf_counter()
+        finish = end - start
+        finish = finish / 1000
+        if len(res) == 0:
+            return await ctx.message.add_reaction('✅')
+        headers = list(res[0].keys())
+        table = PrettyTable()
+        table.field_names = headers
+        for record in res:
+            lst = list(record)
+            table.add_row(lst)
+        msg = table.get_string()
+        await ctx.send(f"```\n{msg}\n```")
+
+    @sql.error
+    async def sql_error_handling(self,ctx,error):
+        if isinstance(error, commands.CommandInvokeError):
+            error = error.original
+            if isinstance(error, asyncpg.exceptions.UndefinedTableError):
+                return await qembed(ctx, "This table does not exist.")
+            elif isinstance(error, asyncpg.exceptions.PostgresSyntaxError):
+                return await qembed(ctx, f"There was a syntax error:```\n {error} ```")
+            else:
+                await ctx.send(error)
+        else:
+            await ctx.send(error)
 
     @commands.command()
     @commands.is_owner()

@@ -41,17 +41,17 @@ class CommandErrorHandler(commands.Cog):
             pass
 
         elif isinstance(error, commands.CheckFailure):
-            await qembed.send(
+            return await qembed.send(
                 ctx,
                 f'You do not have the correct permissions for `{ctx.command}`')
 
         if isinstance(error, discord.Forbidden):
-            await qembed.send(
+            return await qembed.send(
                 ctx,
                 f'I do not have the correct permissions for `{ctx.command}`')
 
         elif isinstance(error, commands.CommandOnCooldown):
-            await qembed.send(
+            return await qembed.send(
                 ctx,
                 f"This command is on cooldown.\nTry again in {humanize.precisedelta(error.retry_after, minimum_unit='seconds')}"
             )
@@ -62,20 +62,20 @@ class CommandErrorHandler(commands.Cog):
                     description=
                     f'`{ctx.command}` can not be used in Private Messages.',
                     color=self.bot.embed_color)
-                await ctx.author.send(embed=e)
+                return await ctx.author.send(embed=e)
             except discord.HTTPException:
                 pass
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            await qembed.send(ctx, f'{error}')
+            return await qembed.send(ctx, f'{error}')
 
         elif isinstance(error, commands.DisabledCommand):
-            await qembed.send(ctx, f'`{ctx.command}` has been disabled.')
+            return await qembed.send(ctx, f'`{ctx.command}` has been disabled.')
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
-                await qembed.send(ctx, 
+                return await qembed.send(ctx, 
                     'I could not find that member. Please try again.')
 
         else:
