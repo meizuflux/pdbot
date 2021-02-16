@@ -60,9 +60,9 @@ class Misc(commands.Cog):
                 msg = self.bot.edits[channel.id]
 
             if not channel:
-                l = ctx.channel or channel
-                msg = self.bot.edits[l.id]
+                msg = self.bot.edits[ctx.channel.id]
             m = await ctx.fetch_message(msg.id)
+            
         except KeyError:
             return await qembed.send(ctx, 'Nothing to snipe!')
 

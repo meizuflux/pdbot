@@ -4,12 +4,14 @@ import os
 import asyncdagpi
 import aiohttp
 import re
+import asyncpg
 import datetime
 from keep_alive import keep_alive
 import motor.motor_asyncio
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
 db = client.prefixes
+dsn = os.environ['sqldsn']
 
 
 class Cute(commands.Bot):
@@ -32,36 +34,53 @@ class Cute(commands.Bot):
         self.embed_color = 0x9c5cb4  #0x1E90FF
         self.mongo = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
         self.data = self.mongo.data
+        self.default_prefix = 'c//'
+        self.prefixes = {}
 
     async def get_prefix(bot, message):
-        # If dm's
-        if not message.guild:
-            return commands.when_mentioned_or("c//")(bot, message)
-
+        if message.guild == None:
+            return commands.when_mentioned_or(bot.default_prefix)(bot, message)
         try:
-            data = await db.pre.find_one({"_id": message.guild.id})
-            # Make sure we have a useable prefix
-            if not data or "prefix" not in data:
-                await db.pre.insert_one({"_id": message.guild.id, "prefix": "c//"})
-                return commands.when_mentioned_or("c//")(bot, message)
-            return commands.when_mentioned_or(data['prefix'])(bot, message)
-        except:
-            return commands.when_mentioned_or("c//")(bot, message)
+            return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
+        except KeyError:
+            prefix = await bot.db.fetchval("SELECT prefix FROM prefixes WHERE serverid = $1", message.guild.id)
+            if prefix:
+                bot.prefixes[message.guild.id] = prefix
+                return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
+            else:
+                await bot.db.execute("INSERT INTO prefixes(serverid,prefix) VALUES($1,$2) ON CONFLICT (serverid) DO UPDATE SET prefix = $2",message.guild.id, bot.default_prefix)
+                bot.prefixes[message.guild.id] = bot.default_prefix
+                return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
+
+    async def create_tables(self):
+        await self.wait_until_ready()
+        await self.db.execute("CREATE TABLE IF NOT EXISTS prefixes (serverid BIGINT PRIMARY KEY,prefix VARCHAR(50))")
+        await self.db.execute("CREATE TABLE IF NOT EXISTS scoresaber (userid BIGINT PRIMARY KEY,ssid BIGINT)")
+        await self.db.execute("CREATE TABLE IF NOT EXISTS economy (userid BIGINT PRIMARY KEY,wallet BIGINT,bank BIGINT)")
 
     def starter(self):
-        self.start_time = datetime.datetime.utcnow()
-        extensions = [
+        try:
+            print("Connecting to database ...")
+            pool_pg = self.loop.run_until_complete(asyncpg.create_pool(dsn=dsn))
+            print("Connected to PostgreSQL server!")
+        except Exception as e:
+            print("Could not connect to database:", e)
+        else:
+            print("Connecting to Discord ...")
+            self.start_time = datetime.datetime.utcnow()
+            self.db = pool_pg
+            extensions = [
             'cogs.misc', 'cogs.fun', 'cogs.tenor', 'cogs.devcommands',
             'cogs.tracking', 'cogs.speak', 'cogs.api', 'cogs.errorhandler',
             'cogs.owner', 'cogs.prefixes', 'jishaku', 'cogs.beatsaber',
             'cogs.imagemanip', 'cogs.invites', 'cogs.zane',
             'cogs.eco', 'cogs.useful'
-        ]
-        for extension in extensions:
-            self.load_extension(extension)
-
-        keep_alive()
-        self.run(os.environ['DTOKEN'])
+            ]
+            for extension in extensions:
+                self.load_extension(extension)
+            
+            keep_alive()
+            self.run(os.environ['DTOKEN'])
 
     async def get_context(self, message: discord.Message, *, cls=None):
             return await super().get_context(message, cls=cls or commands.Context)
@@ -71,12 +90,23 @@ class Cute(commands.Bot):
             return
         if re.fullmatch(f"^(<@!?{self.user.id}>)\s*", message.content):
             await message.add_reaction('<:what:791007602745671701>')
-            ctx = await self.get_context(message)
-            return await ctx.invoke(self.get_command("botprefix"))
+            try:
+                sprefix = bot.prefixes[message.guild.id]
+            except KeyError:
+                prefix = await bot.db.fetchval("SELECT prefix FROM prefixes WHERE serverid = $1", message.guild.id)
+                if prefix:
+                    sprefix = prefix
+                else:
+                    sprefix = bot.default_prefix
+            await message.channel.send("My prefix on `{}` is `{}`".format(message.guild.name, sprefix))
         await self.process_commands(message)
+
+        
+
 
 
 bot = Cute()
+bot.loop.create_task(bot.create_tables())
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
 os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
 os.environ["JISHAKU_HIDE"] = "True"

@@ -30,6 +30,8 @@ motor = "^2.3.1"
 owotext = "^1.1.1"
 aiozaneapi = "^1.6"
 "alexflipnote.py" = "^2.1.1"
+asyncpg = "^0.22.0"
+prettytable = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 
