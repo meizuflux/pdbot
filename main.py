@@ -8,6 +8,7 @@ import asyncpg
 import datetime
 from keep_alive import keep_alive
 import motor.motor_asyncio
+from utils.context import CustomContext
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MongoDB'])
 db = client.prefixes
@@ -52,6 +53,12 @@ class Cute(commands.Bot):
                 bot.prefixes[message.guild.id] = bot.default_prefix
                 return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
 
+    async def try_user(self, user_id: int) -> discord.User:
+        user = self.get_user(user_id)
+        if not user:
+            user = await self.fetch_user(user_id)
+        return user.name
+
     async def create_tables(self):
         await self.wait_until_ready()
         await self.db.execute("CREATE TABLE IF NOT EXISTS prefixes (serverid BIGINT PRIMARY KEY,prefix VARCHAR(50))")
@@ -83,7 +90,7 @@ class Cute(commands.Bot):
             self.run(os.environ['DTOKEN'])
 
     async def get_context(self, message: discord.Message, *, cls=None):
-            return await super().get_context(message, cls=cls or commands.Context)
+            return await super().get_context(message, cls=cls or CustomContext)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -101,7 +108,7 @@ class Cute(commands.Bot):
             await message.channel.send("My prefix on `{}` is `{}`".format(message.guild.name, sprefix))
         await self.process_commands(message)
 
-        
+
 
 
 

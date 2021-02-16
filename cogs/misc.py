@@ -94,25 +94,7 @@ class Misc(commands.Cog):
             'https://www.youtube.com/watch?v=j5a0jTc9S10&list=PL3KnTfyhrIlcudeMemKd6rZFGDWyK23vx&index=11'
         )
 
-    @commands.command(name='ping', help='only for cool kids')
-    async def ping(self, ctx):
-        start = time.perf_counter()
-        message = await ctx.send("Pinging ...")
-        end = time.perf_counter()
-        duration = (end - start) * 1000
-        dbstart = time.perf_counter()
-        await self.bot.prefix_db.pre.find_one({"_id": str(ctx.guild.id)})
-        dbend = time.perf_counter()
-        dbduration = (dbend - dbstart) * 1000
-        pong = discord.Embed(title='Ping', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-        pong.add_field(name='Typing Latency',
-                       value=f'```python\n{round(duration)} ms```')
-        pong.add_field(
-            name='Websocket Latency',
-            value=f'```python\n{round(self.bot.latency * 1000)} ms```')
-        pong.add_field(name='Database Latency',
-                       value=f'```python\n{round(dbduration)} ms```')
-        await message.edit(content=None, embed=pong)
+
 
     @commands.command(name='creator', help='Checks if you are the creator')
     async def creator(self, ctx):

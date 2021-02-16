@@ -14,6 +14,8 @@ class speak(commands.Cog, command_attrs=dict(hidden=True)):
 			await ctx.message.delete()
 		except discord.Forbidden:
 			pass
+		except discord.NotFound:
+			pass
 	
 	@commands.command(name='dm')
 	@commands.is_owner()
