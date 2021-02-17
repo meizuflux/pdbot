@@ -108,10 +108,6 @@ class Cute(commands.Bot):
             await message.channel.send("My prefix on `{}` is `{}`".format(message.guild.name, sprefix))
         await self.process_commands(message)
 
-
-
-
-
 bot = Cute()
 bot.loop.create_task(bot.create_tables())
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
@@ -121,6 +117,16 @@ os.environ["JISHAKU_HIDE"] = "True"
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!\nGuilds: {len(bot.guilds)}\nMembers: {str(sum([guild.member_count for guild in bot.guilds]))}')
+
+blist = [606115299816636416]
+
+@bot.check
+async def blacklist(ctx):
+	if ctx.author.id in blist:
+		await ctx.send('YOU ARE BLACKLISTED LOSER')
+		return False
+	else: 
+		return True
 
 if __name__ == "__main__":
     bot.starter()
