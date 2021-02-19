@@ -31,7 +31,7 @@ description = "An easy to use Python Wrapper for the AlexFlipnote API"
 name = "alexflipnote.py"
 optional = false
 python-versions = ">=3.6"
-version = "2.1.1"
+version = "2.3.0"
 
 [package.dependencies]
 aiohttp = "*"
@@ -54,7 +54,7 @@ description = "google_trans_new but it is async!"
 name = "async-google-trans-new"
 optional = false
 python-versions = "*"
-version = "1.1.2"
+version = "1.2.1"
 
 [package.dependencies]
 aiohttp = ">=3.6.0,<3.8.0"
@@ -341,7 +341,7 @@ description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
-version = "8.6.0"
+version = "8.7.0"
 
 [[package]]
 category = "main"
@@ -478,8 +478,8 @@ description = "A modern CSS selector implementation for Beautiful Soup."
 marker = "python_version >= \"3.0\""
 name = "soupsieve"
 optional = false
-python-versions = ">=3.5"
-version = "2.1"
+python-versions = ">=3.6"
+version = "2.2"
 
 [[package]]
 category = "main"
@@ -625,15 +625,15 @@ aiozaneapi = [
     {file = "aiozaneapi-1.6.tar.gz", hash = "sha256:82b692ab527696089f455bc4aa8241309254db392d4ff3881b4973b853d75784"},
 ]
 "alexflipnote.py" = [
-    {file = "alexflipnote.py-2.1.1-py3-none-any.whl", hash = "sha256:b76db62bb6d55d7c9ffae05a4617b2f1900e95b6e517dd8a113b1a88ab3f9e59"},
-    {file = "alexflipnote.py-2.1.1.tar.gz", hash = "sha256:fef5df14557d73d1ffadd2fe85f2f3dd5e11e07de1841e915ad094acfee69a76"},
+    {file = "alexflipnote.py-2.3.0-py3-none-any.whl", hash = "sha256:1f44a7f9a4135d755f5a9945a613031db083811c343d56a58b3a72a23e6cb3c0"},
+    {file = "alexflipnote.py-2.3.0.tar.gz", hash = "sha256:1b9873669997cc0018ff492ccbc2ae25225122fe09f0e9dc91c350a45aacc12f"},
 ]
 astunparse = [
     {file = "astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"},
     {file = "astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872"},
 ]
 async-google-trans-new = [
-    {file = "async_google_trans_new-1.1.2-py3-none-any.whl", hash = "sha256:bcf1d27698a9e12b78c7389618eda5c1b5ebb842d86f720cdb99a964d51b4ee2"},
+    {file = "async_google_trans_new-1.2.1-py3-none-any.whl", hash = "sha256:b23496bbe35f6085e0c41a9eb1694c9d320361b0bc49958717f0c14de2232f10"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
@@ -795,8 +795,8 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 more-itertools = [
-    {file = "more-itertools-8.6.0.tar.gz", hash = "sha256:b3a9005928e5bed54076e6e549c792b306fddfe72b2d1d22dd63d42d5d3899cf"},
-    {file = "more_itertools-8.6.0-py3-none-any.whl", hash = "sha256:8e1a2a43b2f2727425f2b5839587ae37093f19153dc26c0927d1048ff6557330"},
+    {file = "more-itertools-8.7.0.tar.gz", hash = "sha256:c5d6da9ca3ff65220c3bfd2a8db06d698f05d4d2b9be57e1deb2be5a45019713"},
+    {file = "more_itertools-8.7.0-py3-none-any.whl", hash = "sha256:5652a9ac72209ed7df8d9c15daf4e1aa0e3d2ccd3c87f8265a0673cd9cbc9ced"},
 ]
 motor = [
     {file = "motor-2.3.1-py3-none-any.whl", hash = "sha256:ea5a8f5c7cbb08b7c301d7c66746fc96333d634182df236dff0f814f802fe232"},
@@ -1024,8 +1024,8 @@ six = [
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
 ]
 soupsieve = [
-    {file = "soupsieve-2.1-py3-none-any.whl", hash = "sha256:4bb21a6ee4707bf43b61230e80740e71bfe56e55d1f1f50924b087bb2975c851"},
-    {file = "soupsieve-2.1.tar.gz", hash = "sha256:6dc52924dc0bc710a5d16794e6b3480b2c7c08b07729505feab2b2c16661ff6e"},
+    {file = "soupsieve-2.2-py3-none-any.whl", hash = "sha256:d3a5ea5b350423f47d07639f74475afedad48cf41c0ad7a82ca13a3928af34f6"},
+    {file = "soupsieve-2.2.tar.gz", hash = "sha256:407fa1e8eb3458d1b5614df51d9651a1180ea5fedf07feb46e45d7e25e6d6cdd"},
 ]
 tengiphpy = [
     {file = "TenGiphPy-2.0.0-py3-none-any.whl", hash = "sha256:38fb580795172b2c49767cd7df55c83d1219915e46a7c227550a6cbf08a04ae3"},
