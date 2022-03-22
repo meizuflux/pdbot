@@ -31,9 +31,11 @@ def timeago(target):
 
 def date(target, clock=True):
     """ Clock format using datetime.strftime() """
-    if not clock:
-        return target.strftime("%d %B %Y")
-    return target.strftime("%d %B %Y, %H:%M")
+    return (
+        target.strftime("%d %B %Y, %H:%M")
+        if clock
+        else target.strftime("%d %B %Y")
+    )
 
 def plural(text, size):
     logic = size == 1

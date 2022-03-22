@@ -19,9 +19,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
-        # This prevents any cogs with an overwritten cog_command_error being handled here.
-        cog = ctx.cog
-        if cog:
+        if cog := ctx.cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
@@ -72,7 +70,6 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.DisabledCommand):
             return await qembed.send(ctx, f'`{ctx.command}` has been disabled.')
 
-        # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
                 return await qembed.send(ctx, 
@@ -80,15 +77,12 @@ class CommandErrorHandler(commands.Cog):
 
         else:
             # All other Errors not returned come here. And we can just print the default TraceBack.
-            print('Ignoring exception in command {}:'.format(ctx.command),
-                  file=sys.stderr)
+            print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
             traceback.print_exception(type(error),
                                       error,
                                       error.__traceback__,
                                       file=sys.stderr)
-            error_collection = []
-            error_collection.append(
-                [default.traceback_maker(error, advance=False)])
+            error_collection = [[default.traceback_maker(error, advance=False)]]
             output = "\n".join(
                 [f"```diff\n- {g[0]}```" for g in error_collection])
             await qembed.send(ctx, f"{output}\n¯\_(ツ)_/¯")

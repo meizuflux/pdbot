@@ -13,10 +13,7 @@ class prefixes(commands.Cog, command_attrs=dict(hidden=True)):
 		def predicate(ctx):
 			if ctx.author.id == ctx.bot.author_id:
 				return True
-			if ctx.author.guild_permissions.manage_guild == True:
-				return True
-			else: 
-				return False
+			return ctx.author.guild_permissions.manage_guild == True
 		return commands.check(predicate)
 
 	@commands.Cog.listener()

@@ -58,11 +58,10 @@ class image(commands.Cog, name='Image Manipulation'):
 
     async def alex_image(self, url):
         async with self.bot.session.get(
-                f'https://api.alexflipnote.dev/{url}',
-                headers={'Authorization': flipnotetoken}) as r:
+                    f'https://api.alexflipnote.dev/{url}',
+                    headers={'Authorization': flipnotetoken}) as r:
             io = BytesIO(await r.read())
-            f = discord.File(fp=io, filename='alex.png')
-            return f
+            return discord.File(fp=io, filename='alex.png')
 
     @commands.command(
         aliases=['didyoumean'],
@@ -178,15 +177,17 @@ class image(commands.Cog, name='Image Manipulation'):
                              height=int(i.height * 0.5),
                              delta_x=int(0.5 * scale) if scale else 1,
                              rigidity=0)
-            i.liquid_rescale(width=int(i.width * 1.5),
-                             height=int(i.height * 1.5),
-                             delta_x=scale if scale else 2,
-                             rigidity=0)
+            i.liquid_rescale(
+                width=int(i.width * 1.5),
+                height=int(i.height * 1.5),
+                delta_x=scale or 2,
+                rigidity=0,
+            )
+
             byt = i.make_blob()
             im = polaroid.Image(byt)
             im.resize(500, 500, 1)
-            file = discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
-            return file
+            return discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
 
         final = await self.bot.loop.run_in_executor(None, do_magic)
 
@@ -213,8 +214,7 @@ class image(commands.Cog, name='Image Manipulation'):
             byt = i.make_blob()
             im = polaroid.Image(byt)
             im.resize(500, 500, 1)
-            file = discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
-            return file
+            return discord.File(BytesIO(im.save_bytes()), filename="magik.jpg")
 
         final = await self.bot.loop.run_in_executor(None, do_magic)
 
@@ -502,8 +502,7 @@ class image(commands.Cog, name='Image Manipulation'):
                 byt = BytesIO()
                 im.save(byt, format='jpeg')
                 byt.seek(0)
-                file = discord.File(fp=byt, filename="wanted.jpeg")
-                return file
+                return discord.File(fp=byt, filename="wanted.jpeg")
 
             async def async_func():
                 thing = functools.partial(sync_func)
@@ -541,8 +540,7 @@ class image(commands.Cog, name='Image Manipulation'):
                 byt = BytesIO()
                 obama_pic.save(byt, format='png')
                 byt.seek(0)
-                file = discord.File(fp=byt, filename="obama.png")
-                return file
+                return discord.File(fp=byt, filename="obama.png")
 
             async def async_func():
                 thing = functools.partial(sync_func)
@@ -578,8 +576,7 @@ class image(commands.Cog, name='Image Manipulation'):
                 byt = BytesIO()
                 obama_pic.save(byt, format='png')
                 byt.seek(0)
-                file = discord.File(fp=byt, filename="laugh.png")
-                return file
+                return discord.File(fp=byt, filename="laugh.png")
 
             thing = functools.partial(sync_func)
             file = await self.bot.loop.run_in_executor(None, thing)
@@ -614,8 +611,7 @@ class image(commands.Cog, name='Image Manipulation'):
                 byt = BytesIO()
                 nuts.save(byt, format='png')
                 byt.seek(0)
-                file = discord.File(fp=byt, filename="nut.png")
-                return file
+                return discord.File(fp=byt, filename="nut.png")
 
             async def async_func():
                 thing = functools.partial(sync_func, img2)
@@ -658,8 +654,7 @@ class image(commands.Cog, name='Image Manipulation'):
                 byt = BytesIO()
                 obama_pic.save(byt, format='png')
                 byt.seek(0)
-                file = discord.File(fp=byt, filename="obama.png")
-                return file
+                return discord.File(fp=byt, filename="obama.png")
 
             async def async_func():
                 thing = functools.partial(sync_func, uimg)
@@ -695,9 +690,8 @@ class image(commands.Cog, name='Image Manipulation'):
                 def sync_func():
                     im = polaroid.Image(byt)
                     im.resize(width, height, 1)
-                    file = discord.File(BytesIO(im.save_bytes()),
+                    return discord.File(BytesIO(im.save_bytes()),
                                         filename="stretched.png")
-                    return file
 
                 async def async_func():
                     thing = functools.partial(sync_func)

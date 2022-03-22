@@ -139,9 +139,7 @@ class Invites(commands.Cog):
 
     def get_invite(self, code: str) -> Optional[discord.Invite]:
         for invites in self.bot.invites.values():
-            find = invites.get(code)
-
-            if find:
+            if find := invites.get(code):
                 return find
         return None
 
@@ -176,9 +174,7 @@ class Invites(commands.Cog):
     @commands.Cog.listener()
     async def on_invite_create(self, invite: discord.Invite) -> None:
         print(f"created invite {invite} in {invite.guild}")
-        cached = self.bot.invites.get(invite.guild.id, None)
-
-        if cached:
+        if cached := self.bot.invites.get(invite.guild.id, None):
             cached[invite.code] = invite
 
     @commands.Cog.listener()
@@ -187,9 +183,7 @@ class Invites(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel) -> None:
-        invites = self.bot.invites.get(channel.guild.id)
-
-        if invites:
+        if invites := self.bot.invites.get(channel.guild.id):
             for invite in list(invites.values()):
                 # changed to use id because of doc warning
                 if invite.channel.id == channel.id:
@@ -256,7 +250,7 @@ class Invites(commands.Cog):
         # if there are 10 or more invites in the cache we will
         # display 10 invites, otherwise display the amount
         # of invites
-        amount = 10 if len(invites) >= 10 else len(invites)
+        amount = min(len(invites), 10)
         # list comp on the sorted invites and then
         # join it into one string with str.join
         description = '\n'.join([f'{i + 1}. {invites[i].code} - {invites[i].uses}' for i in range(amount)])

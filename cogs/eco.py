@@ -60,10 +60,9 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 				return await qembed(ctx, 'You don\'t have that much money in your wallet.')
 			if int(amount) < 0:
 				return await qembed(ctx, 'How exactly are you going to deposit a negative amount of money?')
-			else:
-				wallete = wallet - int(amount)
-				bank = bank + int(amount)
-				message = f'You deposited ${humanize.intcomma(amount)}'
+			wallete = wallet - int(amount)
+			bank = bank + int(amount)
+			message = f'You deposited ${humanize.intcomma(amount)}'
 		await self.bot.db.execute("UPDATE economy SET wallet = $1, bank = $2 WHERE userid = $3", wallete, bank, ctx.author.id)
 		await qembed(ctx, message)
 
@@ -84,10 +83,9 @@ class Economy(commands.Cog, command_attrs=dict(hidden=False)):
 				return await qembed(ctx, 'You can\'t exactly withdraw a negative amount of money')
 			if bank < int(amount):
 				return await qembed(ctx, 'You don\'t have that much money!')
-			else:
-				wallet = wallet + int(amount)
-				banke = bank - int(amount)
-				message = f'You withdrew ${humanize.intcomma(amount)}'
+			wallet = wallet + int(amount)
+			banke = bank - int(amount)
+			message = f'You withdrew ${humanize.intcomma(amount)}'
 		await self.bot.db.execute("UPDATE economy SET wallet = $1, bank = $2 WHERE userid = $3", wallet, banke, ctx.author.id)
 		await qembed(ctx, message)
 

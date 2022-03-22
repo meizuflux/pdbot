@@ -39,7 +39,7 @@ class Cute(commands.Bot):
         self.prefixes = {}
 
     async def get_prefix(bot, message):
-        if message.guild == None:
+        if message.guild is None:
             return commands.when_mentioned_or(bot.default_prefix)(bot, message)
         try:
             return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
@@ -47,11 +47,11 @@ class Cute(commands.Bot):
             prefix = await bot.db.fetchval("SELECT prefix FROM prefixes WHERE serverid = $1", message.guild.id)
             if prefix:
                 bot.prefixes[message.guild.id] = prefix
-                return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
             else:
                 await bot.db.execute("INSERT INTO prefixes(serverid,prefix) VALUES($1,$2) ON CONFLICT (serverid) DO UPDATE SET prefix = $2",message.guild.id, bot.default_prefix)
                 bot.prefixes[message.guild.id] = bot.default_prefix
-                return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
+
+            return commands.when_mentioned_or(bot.prefixes[message.guild.id])(bot, message)
 
     async def try_user(self, user_id: int) -> discord.User:
         user = self.get_user(user_id)
@@ -101,11 +101,11 @@ class Cute(commands.Bot):
                 sprefix = bot.prefixes[message.guild.id]
             except KeyError:
                 prefix = await bot.db.fetchval("SELECT prefix FROM prefixes WHERE serverid = $1", message.guild.id)
-                if prefix:
-                    sprefix = prefix
-                else:
-                    sprefix = bot.default_prefix
-            await message.channel.send("My prefix on `{}` is `{}`".format(message.guild.name, sprefix))
+                sprefix = prefix or bot.default_prefix
+            await message.channel.send(
+                f"My prefix on `{message.guild.name}` is `{sprefix}`"
+            )
+
         await self.process_commands(message)
 
 bot = Cute()
@@ -116,17 +116,18 @@ os.environ["JISHAKU_HIDE"] = "True"
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user} has connected to Discord!\nGuilds: {len(bot.guilds)}\nMembers: {str(sum([guild.member_count for guild in bot.guilds]))}')
+    print(
+        f'{bot.user} has connected to Discord!\nGuilds: {len(bot.guilds)}\nMembers: {str(sum(guild.member_count for guild in bot.guilds))}'
+    )
 
 blist = [606115299816636416]
 
 @bot.check
 async def blacklist(ctx):
-	if ctx.author.id in blist:
-		await ctx.send('YOU ARE BLACKLISTED LOSER')
-		return False
-	else: 
-		return True
+    if ctx.author.id not in blist:
+        return True
+    await ctx.send('YOU ARE BLACKLISTED LOSER')
+    return False
 
 if __name__ == "__main__":
     bot.starter()

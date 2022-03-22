@@ -11,10 +11,7 @@ class CustomContext(commands.Context):
         if "reply" in kwargs and not kwargs.pop("reply"):
             return await super().send(content, **kwargs)
         try:
-            if kwargs.pop("mention", False):
-            	mention_author = True
-            else:
-            	mention_author = False
+            mention_author = bool(kwargs.pop("mention", False))
             return await self.reply(content, **kwargs, mention_author=mention_author)
         except discord.HTTPException:
             return await super().send(content, **kwargs)
