@@ -24,11 +24,10 @@ class Misc(commands.Cog):
         def predicate(ctx):
             if ctx.author.id == 777893499471265802:
                 return True
-            if ctx.guild:
-                if ctx.author.guild_permissions.manage_messages == True:
-                    return True
-            else:
+            if not ctx.guild:
                 return False
+            if ctx.author.guild_permissions.manage_messages == True:
+                return True
 
         return commands.check(predicate)
 
@@ -98,13 +97,13 @@ class Misc(commands.Cog):
 
     @commands.command(name='creator', help='Checks if you are the creator')
     async def creator(self, ctx):
-        thelist = [
-            '<:sad:790608581615288320>', '<:DogKek:790932497856725013>',
-            '<:4Head:790667956963115068>', '<:Sadge:789590510225457152>'
-        ]
         if ctx.author.id == self.bot.author_id:
             await qembed.send(ctx, 'you <:PogYou:791007602741739610>')
         else:
+            thelist = [
+                '<:sad:790608581615288320>', '<:DogKek:790932497856725013>',
+                '<:4Head:790667956963115068>', '<:Sadge:789590510225457152>'
+            ]
             await qembed.send(ctx, f'not you {random.choice(thelist)}')
 
     @commands.command(
@@ -115,7 +114,7 @@ class Misc(commands.Cog):
     @commands.guild_only()
     @mng_msg()
     async def purge(self, ctx, amount: int):
-        await ctx.channel.purge(limit=1 + int(amount))
+        await ctx.channel.purge(limit=1 + amount)
         e = discord.Embed(description=f'Deleted {amount} message(s)',
                           color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=e, delete_after=2)
@@ -177,25 +176,25 @@ class Misc(commands.Cog):
     @commands.is_owner()
     async def presence(self, ctx, atype: str, *, activity=None):
         atype = atype.lower()
-        if atype == 'default':
-            await self.bot.change_presence(
-                activity=discord.Activity(type=discord.ActivityType.listening,
-                                          name=f'@{self.bot.user.name}'))
-        if atype == 'watching':
-            await self.bot.change_presence(activity=discord.Activity(
-                type=discord.ActivityType.watching, name=activity))
-        if atype == 'listening':
-            await self.bot.change_presence(activity=discord.Activity(
-                type=discord.ActivityType.listening, name=activity))
-        if atype == 'playing':
-            await self.bot.change_presence(activity=discord.Game(name=activity)
-                                           )
-        if atype == 'streaming':
-            await self.bot.change_presence(activity=discord.Streaming(
-                name=activity, url='https://twitch.tv/ppotatoo_'))
         if atype == 'competing':
             await self.bot.change_presence(activity=discord.Activity(
                 type=discord.ActivityType.competing, name=activity))
+        elif atype == 'default':
+            await self.bot.change_presence(
+                activity=discord.Activity(type=discord.ActivityType.listening,
+                                          name=f'@{self.bot.user.name}'))
+        elif atype == 'listening':
+            await self.bot.change_presence(activity=discord.Activity(
+                type=discord.ActivityType.listening, name=activity))
+        elif atype == 'playing':
+            await self.bot.change_presence(activity=discord.Game(name=activity)
+                                           )
+        elif atype == 'streaming':
+            await self.bot.change_presence(activity=discord.Streaming(
+                name=activity, url='https://twitch.tv/ppotatoo_'))
+        elif atype == 'watching':
+            await self.bot.change_presence(activity=discord.Activity(
+                type=discord.ActivityType.watching, name=activity))
         await qembed.send(
             ctx, f'Set activity to `{activity}` with type `{atype}` ')
 
@@ -203,7 +202,7 @@ class Misc(commands.Cog):
                       aliases=['ui', 'userinformation'],
                       help='Gets info about a user.')
     async def who(self, ctx, member: discord.Member = None):
-        if member == None:
+        if member is None:
             member = ctx.author
         mention_roles = [i.mention for i in member.roles[1:]]
         join = member.joined_at.strftime("%m/%d/%Y")
@@ -213,7 +212,7 @@ class Misc(commands.Cog):
             description=f'**Joined:** {join}\n**Account Creation:** {create}',
             color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         embed.set_thumbnail(url=member.avatar_url)
-        if len(mention_roles) == 0:
+        if not mention_roles:
             embed.add_field(name='Roles', value='This user has no roles')
         else:
             embed.add_field(name='Top Role', value=member.top_role.mention)
@@ -251,10 +250,8 @@ class Misc(commands.Cog):
         if command == 'help':
             e = discord.Embed(
                 description='https://pypi.org/project/discord-pretty-help/', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=e)
         elif command.startswith('jsk') or command.startswith('jishaku'):
             e = discord.Embed(description='https://pypi.org/project/jishaku/', color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=e)
         else:
             obj = self.bot.get_command(command.replace('.', ' '))
             if obj is None:
@@ -273,10 +270,11 @@ class Misc(commands.Cog):
 
             final_url = f'<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
             e = discord.Embed(title='Add a star if you like!',
-                              description=final_url,
-							  color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            description=final_url,
+            color=self.bot.embed_color, timestamp=ctx.message.created_at).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             e.set_footer(text='Don\'t forget the Licence!')
-            await ctx.send(embed=e)
+
+        await ctx.send(embed=e)
 
 
 
