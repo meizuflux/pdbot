@@ -91,10 +91,7 @@ class fun(commands.Cog):
 
     @commands.command(help='Finds the PPSIZE of a user')
     async def ppsize(self, ctx, user: discord.Member = None):
-        if not user:
-            user = ctx.author.name
-        else:
-            user = user.name
+        user = user.name if user else ctx.author.name
         async with self.bot.session.get(
                 'https://www.potatoapi.ml/ppsize') as f:
             f = await f.json()
@@ -255,10 +252,7 @@ class fun(commands.Cog):
 
     @commands.command(name='monke', help='reject discord return to monke')
     async def monk(self, ctx, monke: discord.Member = None):
-        if not monke:
-            monke = ""
-        else:
-            monke = f"{monke.mention}, "
+        monke = f"{monke.mention}, " if monke else ""
         await qembed.send(
             ctx,
             f"https://tenor.com/view/reject-modernity-return-to-monke-monke-gif-19167526\n{monke}return to monke"

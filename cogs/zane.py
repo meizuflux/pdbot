@@ -21,7 +21,7 @@ class Zane(commands.Cog, command_attrs=dict(hidden=False)):
 		# get the image
 			if ctx.message.attachments:
 				img = str(await ctx.message.attachments[0])
-			elif isinstance(image, discord.PartialEmoji) or isinstance(image, discord.Emoji):
+			elif isinstance(image, (discord.PartialEmoji, discord.Emoji)):
 				img = str(await image.url.read())
 			else:
 				img = image or ctx.author
